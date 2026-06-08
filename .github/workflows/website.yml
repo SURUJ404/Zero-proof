@@ -38,12 +38,17 @@ jobs:
       url: ${{ steps.vercel.outputs.url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - name: Deploy to Vercel
         id: vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.ZEROTOKEN }}
-          vercel-org-id: ${{ secrets.VERCELID }}
-          vercel-project-id: ${{ secrets.PROJECTID }}
-          vercel-args: --prod
-          working-directory: website
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCELID }}
+          VERCEL_PROJECT_ID: ${{ secrets.PROJECTID }}
+        run: |
+          npx vercel@latest pull --yes --environment=production --token=${{ secrets.ZEROTOKEN }}
+          npx vercel@latest build --prod --token=${{ secrets.ZEROTOKEN }}
+          npx vercel@latest deploy --prebuilt --prod --token=${{ secrets.ZEROTOKEN }} > vercel-url.txt
+          echo "url=$(cat vercel-url.txt)" >> $GITHUB_OUTPUT
+        working-directory: website
