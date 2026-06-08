@@ -21,5 +21,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/rustup
       - uses: ./.github/actions/protoc
-      - name: Quick check
-        run: cargo check --benches -F prove 2>&1 | tail -5
+      - name: Full build
+        run: cargo build --release -F prove
