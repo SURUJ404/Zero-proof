@@ -24,17 +24,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install latest Vercel CLI
-        run: npm install -g vercel@latest
       - name: Deploy to Vercel
         id: vercel
-        env:
-          BASE_URL: /
         run: |
-          vercel deploy --prod \
+          npx --yes vercel@latest deploy website --prod \
             --token=${{ secrets.ZEROTOKEN }} \
             --scope=${{ secrets.VERCELID }} \
-            --name=zero-proof \
             --yes > vercel-url.txt
           echo "url=$(cat vercel-url.txt)" >> $GITHUB_OUTPUT
-        working-directory: website
