@@ -1,0 +1,15 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "EditorConfig.EditorConfig",
+    "kriegalex.vscode-cudacpp",
+    "llvm-vs-code-extensions.vscode-clangd",
+    "ms-vscode.cpptools",
+    "rust-lang.rust-analyzer",
+    "serayuzgur.crates",
+    "stkb.rewrap",
+    "tamasfe.even-better-toml",
+    "valentjn.vscode-ltex",
+    "unifiedjs.vscode-remark"
+  ]
+}

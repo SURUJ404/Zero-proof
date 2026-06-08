@@ -1,0 +1,15 @@
+[package]
+name = "hash"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+risc0-zkvm = { path = "../../../../risc0/zkvm", default-features = false, features = ["std"] }
+sha2 = "0.10.9"
+
+[patch.crates-io]
+# Placing this patch statement in the workspace Cargo.toml will add RISC Zero SHA-256 accelerator
+# support for all downstream usages of the `sha2` crate.
+sha2 = { git = "https://github.com/suruj404/zero-knowledgeriscRustCrypto-hashes", tag = "sha2-v0.10.9-risczero.0" }

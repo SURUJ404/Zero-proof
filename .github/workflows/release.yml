@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+env:
+  RISC0_RUST_TOOLCHAIN_VERSION: 1.94.1
+  RISC0_CPP_TOOLCHAIN_VERSION: 2024.01.05
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact: cargo-risczero-x86_64-unknown-linux-gnu.tgz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact: cargo-risczero-aarch64-apple-darwin.tgz
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - run: git lfs pull
+      - uses: ./.github/actions/rustup
+      - name: Build release binaries
+        run: |
+          cargo build -p cargo-risczero -p risc0-r0vm --release --locked
+          mkdir -p tmp/pkg
+          cp target/release/cargo-risczero tmp/pkg/
+          cp target/release/r0vm tmp/pkg/
+      - name: Package artifacts
+        run: |
+          cd tmp/pkg
+          tar cv * | gzip -9 > ../../${{ matrix.artifact }}
+      - uses: svenstaro/upload-release-action@v2
+        with:
+          overwrite: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ matrix.artifact }}

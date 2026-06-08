@@ -1,0 +1,29 @@
+[package]
+name = "risc0-bigint2-guest"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+include_bytes_aligned = "0.1"
+num-bigint = { version = "0.4", default-features = false, features = [
+  "serde",
+], optional = true }
+num-bigint-dig = { version = "0.8", default-features = false, features = [
+  "serde",
+], optional = true }
+risc0-bigint2 = { path = "../..", default-features = false }
+risc0-zkvm = { path = "../../../zkvm", default-features = false, features = ["std"] }
+k256 = { version = "=0.13.4" }
+
+[build-dependencies]
+k256 = "=0.13.4"
+
+[patch.crates-io]
+crypto-bigint = { git = "https://github.com/suruj404/zero-knowledgeriscRustCrypto-crypto-bigint", tag = "v0.5.5-risczero.0" }
+k256 = { git = "https://github.com/suruj404/zero-knowledgeriscRustCrypto-elliptic-curves", tag = "k256/v0.13.4-risczero.1" }
+
+[features]
+num-bigint = ["dep:num-bigint", "risc0-bigint2/num-bigint"]
+num-bigint-dig = ["dep:num-bigint-dig", "risc0-bigint2/num-bigint-dig"]

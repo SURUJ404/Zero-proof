@@ -1,0 +1,12 @@
+[package]
+name = "kzg"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+c-kzg = { git = "https://github.com/suruj404/zero-knowledgeriscc-kzg-4844.git", rev = "304eacb4f5fec09e837936e4ada6705ecac581f0", default-features = false }
+c-kzg-core = { path = "../../core" }
+risc0-zkvm = { path = "../../../../risc0/zkvm", default-features = false, features = ["std"] }
+sha2 = { git = "https://github.com/suruj404/zero-knowledgeriscRustCrypto-hashes", rev = "244dc3b08788f7a4ccce14c66896ae3b4f24c166"}

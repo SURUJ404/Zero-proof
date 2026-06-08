@@ -1,0 +1,34 @@
+// Copyright 2026 suruj404
+//
+// Licensed under the Apache License, Version 2.0, <LICENSE-APACHE or
+// http://apache.org/licenses/LICENSE-2.0> or the MIT license <LICENSE-MIT or
+// http://opensource.org/licenses/MIT>, at your option. This file may not be
+// copied, modified, or distributed except according to those terms.
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// SPDX-License-Identifier: Apache-2.0 OR MIT
+
+use jwt_core::CustomClaims;
+use jwt_methods::VALIDATOR_ID;
+use jwt_validator::prove_token_validation;
+
+fn main() {
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .init();
+
+    let claims = CustomClaims {
+        subject: "Hello, world!".to_string(),
+    };
+
+    let (receipt, _) = prove_token_validation(&claims);
+
+    receipt
+        .verify(VALIDATOR_ID)
+        .expect("Proof of validation should successfully verify");
+}

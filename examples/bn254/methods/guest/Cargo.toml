@@ -1,0 +1,14 @@
+[package]
+name = "bn254-inner"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[dependencies]
+bn254-core = { path = "../../core" }
+risc0-zkvm = { path = "../../../../risc0/zkvm", default-features = false, features = ["std"] }
+substrate-bn = "=0.6.0"
+
+[patch.crates-io]
+substrate-bn = { git = "https://github.com/suruj404/zero-knowledgeriscparitytech-bn", tag = "v0.6.0-risczero.0" }

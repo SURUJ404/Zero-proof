@@ -1,0 +1,14 @@
+*.id binary
+*.iid binary
+*.xz binary
+*.zip binary
+*.zkr binary
+groth16_proof/groth16/stark_verify.circom binary
+risc0/circuit/hello-m3/src/testdata/proof.bin binary
+*.zkr !text !filter !merge !diff
+*.xz !text !filter !merge !diff
+*.zip !text !filter !merge !diff
+*.circom !text !filter !merge !diff
+*.bin !text !filter !merge !diff
+*.id !text !filter !merge !diff
+*.iid !text !filter !merge !diff

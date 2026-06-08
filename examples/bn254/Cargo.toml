@@ -1,0 +1,21 @@
+[package]
+name = "bn254-example"
+version = "0.1.0"
+edition = { workspace = true }
+
+default-run = "bn254-example"
+
+[features]
+cuda = ["risc0-zkvm/cuda"]
+default = []
+prove = ["risc0-zkvm/prove"]
+
+[dependencies]
+bn254-core = { path = "core" }
+bn254-methods = { path = "methods" }
+hex = "0.4.3"
+risc0-zkvm = { path = "../../risc0/zkvm" }
+substrate-bn = "=0.6.0"
+
+[dev-dependencies]
+gpu-guard = { path = "../../tools/gpu-guard" }
