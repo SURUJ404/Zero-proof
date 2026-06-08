@@ -53,7 +53,7 @@
   </summary>
 
   A: Some known issues and workarounds are tracked on GitHub under the <a href="https://github.com/suruj404/zero-knowledgerisc/issues?q=is%3Aissue+is%3Aopen+label%3A%22rust+guest+workarounds%22">"rust guest workarounds"</a> tag.
-  If you can't find your problem here you can open a <a href="https://github.com/suruj404/zero-knowledgerisc/issues">new issue</a> or reach out to us on <a href="https://">Discord</a>.
+  If you can't find your problem here you can open a <a href="https://github.com/suruj404/zero-knowledgerisc/issues">new issue</a> or reach out to us on Discord.
 </details>
 
 <br />
@@ -143,7 +143,7 @@
   A: We recommend Rust for writing zkVM applications.
   Although technically the zkVM can execute any RISC-V code, we only have documentation and API support for Rust development.
   Development in C++ is also possible, but proceed at your own risk.
-  You can reference the <a href="https://github.com/suruj404/zero-knowledgerisc/tree/v0.11.0/examples/cpp">examples in C++</a> that were included in the 0.11 release, although we've made substantial changes since that release, and we're available to answer questions on <a href="https://"> Discord</a> as needed.
+  You can reference the <a href="https://github.com/suruj404/zero-knowledgerisc/tree/v0.11.0/examples/cpp">examples in C++</a> that were included in the 0.11 release, although we've made substantial changes since that release, and we're available to answer questions on Discord as needed.
 </details>
 
 <a class="anchor" id="max-length" />

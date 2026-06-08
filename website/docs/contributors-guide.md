@@ -8,7 +8,7 @@ _This page describes guidelines for community contributions to this [website](ht
 > - Contribute website content or give feedback on [open pull requests](https://github.com/suruj404/zero-knowledgerisc/pulls)
 > - Contribute to the [main zkVM project](https://github.com/suruj404/zero-knowledgerisc) (see [CONTRIBUTING](https://github.com/suruj404/zero-knowledgerisc/blob/main/CONTRIBUTING.md))
 > - Contribute to our tutorials and how-to guides for our [templates](https://github.com/suruj404/zero-knowledgerisc/tree/main/risc0/cargo-risczero/templates) and [Rust examples](https://github.com/suruj404/zero-knowledgerisc/tree/main/examples)
-> - Ask questions on [Discord](https://)
+> - Ask questions on Discord
 
 ## How to Contribute
 
@@ -78,4 +78,4 @@ We're excited about the engagement we've seen so far, and we're looking forward 
 
 ## Questions?
 
-Find us on [Discord](https://).
+Find us on Discord.

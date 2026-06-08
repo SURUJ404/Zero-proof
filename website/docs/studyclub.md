@@ -15,7 +15,7 @@ This session of study club will discuss how to use proof composition, how proof 
 All sessions are hosted at **9am Pacific / 5PM UTC**. <br />
 Join the session: [Zoom link] <br />
 
-Join the conversation on [Discord](https://).
+Join the conversation on Discord.
 
 ### Past Sessions
 
