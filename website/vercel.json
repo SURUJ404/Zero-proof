@@ -1,0 +1,5 @@
+{
+  "framework": "docusaurus-3",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build"
+}

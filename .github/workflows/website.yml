@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: 20
       - name: Install latest Vercel CLI
-        run: npm i -g vercel@latest
+        run: npm install -g vercel@latest
       - name: Deploy to Vercel
         id: vercel
         env:
