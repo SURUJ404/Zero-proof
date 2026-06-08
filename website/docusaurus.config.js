@@ -30,6 +30,10 @@ export default async function createConfigAsync() {
       locales: ["en"],
     },
 
+    future: {
+      experimental_faster: false,
+    },
+
     presets: [
       [
         "classic",
