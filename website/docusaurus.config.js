@@ -30,17 +30,6 @@ export default async function createConfigAsync() {
       locales: ["en"],
     },
 
-    future: {
-      experimental_faster: {
-        swcJsLoader: true,
-        swcJsMinimizer: true,
-        swcHtmlMinimizer: false, // doesn't work with @acid-info/docusaurus-og
-        lightningCssMinimizer: true,
-        rspackBundler: true,
-        mdxCrossCompilerCache: true,
-      },
-    },
-
     presets: [
       [
         "classic",
@@ -62,16 +51,6 @@ export default async function createConfigAsync() {
     ],
 
     plugins: [
-      [
-        "@acid-info/docusaurus-og",
-        {
-          path: "./preview-images", // relative to the build directory
-          imageRenderers: {
-            "docusaurus-plugin-content-docs": require("./src/og/og-renderer")
-              .renderer,
-          },
-        },
-      ],
       [
         "@docusaurus/plugin-content-docs",
         {
