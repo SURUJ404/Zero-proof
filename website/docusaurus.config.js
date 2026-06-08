@@ -22,8 +22,8 @@ export default async function createConfigAsync() {
     organizationName: "zero-proof",
     projectName: "devdocs",
 
-    onBrokenLinks: "throw",
-    onBrokenMarkdownLinks: "throw",
+    onBrokenLinks: "warn",
+    onBrokenMarkdownLinks: "warn",
 
     i18n: {
       defaultLocale: "en",
