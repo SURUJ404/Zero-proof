@@ -4,9 +4,9 @@ slug: ./
 
 # Introduction
 
-Welcome to the [RISC Zero][external-risc-zero] documentation!
+Welcome to the [Zero Proof][external-risc-zero] documentation!
 
-RISC Zero is creating the infrastructure & tooling necessary for
+Zero Proof is creating the infrastructure & tooling necessary for
 developers around the globe to build software that leverages **verifiable computation**. With verifiable computation, you can be cryptographically confident that a specific blob of data was produced by a specific algorithm.
 
 This technology is poised to enable the finance and healthcare sectors to prove compliance while maintaining privacy, and enables the tech sector to address decades-long trust gaps in software supply chains.

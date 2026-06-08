@@ -9,7 +9,7 @@ const FeatureList = [
     description: (
       <>
         Our{" "}
-        <a href="https://github.com/risc0/risc0">
+        <a href="https://github.com/SURUJ404/Zero-proof">
           codebase is licensed under the Apache2 license
         </a>{" "}
         and includes a full proving and verification system.
@@ -21,7 +21,7 @@ const FeatureList = [
     png: require("@site/static/img/feature/languages.png").default,
     description: (
       <>
-        RISC Zero supports Rust and C++ for writing ZK proofs. Any language that
+        Zero Proof supports Rust and C++ for writing ZK proofs. Any language that
         compiles to RISC-V can be supported.
       </>
     ),
@@ -31,7 +31,7 @@ const FeatureList = [
     png: require("@site/static/img/feature/zkvm.png").default,
     description: (
       <>
-        The RISC Zero ZKVM is a verifiable computer that works like a real
+        The Zero Proof ZKVM is a verifiable computer that works like a real
         embedded RISC-V microprocessor, enabling programmers to write ZK proofs
         like they write any other code.
       </>

@@ -9,7 +9,7 @@
   - [Code Troubleshooting](#code-troubleshooting)
   - [zkVM Application Design](#zkvm-application-design)
   - [Features, Performance, and Limitations](#features-performance-and-limitations)
-- [The RISC Zero Circuits](#the-risc-zero-circuits)
+- [The Zero Proof Circuits](#the-risc-zero-circuits)
 - [Security](#security)
 
 ---
@@ -24,7 +24,7 @@
   </summary>
 
   A zero-knowledge proof (or ZKP) is <a href="https://en.wikipedia.org/wiki/Zero-knowledge_proof">"a method by which one party (the prover) can prove to another party (the verifier) that a given statement is true \[without] conveying any additional information"</a>.
-  RISC Zero's zkVM makes it easy to produce ZKPs to prove the correct execution of arbitrary code. <br />
+  Zero Proof's zkVM makes it easy to produce ZKPs to prove the correct execution of arbitrary code. <br />
 
   <br />
 
@@ -53,7 +53,7 @@
   </summary>
 
   A: Some known issues and workarounds are tracked on GitHub under the <a href="https://github.com/suruj404/zero-knowledgerisc/issues?q=is%3Aissue+is%3Aopen+label%3A%22rust+guest+workarounds%22">"rust guest workarounds"</a> tag.
-  If you can't find your problem here you can open a <a href="https://github.com/suruj404/zero-knowledgerisc/issues">new issue</a> or reach out to us on <a href="https://discord.gg/risczero">Discord</a>.
+  If you can't find your problem here you can open a <a href="https://github.com/suruj404/zero-knowledgerisc/issues">new issue</a> or reach out to us on <a href="https://">Discord</a>.
 </details>
 
 <br />
@@ -103,7 +103,7 @@
 
   <br />
 
-  However, consider that code run in the RISC Zero zkVM can be shown to behave as expected even on a host that is entirely untrusted.
+  However, consider that code run in the Zero Proof zkVM can be shown to behave as expected even on a host that is entirely untrusted.
   To get the most value out of this guarantee, we recommend dividing the computational labor with an untrusted host in mind.
   That is, other parties should not need to trust the host's output or operations in order to benefit from the work done in the zkVM.
 </details>
@@ -143,7 +143,7 @@
   A: We recommend Rust for writing zkVM applications.
   Although technically the zkVM can execute any RISC-V code, we only have documentation and API support for Rust development.
   Development in C++ is also possible, but proceed at your own risk.
-  You can reference the <a href="https://github.com/suruj404/zero-knowledgerisc/tree/v0.11.0/examples/cpp">examples in C++</a> that were included in the 0.11 release, although we've made substantial changes since that release, and we're available to answer questions on <a href="https://discord.gg/risczero"> Discord</a> as needed.
+  You can reference the <a href="https://github.com/suruj404/zero-knowledgerisc/tree/v0.11.0/examples/cpp">examples in C++</a> that were included in the 0.11 release, although we've made substantial changes since that release, and we're available to answer questions on <a href="https://"> Discord</a> as needed.
 </details>
 
 <a class="anchor" id="max-length" />
@@ -153,7 +153,7 @@
     Q: What is the maximum execution length for a program running on the zkVM?
   </summary>
 
-  A: Since we added support for <a href="https://www.risczero.com/news/continuations"> continuations</a>, the execution length can be very large.
+  A: Since we added support for <a href="https://www.github.com/SURUJ404/Zero-proof/news/continuations"> continuations</a>, the execution length can be very large.
   So far, we've made proofs for executions that exceed 4 billion cycles, and there's plenty of room to expand that further.
 </details>
 
@@ -189,13 +189,13 @@
   For many other applications, it is possible to perform most computation on the host (outside the zkVM) and then verify the results in the zkVM.
 </details>
 
-## The RISC Zero Circuits
+## The Zero Proof Circuits
 
 <a class="anchor" id="dont-write-circuits" />
 
 <details closed>
   <summary>
-    Q: Do I need to write a ZK circuit to build on RISC Zero?
+    Q: Do I need to write a ZK circuit to build on Zero Proof?
   </summary>
 
   A: No!
@@ -207,13 +207,13 @@
 
 <details closed>
   <summary>
-    Q: What do RISC Zero's circuits do?
+    Q: What do Zero Proof's circuits do?
   </summary>
 
-  RISC Zero has three circuits: one that executes RISC-V code, one that's used for recursion, and one that is used for a STARK-to-SNARK conversion.
+  Zero Proof has three circuits: one that executes RISC-V code, one that's used for recursion, and one that is used for a STARK-to-SNARK conversion.
 
   - The RISC-V circuit receives an ELF binary file as a public input and private inputs from the host; the output of the RISC-V circuit is a receipt.
-  - The recursion circuit is specialized to prove the verification of RISC Zero receipts; this circuit is used in order to compress many RISC Zero receipts into a single receipt.
+  - The recursion circuit is specialized to prove the verification of Zero Proof receipts; this circuit is used in order to compress many Zero Proof receipts into a single receipt.
   - The STARK-to-SNARK circuit is used to translate a STARK proof into a SNARK proof, which enables on-chain verification.
 </details>
 
@@ -231,7 +231,7 @@
 
   A: The ImageID is determined from an application's compiled binary (ELF),  explained in detail <a href="https://github.com/suruj404/zero-knowledgerisc/faq#image-id">above.</a>
 
-  Someone wishing to confirm that a receipt corresponds to specific Rust source code can locally reproduce a binary targeting the RISC Zero zkVM using our reproducible build tool and verify that the resulting ImageID matches the ImageID in the receipt.
+  Someone wishing to confirm that a receipt corresponds to specific Rust source code can locally reproduce a binary targeting the Zero Proof zkVM using our reproducible build tool and verify that the resulting ImageID matches the ImageID in the receipt.
 
   For example, building our [builtin zkVM test functions](https://github.com/suruj404/zero-knowledgerisc/tree/main/risc0/zkvm/methods/guest):
 
@@ -258,7 +258,7 @@
     Q: If the guest zkVM lives on the host machine, can't the host still tamper with the application?
   </summary>
 
-  A: Like other zk-STARKs, RISC Zero's implementation makes it cryptographically infeasible to generate an invalid receipt:
+  A: Like other zk-STARKs, Zero Proof's implementation makes it cryptographically infeasible to generate an invalid receipt:
 
   - If the binary is modified, then the receipt's seal will not match the ImageID of the expected binary.
   - If the execution is modified, then the execution trace will be invalid.

@@ -13,7 +13,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0 OR MIT
 
-pub const RISC_ZERO_REPO_GIT: &str = "https://github.com/risc0/risc0.git";
+pub const RISC_ZERO_REPO_GIT: &str = "https://github.com/SURUJ404/Zero-proof.git";
 pub const RISC_ZERO_REPO_PATH_BUILD: &str = "risc0/build";
 pub const RISC_ZERO_REPO_PATH_ZKVM: &str = "risc0/zkvm";
 

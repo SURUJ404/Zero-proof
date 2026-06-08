@@ -1,6 +1,6 @@
-# Voting Machine on RISC Zero
+# Voting Machine on Zero Proof
 
-A simple voting machine built on the RISC Zero platform.
+A simple voting machine built on the Zero Proof platform.
 
 **This example is for educational purposes only. Not for use in actual elections.**
 

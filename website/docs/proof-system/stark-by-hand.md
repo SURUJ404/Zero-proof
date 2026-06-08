@@ -1,13 +1,13 @@
 # STARK by Hand
 
-> When the RISC Zero [zkVM](/api/zkvm) executes, it generates a [receipt](https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.Receipt.html) that allows third-parties to authenticate the validity of the execution.
+> When the Zero Proof [zkVM](/api/zkvm) executes, it generates a [receipt](https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.Receipt.html) that allows third-parties to authenticate the validity of the execution.
 > The receipt contains a [zk-STARK](../reference-docs/about-starks.md) in the form of the [seal](https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.SegmentReceipt.html#structfield.seal).
-> The zk-STARK that lives on the receipt is the crux of RISC Zero's technology.
+> The zk-STARK that lives on the receipt is the crux of Zero Proof's technology.
 
-The construction of the RISC Zero STARK is highly technical, relying on several recent advances in the world of zero-knowledge cryptography.
-Specifically, constructing RISC Zero's zk-STARK uses the DEEP-ALI protocol & the batched FRI protocol (after a randomized preprocessing step).
+The construction of the Zero Proof STARK is highly technical, relying on several recent advances in the world of zero-knowledge cryptography.
+Specifically, constructing Zero Proof's zk-STARK uses the DEEP-ALI protocol & the batched FRI protocol (after a randomized preprocessing step).
 
-In this series of 12 brief lessons, we walk through a simplified numerical example of the construction of RISC Zero's STARK.
+In this series of 12 brief lessons, we walk through a simplified numerical example of the construction of Zero Proof's STARK.
 
 - [Google Sheet version](https://docs.google.com/spreadsheets/d/1Onr41OozD62y-B0jIL7bHAH5kf771-o4xvmnHUFpOyo/edit?usp=sharing)
 - [PDF Version](https://github.com/suruj404/zero-knowledgerisc/STARK-by-hand.pdf) (PDF)
@@ -19,7 +19,7 @@ The [proof system sequence diagram](proof-system-sequence-diagram.md) describes 
 
 ## Lesson 1: the Execution Trace
 
-> When any code executes in the RISC Zero virtual machine, each step of that execution is recorded in an [`Execution Trace`](./what-is-a-trace.md).
+> When any code executes in the Zero Proof virtual machine, each step of that execution is recorded in an [`Execution Trace`](./what-is-a-trace.md).
 
 We show a simplified example, computing 4 steps of a Fibonacci sequence modulo 97, using two user-specified inputs.
 
@@ -30,7 +30,7 @@ In this example, our trace consists of 6 `columns`.
 - Each of the first three columns is a record of the internal state of a register at each clock cycle from initialization until termination. We call these `Data Columns`.
 - The next three columns are `Control Columns`, which we use to mark initialization and termination points.
 
-> In the full RISC Zero protocol, the `Data Columns` hold the state of the [RISC-V] processor, including ISA registers, the program counter, and various microarchitecture details such as instruction decoding data, ALU registers, etc., while the `Control Columns` handle system initialization and shutdown, setting up the page table with the program memory image, and other control signals that don't depend on the programs execution.
+> In the full Zero Proof protocol, the `Data Columns` hold the state of the [RISC-V] processor, including ISA registers, the program counter, and various microarchitecture details such as instruction decoding data, ALU registers, etc., while the `Control Columns` handle system initialization and shutdown, setting up the page table with the program memory image, and other control signals that don't depend on the programs execution.
 >
 > The full implementation also has `Accumulator Columns`, allowing for [RISC-V] memory emulation. The `Accumulator Columns` are not necessary in this simplified example.
 
@@ -71,7 +71,7 @@ Let's remove the `rule-checking columns` for a minute and turn our attention tow
 Throughout these lessons, all of the arithmetic takes place in $\mathbb{F}_{97}$.
 
 _From here on, the lessons assume some familiarity with finite fields. If finite fields are foreign to you, fear not!
-This [finite fields primer](../reference-docs/about-finite-fields.md) covers just enough to make sense of RISC Zero's use of finite fields._
+This [finite fields primer](../reference-docs/about-finite-fields.md) covers just enough to make sense of Zero Proof's use of finite fields._
 
 Every element of $\mathbb{F}_{97}$ can be written as a power of 5. In other words, the elements of $\mathbb{F}_{97}$ are $0, 5^0, 5^1, \ldots,$ and $5^{95}$.
 We write $\mathcal{D}(5^{12})$ for the set of powers of $5^{12}$ and $\mathcal{D}(5^{3})$ for the set of powers of $5^{3}$.
@@ -112,7 +112,7 @@ In fact, this shift in the evaluation domain `disguises` all the `Trace Data`.
 
 ## Lesson 6: Constraint Polynomials
 
-> This lesson briefly describes how [arithmetization](https://medium.com/starkware/arithmetization-i-15c046390862) is accomplished in RISC Zero.
+> This lesson briefly describes how [arithmetization](https://medium.com/starkware/arithmetization-i-15c046390862) is accomplished in Zero Proof.
 > The constraints are an "arithmetized" version of logical checks.
 
 Now that we've encoded our `trace columns` into `trace polynomials`, let's return to our original Reed-Solomon domain and add back in our `rule-checking cells`.
@@ -143,7 +143,7 @@ In this example, the degree of the `mixed constraint polynomial` is equal to the
 In more complicated examples, composing our `rule checking polynomials` with our `trace polynomials` would yield `high degree constraint polynomials.`
 In that case, we'd add an extra step at the end of Lesson 9 to split our `high degree validity polynomial` into a few `low degree validity polynomials`.
 
-## Lesson 8: the Core of the RISC Zero STARK
+## Lesson 8: the Core of the Zero Proof STARK
 
 > The Prover constructs the `validity polynomial` by dividing the `mixed constraint polynomial` from the previous lesson by the publicly known `zeros polynomial`.
 >
@@ -154,14 +154,14 @@ In our example, the `zeros polynomial` is
 
 $Z(x) = (x-1)(x-47)(x-75)(x-33)(x-96)(x-50)(x-22)(x-64)$, where the 8 terms are the elements of $\mathcal{D}(5^{12})$.
 
-![Lesson 8: The Core of the RISC Zero STARK](assets/fibonacci-08.png)
+![Lesson 8: The Core of the Zero Proof STARK](assets/fibonacci-08.png)
 
 > Normally, when we divide two low degree polynomials, we don't expect to get another low degree polynomial.
 > But for an honest prover, it's not hard to see that V(x) will be lower degree than C(x), since the roots of Z(x) line up perfectly with roots of C(x).
 
 The Prover evaluates V(x) over the $5, 5^4, \ldots, 5^{94}$, commits the values to a `validity Merkle tree`, and appends the root to the seal.
 
-> The construction of these polynomials is the core conceptual thrust of RISC Zero's proof of trace validity.
+> The construction of these polynomials is the core conceptual thrust of Zero Proof's proof of trace validity.
 > All of the information necessary to confirm the validity of the original Execution trace can be described in the following assertions about these polynomials:
 >
 > (i) V(x) = C(x) / Z(x) for all x
@@ -329,7 +329,7 @@ The Prover sends evaluations of $f_3$ on powers of $28^8$ without Merkleization;
 
 This completes the commit phase of the FRI protocol. In 3 rounds of folding, we've reduced a polynomial with 8 coefficients into a polynomial with 1 coefficient (i.e., a constant polynomial).
 
-In the RISC Zero protocol, the final round of FRI occurs when the polynomial has been reduced to degree 255.
+In the Zero Proof protocol, the final round of FRI occurs when the polynomial has been reduced to degree 255.
 The Prover sends a vector of 1024 evaluations, which the Verifier interpolates to confirm that the evaluations correspond to a low-degree polynomial.
 
 ## Lesson 12: FRI Protocol (Query Phase)
@@ -340,7 +340,7 @@ The Prover sends a vector of 1024 evaluations, which the Verifier interpolates t
 > The queries serve as a random challenge, testing the legitimacy of the Prover's commitments.
 > Loosely speaking, with a blow-up factor of $4$, a single query will catch a cheating Prover $\frac{3}{4}$ of the time.
 > In other words, a single query provides $2$ bits of security.
-> The RISC Zero zkVM uses $50$ queries and a blow-up factor of 4, which amounts to \~100 bits of security.
+> The Zero Proof zkVM uses $50$ queries and a blow-up factor of 4, which amounts to \~100 bits of security.
 >
 > Note that the paragraph above is a substantial simplification of the full security analysis.
 > For a more thorough security analysis, see our [cryptographic security model] page and our [security calculator].
@@ -427,7 +427,7 @@ The key point here is that the FRI folding procedure can be checked _locally_: t
 
 Whew! Congratulations and thank you for making it this far!
 
-Got questions, feedback, or corrections? Find us on [Twitter](https://twitter.com/risczero) and [Discord](https://discord.gg/risczero).
+Got questions, feedback, or corrections? Find us on [Twitter](https://) and [Discord](https://).
 
 [cryptographic security model]: /api/security-model
 [RISC-V]: https://en.wikipedia.org/wiki/RISC-V

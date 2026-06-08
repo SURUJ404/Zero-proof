@@ -17,7 +17,7 @@ This example requires \~500M cycles to run and therefore will take some time to 
 
 ## Quick Start
 
-First, follow the [installation guide] if you don't already have the RISC Zero tools installed.
+First, follow the [installation guide] if you don't already have the Zero Proof tools installed.
 
 Then, run the example in [`DEV_MODE`][DEV_MODE] with:
 

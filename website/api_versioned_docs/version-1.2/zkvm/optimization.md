@@ -1,6 +1,6 @@
 # Guest Optimization Guide
 
-RISC Zero's zkVM is designed and built to act like a physical CPU. We did this
+Zero Proof's zkVM is designed and built to act like a physical CPU. We did this
 so you could use general purpose languages (e.g. Rust) and general purpose tools
 (e.g. Cargo, LLVM). **Generally, you can apply general purpose optimization
 techniques too!**
@@ -89,12 +89,12 @@ your code.**
 
 Profiling tools, like [pprof] and [perf], allow collecting performance
 information over the entire execution of your program, and help create
-visualizations for the performance of your program. RISC Zero has experimental
+visualizations for the performance of your program. Zero Proof has experimental
 support for generating pprof files for cycle counts.
 
 [Sampling CPU profilers], as implemented by pprof and perf, provide a view of
 where your program is spending its time. It does so by recording the current
-call stack at a sampling interval. RISC Zero provides a "sampling" [^1] CPU
+call stack at a sampling interval. Zero Proof provides a "sampling" [^1] CPU
 profiler for guest execution.
 
 One very useful visualization of this data is as a [flamegraph], such as the one
@@ -221,7 +221,7 @@ accessed can all help reduce paging overhead. It's best to experiment.
 
 ### The Zkvm Does Not Have Native Floating Point Operations
 
-The RISC Zero zkVM does not implement the RISC-V floating point instructions. As
+The Zero Proof zkVM does not implement the RISC-V floating point instructions. As
 a result, all floating point operations are emulated in software. In contrast to
 integer operations that take 1-2 cycles, floating point operations can take
 60-140 cycles for basic operations such as add, subtract, multiply, and divide.
@@ -321,7 +321,7 @@ starting point.
 
 ### Cryptography in the Guest Can Utilize Accelerator Circuits
 
-RISC Zero's riscv32im implementation includes a number of special purpose
+Zero Proof's riscv32im implementation includes a number of special purpose
 operations, including two "accelerators" for cryptographic functions: SHA-256
 and [256-bit modular multiplication][bigint]. By implementing these operations
 directly in the "hardware" of the zkVM, programs that use these accelerators
@@ -362,7 +362,7 @@ Instruction throughput is much higher when the pipeline is kept full and
 independent execution units are utilized. CPUs implement out-of-order and
 speculative execution, among other techniques to achieve this.
 
-By comparison, RISC Zero's riscv32im implementation is very simple. Instructions
+By comparison, Zero Proof's riscv32im implementation is very simple. Instructions
 will be read from the guest program and executed in the order chosen by the
 compiler.
 
@@ -373,7 +373,7 @@ branches, or reordering instructions to maximize instruction-level parallelism.
 ## Prover Acceleration
 
 You are probably interested in guest optimization in order to have faster
-proving times, to reduce compute costs, or both. RISC Zero can leverage hardware
+proving times, to reduce compute costs, or both. Zero Proof can leverage hardware
 accelerators, the ones made of real silicon this time, to accomplish both of
 these objectives.
 
@@ -402,10 +402,10 @@ machine, and the `cuda` feature enabled.
 
 ### RV32IM Operations with Cycle Counts
 
-Table from [https://marks.page/riscv/][RISC-V operations], with RISC Zero
+Table from [https://marks.page/riscv/][RISC-V operations], with Zero Proof
 cycle counts added.
 
-| Assembly            | Name                               | Pseudocode                                     | RISC Zero Cycles                                |
+| Assembly            | Name                               | Pseudocode                                     | Zero Proof Cycles                                |
 | ------------------- | ---------------------------------- | ---------------------------------------------- | ----------------------------------------------- |
 | LUI rd,imm          | Load Upper Immediate               | rd ← imm                                       | 1                                               |
 | AUIPC rd,offset     | Add Upper Immediate to PC          | rd ← pc + offset                               | 1                                               |
@@ -453,10 +453,10 @@ cycle counts added.
 | REM rd,rs1,rs2      | Remainder Signed                   | rd ← sx(rs1) mod sx(rs2)                       | 2                                               |
 | REMU rd,rs1,rs2     | Remainder Unsigned                 | rd ← ux(rs1) mod ux(rs2)                       | 2                                               |
 
-### RISC Zero ECALL Operations
+### Zero Proof ECALL Operations
 
 RISC-V specifies a mechanism for environment calls (ecalls), which may be
-specified by the vendor. In RISC Zero's zkVM, ecalls are specified for a number
+specified by the vendor. In Zero Proof's zkVM, ecalls are specified for a number
 of core operations. A short description and associated cycle counts are listed
 below.
 

@@ -8,7 +8,7 @@ You can find out more info on the relevant issues [here](https://github.com/risc
 
 ---
 
-To support a variety of use cases, RISC Zero allows users a variety of options for proof generation.
+To support a variety of use cases, Zero Proof allows users a variety of options for proof generation.
 
 Users can choose between:
 

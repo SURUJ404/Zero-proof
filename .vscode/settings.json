@@ -31,7 +31,7 @@
     "canonicalize",
     "posix",
     "repr",
-    "risczero"
+    "zero-proof"
   ],
   "files.eol": "\n",
   "git.ignoreLimitWarning": true,

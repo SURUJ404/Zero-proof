@@ -12,14 +12,14 @@ const baseUrl = process.env.BASE_URL ?? "/";
 export default async function createConfigAsync() {
   /** @type {import('@docusaurus/types').Config} */
   return {
-    title: "RISC Zero Developer Docs",
+    title: "Zero Proof Developer Docs",
     tagline: "Hyper-Efficient General Purpose Zero-Knowledge Computing.",
     favicon: "img/favicon.ico",
 
-    url: "https://dev.risczero.com",
+    url: "https://github.com/SURUJ404/Zero-proof",
     baseUrl: baseUrl,
 
-    organizationName: "risc0",
+    organizationName: "zero-proof",
     projectName: "devdocs",
 
     onBrokenLinks: "throw",
@@ -84,7 +84,7 @@ export default async function createConfigAsync() {
           editUrl: ({ locale, docPath }) => {
             // We want users to submit updates to the upstream/next version!
             // Otherwise we risk losing the update on the next release.
-            return `https://github.com/risc0/risc0/edit/main/website/api/${docPath}`;
+            return `https://github.com/SURUJ404/Zero-proof/edit/main/website/api/${docPath}`;
           },
         },
       ],
@@ -155,7 +155,7 @@ export default async function createConfigAsync() {
         ],
         navbar: {
           logo: {
-            alt: "RISC Zero",
+            alt: "Zero Proof",
             src: "img/logo.svg",
             href: "/",
           },
@@ -187,12 +187,12 @@ export default async function createConfigAsync() {
               className: "docsVersionDropdown",
             },
             {
-              href: "https://www.risczero.com/blog",
+              href: "https://www.github.com/SURUJ404/Zero-proof/blog",
               position: "right",
               label: "Blog",
             },
             {
-              href: "https://github.com/risc0",
+              href: "https://github.com/SURUJ404/Zero-proof",
               position: "right",
               label: "GitHub",
             },
@@ -203,15 +203,15 @@ export default async function createConfigAsync() {
               items: [
                 {
                   label: "Twitter",
-                  href: "https://twitter.com/risczero",
+                  href: "https://",
                 },
                 {
                   label: "YouTube",
-                  href: "https://www.youtube.com/@risczero",
+                  href: "https://www.youtube.com",
                 },
                 {
                   label: "Stack Overflow",
-                  href: "https://stackoverflow.com/questions/tagged/risczero",
+                  href: "https://stackoverflow.com/questions/tagged/zero-proof",
                 },
                 {
                   label: "Contributor's Guide",
@@ -223,9 +223,9 @@ export default async function createConfigAsync() {
         },
         footer: {
           logo: {
-            alt: "RISC Zero",
+            alt: "Zero Proof",
             src: "img/logo.svg",
-            href: "https://risczero.com",
+            href: "https://github.com/SURUJ404/Zero-proof",
             height: 42,
           },
           links: [
@@ -233,15 +233,15 @@ export default async function createConfigAsync() {
               items: [
                 {
                   label: "Blog",
-                  href: "https://www.risczero.com/blog",
+                  href: "https://www.github.com/SURUJ404/Zero-proof/blog",
                 },
                 {
                   label: "Careers",
-                  href: "https://jobs.ashbyhq.com/RiscZero",
+                  href: "https://jobs.ashbyhq.com/ZeroProof",
                 },
                 {
                   label: "Bug Bounties",
-                  href: "https://hackenproof.com/company/risc-zero/programs",
+                  href: "https://hackenproof.com/company/zero-proof/programs",
                 },
               ],
             },
@@ -249,20 +249,20 @@ export default async function createConfigAsync() {
               items: [
                 {
                   label: "GitHub",
-                  href: "https://github.com/risc0",
+                  href: "https://github.com/SURUJ404/Zero-proof",
                 },
                 {
                   label: "X",
-                  href: "https://x.com/RiscZero",
+                  href: "https://x.com/ZeroProof",
                 },
                 {
                   label: "YouTube",
-                  href: "https://www.youtube.com/@risczero",
+                  href: "https://www.youtube.com",
                 },
               ],
             },
           ],
-          copyright: `©${new Date().getFullYear()} RISC Zero`,
+          copyright: `©${new Date().getFullYear()} Zero Proof`,
         },
         prism: {
           additionalLanguages: ["bash", "rust", "toml"],

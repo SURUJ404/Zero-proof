@@ -5,7 +5,7 @@ executed and proven by the zkVM.
 
 ![From Guest Code to Receipt][from-rust-to-receipt]
 
-This page serves as an introduction to writing RISC Zero [guest code], to help
+This page serves as an introduction to writing Zero Proof [guest code], to help
 you get started building applications for the [zkVM].
 
 - For a guide to writing and running your first guest code, check out our [zkVM
@@ -87,7 +87,7 @@ If you run into problems, don't be a stranger! You can file an issue on [these d
 [`env::write_slice`]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/guest/env/fn.write_slice.html
 [`env::write`]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/guest/env/fn.write.html
 [benchmarks]: ./benchmarks.md
-[Discord]: https://discord.gg/risczero
+[Discord]: https://
 [examples]: ./examples.md
 [from-rust-to-receipt]: /diagrams/from-rust-to-receipt.png
 [guest]: /terminology#guest

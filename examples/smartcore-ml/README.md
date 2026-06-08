@@ -1,6 +1,6 @@
-# RISC Zero Rust SmartCore Machine Learning Template
+# Zero Proof Rust SmartCore Machine Learning Template
 
-This template is intended to give you a framework for using the RISC Zero ZKVM to perform verifiable inference using machine learning models from the Rust SmartCore library.  The following models are currently supported:
+This template is intended to give you a framework for using the Zero Proof ZKVM to perform verifiable inference using machine learning models from the Rust SmartCore library.  The following models are currently supported:
 
 Classifiers: Logistic Regression, Decision Trees, Random Forests, K Nearest Neighbors, Naive Bayes, and Support Vector Machines.  (Support Vector Machine and Support Vector Regression are supported using a forked version of SmartCore.)
 
@@ -12,7 +12,7 @@ Dimensionality Reduction:  PCA.
 
 Matrix Decomposition:  SVD, Eigenvalue Decomposition, QR, LU.
 
-The following folders are not part of the standard RISC Zero starter template and should be added if the user wishes to replicate the layout of this template:  res/ml-model, res/input-data, the SmartCore Jupyter notebook, and the iris input data and classes CSV files.  The ml-model folder contains a json file of a trained decision tree model and input-data contains a json file of sample input data.  You can train and export your model along with any sample data in the Jupyter notebook.
+The following folders are not part of the standard Zero Proof starter template and should be added if the user wishes to replicate the layout of this template:  res/ml-model, res/input-data, the SmartCore Jupyter notebook, and the iris input data and classes CSV files.  The ml-model folder contains a json file of a trained decision tree model and input-data contains a json file of sample input data.  You can train and export your model along with any sample data in the Jupyter notebook.
 
 res/ml-model and res/input-data come preloaded with a trained decision tree classifier.  You can replace the code in the Jupyter notebook to train and export any of the supported models listed above.
 
@@ -56,7 +56,7 @@ let model: KMeans<{float}, u8, DenseMatrix<{float}>, Vec<u8>> = trained_model;
 let model: PCA<{float}, DenseMatrix<{float}>> = trained_model;
 ```
 
-NOTE:  Deserialization of SVC and SVR does not include that `SVCParametersmake` field.  It must be added back into the model struct manually after deserialization.  The RISC Zero SmartCore fork has amended the visibility of the model `struct`, making the parameters field public and thereby allowing the parameters field to be directly inserted into the model struct after deserialization.  You must insert the same parameters that were used when training the model.
+NOTE:  Deserialization of SVC and SVR does not include that `SVCParametersmake` field.  It must be added back into the model struct manually after deserialization.  The Zero Proof SmartCore fork has amended the visibility of the model `struct`, making the parameters field public and thereby allowing the parameters field to be directly inserted into the model struct after deserialization.  You must insert the same parameters that were used when training the model.
 
 ```rust
 let mut model: SVC<{float}, i32, DenseMatrix<{float}>, Vec<i32>> = deserialized_svc_trained;

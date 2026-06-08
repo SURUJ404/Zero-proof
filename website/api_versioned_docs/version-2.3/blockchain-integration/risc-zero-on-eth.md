@@ -1,10 +1,10 @@
-# RISC Zero on Ethereum
+# Zero Proof on Ethereum
 
 :::tip
 The [risc0-ethereum][risc0-ethereum] repo is where you can find [blockchain examples][blockchain-examples], [verifier contracts][verifier-contracts] and [Steel][steel-src].
 :::
 
-Prove computation with the [RISC Zero zkVM][docs-zkvm] and verify the results in your Ethereum contract.
+Prove computation with the [Zero Proof zkVM][docs-zkvm] and verify the results in your Ethereum contract.
 
 The zkVM can act as a [coprocessor][article-coprocessor] to a smart contract application.
 This unlocks powerful new applications on Ethereum that offload computationally intensive (i.e. gas expensive) and difficult to implement (e.g. ed25519 signature verification, or HTML parsing) functions to the zkVM.

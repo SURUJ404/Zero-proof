@@ -47,17 +47,17 @@ struct Args {
 
     // TODO: Maybe it'd be possible to use `clap_serde_derive` as a way to simplify argument parsing?
     // (Doing this for each variant of the `Repo` enum - `path`, `branch` and `tag`)
-    /// Specify the RISC Zero repository path to use as source for templates and
+    /// Specify the Zero Proof repository path to use as source for templates and
     /// crate imports.
     #[arg(short, long, conflicts_with_all = &["branch", "tag"])]
     path: Option<String>,
 
-    /// Specify the RISC Zero repository branch to use as source for templates and
+    /// Specify the Zero Proof repository branch to use as source for templates and
     /// crate imports.
     #[arg(short, long, conflicts_with_all = &["path", "tag"])]
     branch: Option<String>,
 
-    /// Specify the RISC Zero repository tag to use as source for templates and
+    /// Specify the Zero Proof repository tag to use as source for templates and
     /// crate imports.
     #[arg(short, long, conflicts_with_all = &["path", "branch"])]
     tag: Option<String>,

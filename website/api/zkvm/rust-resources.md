@@ -10,7 +10,7 @@ We recommend the official materials from [Rust]:
 - [Rust Installation][install-rust]
 - [Rust Book][rust-book]
 
-## RISC Zero's Rust Crates
+## Zero Proof's Rust Crates
 
 For writing a basic [zkVM application][zkvm-overview], all the functionality
 you'll need is contained in the [`risc0-zkvm` crate][risc0-zkvm]. For more
@@ -19,7 +19,7 @@ crates][rust-libraries].
 
 ## Using Rust Crates Inside the zkVM
 
-A major advantage of the [RISC Zero zkVM][zkvm-overview] is that you can use
+A major advantage of the [Zero Proof zkVM][zkvm-overview] is that you can use
 Rust crates inside your [zkVM applications][zkvm-overview]. Being able to easily
 import crates means that you can quickly build complex applications.
 

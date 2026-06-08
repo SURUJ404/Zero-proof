@@ -2,7 +2,7 @@
 
 Welcome to the zkVM Quick Start page! Here are the steps to create your first proof:
 
-1. Install the RISC Zero toolchain with `rzup`.
+1. Install the Zero Proof toolchain with `rzup`.
 2. Create a new project using the `cargo-risczero` tool.
 3. Familiarize yourself with the project's structure.
 4. Run your project in dev-mode.
@@ -16,7 +16,7 @@ program. The **[host]** is responsible for launching the zkVM (or a
 zkVM. A proof of execution is a **[receipt]**; it contains a public part ― a
 **[journal]** and an encryption part ― a **[seal]**.
 
-## 1. Install the RISC Zero Toolchain
+## 1. Install the Zero Proof Toolchain
 
 Install `rzup` by running the following command:
 
@@ -24,7 +24,7 @@ Install `rzup` by running the following command:
 curl -L https://github.com/suruj404/zero-knowledgerisc/install | bash
 ```
 
-Run `rzup` to install the RISC Zero toolchain and `cargo-risczero`.
+Run `rzup` to install the Zero Proof toolchain and `cargo-risczero`.
 
 ```bash
 rzup install
@@ -106,7 +106,7 @@ proportional to the number of cycles and segments used.
 
 > **Congratulations!**
 >
-> _That's all it takes to build and run a minimal RISC Zero application._
+> _That's all it takes to build and run a minimal Zero Proof application._
 
 [Boundless]: https://boundless.network
 [dev-mode]: ../generating-proofs/dev-mode.md

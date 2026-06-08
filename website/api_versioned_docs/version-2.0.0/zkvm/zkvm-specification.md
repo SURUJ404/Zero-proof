@@ -37,7 +37,7 @@ terminates without executing exception handlers.
 
 ## The User/Kernel Split
 
-The RISC Zero zkVM implements user and machine modes. The guest code running
+The Zero Proof zkVM implements user and machine modes. The guest code running
 on the zkVM is divided into two components: the kernel and user-space programs,
 both executing the rv32im instruction set. The kernel functions as an operating
 system kernel, while user programs run in a separate user mode. This separation

@@ -156,9 +156,9 @@ profiles:
 - name: async-channel
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 2.3.1
 - name: async-compression
@@ -167,9 +167,9 @@ profiles:
 - name: async-executor
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 1.13.1
 - name: async-global-executor
@@ -178,9 +178,9 @@ profiles:
 - name: async-io
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 2.4.0
 - name: async-lock
@@ -357,9 +357,9 @@ profiles:
 - name: blocking
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 1.6.1
 - name: borsh
@@ -550,9 +550,9 @@ profiles:
 - name: concurrent-queue
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 2.5.0
 - name: config
@@ -640,9 +640,9 @@ profiles:
   std: true
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 0.5.1
 - name: criterion-plot
@@ -657,25 +657,25 @@ profiles:
 - name: crossbeam-deque
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 0.8.5
 - name: crossbeam-epoch
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 0.9.18
 - name: crossbeam-queue
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 0.3.11
 - name: crossbeam-utils
@@ -2081,17 +2081,17 @@ profiles:
 - name: rayon
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 1.10.0
 - name: rayon-core
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 1.12.1
 - name: rcgen
@@ -2110,9 +2110,9 @@ profiles:
 - name: redox_users
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 0.4.6
 - name: ref-cast
@@ -2945,9 +2945,9 @@ profiles:
 - name: vsdb
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 3.0.0
 - name: vsdb_derive
@@ -2956,9 +2956,9 @@ profiles:
 - name: vsdbsled
   patch: |
     [patch.crates-io]
-    crossbeam = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-utils = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
-    crossbeam-channel = { git = "https://github.com/risc0/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-utils = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
+    crossbeam-channel = { git = "https://github.com/SURUJ404/Zero-proof/crossbeam", rev = "b25eb50f8c193f36dacb6739692261ea96827bb7" }
   versions:
   - 0.34.7-p1
 - name: vsimd

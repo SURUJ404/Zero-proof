@@ -4,9 +4,9 @@ slug: ./
 
 # Introduction
 
-Welcome to the [RISC Zero][external-risc-zero] documentation!
+Welcome to the [Zero Proof][external-risc-zero] documentation!
 
-RISC Zero is creating the infrastructure & tooling necessary for
+Zero Proof is creating the infrastructure & tooling necessary for
 developers around the globe to build software that leverages ZK technology.
 
 ZK technology is staged to re-shape the way we interact digitally. Historically,

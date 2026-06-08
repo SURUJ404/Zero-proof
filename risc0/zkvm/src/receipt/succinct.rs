@@ -56,7 +56,7 @@ use crate::{
 /// [SuccinctReceipt]. In this way, a constant sized proof can be generated for arbitrarily long
 /// computations, and with an arbitrary number of segments linked via composition.
 ///
-/// [STARK]: https://dev.risczero.com/terminology#stark
+/// [STARK]: https://dev.github.com/SURUJ404/Zero-proof/terminology#stark
 #[derive(Clone, Debug, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[cfg_attr(test, derive(PartialEq))]
 #[non_exhaustive]

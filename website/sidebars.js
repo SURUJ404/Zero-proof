@@ -11,13 +11,13 @@ export default {
     {
       type: "link",
       label: "Articles",
-      href: "https://risczero.com/blog",
+      href: "https://github.com/SURUJ404/Zero-proof/blog",
     },
     "studyclub",
     {
       type: "link",
       label: "Education Database",
-      href: "https://risczero.notion.site/5a335a1d29b44cb48c44b36ae66f366f?v=95cda72e39d3403fbfb59884afb0045d&pvs=4",
+      href: "https://zero-proof.notion.site/5a335a1d29b44cb48c44b36ae66f366f?v=95cda72e39d3403fbfb59884afb0045d&pvs=4",
     },
     {
       type: "category",
@@ -46,7 +46,7 @@ export default {
         {
           type: "link",
           label: "ZKP Whitepaper",
-          href: "https://www.risczero.com/proof-system-in-detail.pdf",
+          href: "https://www.github.com/SURUJ404/Zero-proof/proof-system-in-detail.pdf",
         },
       ],
     },

@@ -2,13 +2,13 @@
 
 _This page describes guidelines for community contributions to this [website](https://github.com/suruj404/zero-knowledgerisc/tree/main/website); you may also be interested in contributing to the [main project codebase](https://github.com/suruj404/zero-knowledgerisc)._
 
-> `RISC Zero welcomes community participation!`
+> `Zero Proof welcomes community participation!`
 >
 > - Make suggestions or report bugs via [GitHub issues](https://github.com/suruj404/zero-knowledgerisc/issues)
 > - Contribute website content or give feedback on [open pull requests](https://github.com/suruj404/zero-knowledgerisc/pulls)
 > - Contribute to the [main zkVM project](https://github.com/suruj404/zero-knowledgerisc) (see [CONTRIBUTING](https://github.com/suruj404/zero-knowledgerisc/blob/main/CONTRIBUTING.md))
 > - Contribute to our tutorials and how-to guides for our [templates](https://github.com/suruj404/zero-knowledgerisc/tree/main/risc0/cargo-risczero/templates) and [Rust examples](https://github.com/suruj404/zero-knowledgerisc/tree/main/examples)
-> - Ask questions on [Discord](https://discord.gg/risczero)
+> - Ask questions on [Discord](https://)
 
 ## How to Contribute
 
@@ -21,7 +21,7 @@ _This page describes guidelines for community contributions to this [website](ht
 
 ## Style Guidelines
 
-Our objective in organizing and creating website content is that anyone who finds their way to any RISC Zero content is able to rapidly find their way to the material suits their needs.
+Our objective in organizing and creating website content is that anyone who finds their way to any Zero Proof content is able to rapidly find their way to the material suits their needs.
 
 In order to achieve this objective, we rely on:
 
@@ -37,7 +37,7 @@ In order to achieve this objective, we rely on:
 
 ## Terminology Conventions
 
-[`RISC Zero Official Terminology`](./terminology.md)
+[`Zero Proof Official Terminology`](./terminology.md)
 
 Our terminology and naming conventions are subject to ongoing evaluation, and we encourage conversation and questions on these topics.
 Please let us know via a [`GitHub issue`](https://github.com/suruj404/zero-knowledgerisc/issues) when you encounter terms that don't seem quite right.
@@ -56,7 +56,7 @@ We typically organize reference docs according to the following sections; we use
 
 > **Topic**
 >
-> _Topic is used to \[concise explanation of relevance to RISC Zero]_
+> _Topic is used to \[concise explanation of relevance to Zero Proof]_
 >
 > - Documentation
 > - Basic Function
@@ -78,4 +78,4 @@ We're excited about the engagement we've seen so far, and we're looking forward 
 
 ## Questions?
 
-Find us on [Discord](https://discord.gg/risczero).
+Find us on [Discord](https://).

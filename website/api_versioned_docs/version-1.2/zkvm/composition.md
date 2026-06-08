@@ -1,12 +1,12 @@
 # Proof Composition
 
-RISC Zero's zkVM offers a convenient API for efficiently verifying proofs inside the guest program.
+Zero Proof's zkVM offers a convenient API for efficiently verifying proofs inside the guest program.
 
 This feature enables rich possibilities for building modular applications. Check out the [blog post] to learn more about the power of proof composition.
 
 :::info
 Although the "obvious" approach to proof composition would be to simply run the verifier inside the guest program, this approach doesn't result in compression.
-Instead, RISC Zero's approach to composition relies on _adding_ [assumptions] to the [ReceiptClaim] and then _resolving_ them.
+Instead, Zero Proof's approach to composition relies on _adding_ [assumptions] to the [ReceiptClaim] and then _resolving_ them.
 
 This approach allows us to offer users a simple API for composition while still being able to access the benefits of our hyper-efficient [recursion circuit].
 :::
@@ -37,7 +37,7 @@ This is accomplished via `resolve`, which is called automatically when users cal
 
 ![Resolving an assumption][composition-resolve]
 
-For a more detailed dive into proof composition and RISC Zero's approach to recursive proving, check out the [Study Club recording].
+For a more detailed dive into proof composition and Zero Proof's approach to recursive proving, check out the [Study Club recording].
 
 [`add_assumption()`]: https://github.com/risc0/risc0/blob/release-1.2/examples/composition/src/main.rs#L29
 [`env::verify()`]: https://github.com/risc0/risc0/blob/release-1.2/examples/composition/methods/guest/src/main.rs#L24

@@ -190,7 +190,7 @@ look at the other [examples] for more project ideas that use zero-knowledge
 proofs.
 
 [cargo-risczero]: https://docs.rs/cargo-risczero
-[Discord]: https://discord.gg/risczero
+[Discord]: https://
 [examples]: ../examples.md
 [host]: /terminology#host-program
 [install]: ../install.md

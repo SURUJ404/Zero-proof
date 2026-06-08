@@ -1,6 +1,6 @@
 # rzup
 
-`rzup` is a tool for managing RISC Zero toolchain components. It helps you install, update, and switch between different versions of RISC Zero tools.
+`rzup` is a tool for managing Zero Proof toolchain components. It helps you install, update, and switch between different versions of Zero Proof tools.
 
 ## Installation
 
@@ -14,7 +14,7 @@ curl -L https://github.com/suruj404/zero-knowledgerisc/install | bash
 
 ### Install
 
-Install RISC Zero components.
+Install Zero Proof components.
 
 ```sh
 rzup install [OPTIONS] [NAME] [VERSION]
@@ -44,7 +44,7 @@ rzup install rust --force
 
 ### Update
 
-Update your RISC Zero installation.
+Update your Zero Proof installation.
 
 ```sh
 # Update to latest versions of all components
@@ -127,17 +127,17 @@ The resulting version of the component will contain the commit hash.
 
 rzup manages the following components:
 
-1. **rust**: The RISC Zero Rust toolchain
-   - Rust compiler and tools optimized for the RISC Zero zkVM
+1. **rust**: The Zero Proof Rust toolchain
+   - Rust compiler and tools optimized for the Zero Proof zkVM
 
-2. **cpp**: The RISC Zero C++ toolchain
-   - The C++ compiler and tools optimized for the RISC Zero zkVM
+2. **cpp**: The Zero Proof C++ toolchain
+   - The C++ compiler and tools optimized for the Zero Proof zkVM
 
-3. **cargo-risczero**: The RISC Zero Cargo extension
-   - Provides cargo subcommands for RISC Zero development
+3. **cargo-risczero**: The Zero Proof Cargo extension
+   - Provides cargo subcommands for Zero Proof development
 
-4. **r0vm**: The RISC Zero zkVM
-    - Precompiled version of the RISC Zero zkVM
+4. **r0vm**: The Zero Proof zkVM
+    - Precompiled version of the Zero Proof zkVM
 
 ## Configuration
 

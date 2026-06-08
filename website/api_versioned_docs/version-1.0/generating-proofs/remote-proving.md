@@ -10,12 +10,12 @@ If you already have an API key, you can request proofs from Bonsai in any of the
 
 - via **[cargo risczero][external-cargo-risczero]** (great for experimenting or for non-blockchain applications)
   - Enable Bonsai by setting the environment variables `BONSAI_API_KEY=<YOUR_API_KEY>` and `BONSAI_API_URL=<BONSAI_URL>` when running your program
-- via the **[RISC Zero Foundry Template][external-foundry-template]** (for integrating with Ethereum)
+- via the **[Zero Proof Foundry Template][external-foundry-template]** (for integrating with Ethereum)
 - via the **[Bonsai SDK][external-bonsai-sdk]** (for accessing Bonsai from Rust)
 - via the **[Bonsai REST API][external-bonsai-rest-api]** (for building your own client or accessing Bonsai directly)
 
 If you don't have an API key, you can [request access][external-bonsai-apply].
-While you wait, you can make use of the local proving option on the [RISC Zero Foundry Template][external-foundry-template], or you can focus on developing for the [zkVM][docs-zkvm].
+While you wait, you can make use of the local proving option on the [Zero Proof Foundry Template][external-foundry-template], or you can focus on developing for the [zkVM][docs-zkvm].
 
 ## API Limits
 

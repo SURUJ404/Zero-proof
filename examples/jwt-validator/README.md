@@ -1,6 +1,6 @@
 # JSON Web Token Validation
 
-This code provides a minimal example for using RISC Zero's [zkVM] to create zero-knowledge proofs that confirm the integrity of a signed JSON Web Token (JWT). It leverages the [jwt-compact] crate to verify the RS256 JWT signature and claim within the [zkVM].
+This code provides a minimal example for using Zero Proof's [zkVM] to create zero-knowledge proofs that confirm the integrity of a signed JSON Web Token (JWT). It leverages the [jwt-compact] crate to verify the RS256 JWT signature and claim within the [zkVM].
 
 ## Quick Start
 
@@ -55,5 +55,5 @@ The [guest code] confirms the JWT's integrity using the public key and records t
 [jwt-compact]: https://github.com/slowli/jwt-compact
 [receipt]: https://github.com/suruj404/zero-knowledgerisc/terminology#receipt
 [Rust Resources]: https://github.com/suruj404/zero-knowledgerisc/api/zkvm/rust-resources
-[zk coprocessor]: https://www.risczero.com/blog/a-guide-to-zk-coprocessors-for-scalability
+[zk coprocessor]: https://www.github.com/SURUJ404/Zero-proof/blog/a-guide-to-zk-coprocessors-for-scalability
 [zkVM]: https://github.com/suruj404/zero-knowledgerisc/zkvm

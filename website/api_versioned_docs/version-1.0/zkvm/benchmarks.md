@@ -3,10 +3,10 @@
 ## Generating your own datasheet
 
 You can generate a datsheet yourself to get performance data for your exact
-system, or if you want benchmarks for a different RISC Zero zkVM version than
+system, or if you want benchmarks for a different Zero Proof zkVM version than
 used in the datasheet.
 
-To generate a datasheet, first [install Rust and the RISC Zero
+To generate a datasheet, first [install Rust and the Zero Proof
 toolchain][install] and clone the [risc0 repository] if you haven't already done
 so. Navigate to the risc0 source code directory and, if necessary, check out the
 branch or tag you wish to generate a datasheet for. Then run:
@@ -16,7 +16,7 @@ cargo run --release --example datasheet
 ```
 
 This will produce the benchmark data shown in the datasheet for your system
-(using the CPU) on the checked out version of the RISC Zero zkVM.
+(using the CPU) on the checked out version of the Zero Proof zkVM.
 
 If you want to benchmark a GPU, you will need to build with the `cuda` or
 `metal` feature enabled (whichever is appropriate for your hardware). To do

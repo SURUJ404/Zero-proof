@@ -467,7 +467,7 @@ impl Digestible for Output {
 /// commits the statement, such that only a receipt proving that statement can be used to resolve
 /// and remove the assumption.
 ///
-/// [assumption]: https://dev.risczero.com/terminology#assumption
+/// [assumption]: https://dev.github.com/SURUJ404/Zero-proof/terminology#assumption
 #[derive(
     Clone, Debug, Serialize, Deserialize, Eq, Hash, PartialEq, BorshSerialize, BorshDeserialize,
 )]
@@ -487,7 +487,7 @@ pub struct Assumption {
     /// A special value of all zeroes indicates "self-composition", where the control root used to
     /// verify this claim is also used to verify the assumption.
     ///
-    /// [recursion programs]: https://dev.risczero.com/terminology#recursion-program
+    /// [recursion programs]: https://dev.github.com/SURUJ404/Zero-proof/terminology#recursion-program
     pub control_root: Digest,
 }
 

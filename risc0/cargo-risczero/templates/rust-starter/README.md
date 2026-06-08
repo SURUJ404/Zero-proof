@@ -98,7 +98,7 @@ We'd love to hear from you on [Discord][discord] or [Twitter][twitter].
 [crates]: https://github.com/suruj404/zero-knowledgerisc/blob/main/README.md#rust-binaries
 [dev-docs]: https://github.com/suruj404/zero-knowledgerisc
 [dev-mode]: https://github.com/suruj404/zero-knowledgerisc/api/generating-proofs/dev-mode
-[discord]: https://discord.gg/risczero
+[discord]: https://
 [docs.rs]: https://docs.rs/releases/search?query=risc0
 [examples]: https://github.com/suruj404/zero-knowledgerisc/tree/main/examples
 [risc0-build]: https://docs.rs/risc0-build
@@ -106,6 +106,6 @@ We'd love to hear from you on [Discord][discord] or [Twitter][twitter].
 [risc0-zkvm]: https://docs.rs/risc0-zkvm
 [rust-toolchain]: rust-toolchain.toml
 [rustup]: https://rustup.rs
-[twitter]: https://twitter.com/risczero
+[twitter]: https://
 [zkhack-iii]: https://www.youtube.com/watch?v=Yg_BGqj_6lg&list=PLcPzhUaCxlCgig7ofeARMPwQ8vbuD6hC5&index=5
 [zkvm-overview]: https://github.com/suruj404/zero-knowledgerisc/zkvm

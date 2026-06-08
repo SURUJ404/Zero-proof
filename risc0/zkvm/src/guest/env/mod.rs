@@ -66,9 +66,9 @@
 //! began. These can be achieved using the [log] and [cycle_count] functions.
 //!
 //! [receipts]: crate::Receipt
-//! [proof composition]:https://www.risczero.com/blog/proof-composition
+//! [proof composition]:https://www.github.com/SURUJ404/Zero-proof/blog/proof-composition
 //! [guest-optimization]:
-//!     https://dev.risczero.com/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
+//!     https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
 
 mod batcher;
 mod read;
@@ -204,8 +204,8 @@ pub fn pause(exit_code: u8) {
 ///
 /// Additional explanation on I/O in the zkVM can be found in RISC Zero's [I/O documentation].
 ///
-/// [example page]: https://dev.risczero.com/api/zkvm/examples
-/// [I/O documentation]: https://dev.risczero.com/api/zkvm/tutorials/io
+/// [example page]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
+/// [I/O documentation]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/io
 pub fn read<T: DeserializeOwned>() -> T {
     stdin().read()
 }
@@ -233,9 +233,9 @@ pub fn read<T: DeserializeOwned>() -> T {
 ///
 /// Additional explanation on I/O in the zkVM can be found in RISC Zero's [I/O documentation].
 ///
-/// [example page]: https://dev.risczero.com/api/zkvm/examples
-/// [I/O documentation]: https://dev.risczero.com/api/zkvm/tutorials/io
-/// [instructions on guest optimization]: https://dev.risczero.com/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
+/// [example page]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
+/// [I/O documentation]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/io
+/// [instructions on guest optimization]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
 pub fn read_slice<T: Pod>(slice: &mut [T]) {
     stdin().read_slice(slice)
 }
@@ -264,8 +264,8 @@ pub fn read_slice<T: Pod>(slice: &mut [T]) {
 ///
 /// Additional explanation on I/O in the zkVM can be found in RISC Zero's [I/O documentation].
 ///
-/// [example page]: https://dev.risczero.com/api/zkvm/examples
-/// [I/O documentation]: https://dev.risczero.com/api/zkvm/tutorials/io
+/// [example page]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
+/// [I/O documentation]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/io
 /// [risc0-r0vm]: https://crates.io/crates/risc0-r0vm
 pub fn write<T: Serialize>(data: &T) {
     stdout().write(data)
@@ -295,9 +295,9 @@ pub fn write<T: Serialize>(data: &T) {
 ///
 /// Additional explanation on I/O in the zkVM can be found in RISC Zero's [I/O documentation].
 ///
-/// [example page]: https://dev.risczero.com/api/zkvm/examples
-/// [I/O documentation]: https://dev.risczero.com/api/zkvm/tutorials/io
-/// [instructions on guest optimization]: https://dev.risczero.com/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
+/// [example page]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
+/// [I/O documentation]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/io
+/// [instructions on guest optimization]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
 /// [risc0-r0vm]: https://crates.io/crates/risc0-r0vm
 pub fn write_slice<T: Pod>(slice: &[T]) {
     stdout().write_slice(slice);
@@ -326,8 +326,8 @@ pub fn write_slice<T: Pod>(slice: &[T]) {
 ///
 /// Additional explanation on I/O in the zkVM can be found in RISC Zero's [I/O documentation].
 ///
-/// [example page]: https://dev.risczero.com/api/zkvm/examples
-/// [I/O documentation]: https://dev.risczero.com/api/zkvm/tutorials/io
+/// [example page]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
+/// [I/O documentation]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/io
 pub fn commit<T: Serialize>(data: &T) {
     journal().write(data)
 }
@@ -355,9 +355,9 @@ pub fn commit<T: Serialize>(data: &T) {
 ///
 /// Additional explanation on I/O in the zkVM can be found in RISC Zero's [I/O documentation].
 ///
-/// [example page]: https://dev.risczero.com/api/zkvm/examples
-/// [I/O documentation]: https://dev.risczero.com/api/zkvm/tutorials/io
-/// [instructions on guest optimization]: https://dev.risczero.com/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
+/// [example page]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
+/// [I/O documentation]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/io
+/// [instructions on guest optimization]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/optimization#when-reading-data-as-raw-bytes-use-envread_slice
 pub fn commit_slice<T: Pod>(slice: &[T]) {
     journal().write_slice(slice);
 }

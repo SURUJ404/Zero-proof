@@ -1,8 +1,8 @@
 # Trusted Setup Security
 
-RISC Zero has run a trusted setup ceremony for our Groth16 prover/verifier. This ceremony secures our STARK Verify circuit so we can publish Groth16 receipts for our general purpose zkVM to limited-memory environments like blockchains.
+Zero Proof has run a trusted setup ceremony for our Groth16 prover/verifier. This ceremony secures our STARK Verify circuit so we can publish Groth16 receipts for our general purpose zkVM to limited-memory environments like blockchains.
 
-You don't need to take our word for it that this is secure, though! This document will walk you through how to verify the security of our ceremony for yourself. This can also be used to aid in the detection of attacks related to our ceremony, e.g. it may help detect fraudulent actors publishing something they claim to be the RISC Zero STARK Verifier but which is actually malicious code.
+You don't need to take our word for it that this is secure, though! This document will walk you through how to verify the security of our ceremony for yourself. This can also be used to aid in the detection of attacks related to our ceremony, e.g. it may help detect fraudulent actors publishing something they claim to be the Zero Proof STARK Verifier but which is actually malicious code.
 
 ## Overview
 
@@ -15,13 +15,13 @@ There are multiple steps to verifying the security of a trusted setup ceremony. 
 
 ## The Circuit
 
-The circuit we are securing is the RISC Zero STARK Verify circuit, which is open source and [available on GitHub][stark-verify-circom] (along with [a short library][risc0-circom-library] it depends on).
+The circuit we are securing is the Zero Proof STARK Verify circuit, which is open source and [available on GitHub][stark-verify-circom] (along with [a short library][risc0-circom-library] it depends on).
 
 To ensure that the circuit itself does not have security holes, we have used a mixture of good software engineering practices, internal security reviews, and external audits. We have published these audits: you can read more details and the audits themselves [here][audits-readme].
 
 ## The Transcript Matches the Circuit
 
-Our ceremony transcript is included in the `zkey` published on ceremony.pse.dev in the "Download ZKey" tab of the [RISC Zero STARK-to-SNARK Prover page][pse-risc0-ceremony]. (We mirror this file [here][zkey-mirror], and have a compressed version [here][zkey-compressed]) You can verify it matches the circuit using Circom and snarkjs:
+Our ceremony transcript is included in the `zkey` published on ceremony.pse.dev in the "Download ZKey" tab of the [Zero Proof STARK-to-SNARK Prover page][pse-risc0-ceremony]. (We mirror this file [here][zkey-mirror], and have a compressed version [here][zkey-compressed]) You can verify it matches the circuit using Circom and snarkjs:
 
 1. Install [Circom][install-circom] (version [`v2.2.2`][circom-v2.2.2]) and [snarkjs][snarkjs].
 2. Download the [`stark_verify.circom`][stark-verify-circom] and [`risc0.circom`][risc0-circom-library] source files.

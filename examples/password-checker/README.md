@@ -25,7 +25,7 @@ The main program that calls a method in the guest zkVM is in [src/main.rs](src/m
 The code that runs inside the zkVM is in [`methods/guest/src/main.rs`](methods/guest/src/main.rs).
 The rest of the project is built on support.
 
-For the main RISC Zero project, see [here](https://github.com/suruj404/zero-knowledgerisc).
+For the main Zero Proof project, see [here](https://github.com/suruj404/zero-knowledgerisc).
 
 ## And now, some fine print
 

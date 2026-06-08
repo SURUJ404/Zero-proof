@@ -2,7 +2,7 @@ import RecursionMermaid from "@site/src/components/Mermaid/recursion.mermaid";
 
 # Recursive Proving
 
-RISC Zero's zkVM uses recursive proving in order to achieve unbounded computation size, constant proof size, proof aggregation, and proof composition.
+Zero Proof's zkVM uses recursive proving in order to achieve unbounded computation size, constant proof size, proof aggregation, and proof composition.
 
 :::tip
 [`Prover::prove_with_opts`] allows users to choose between [composite, succinct or groth16 receipts].
@@ -25,11 +25,11 @@ To summarize the diagram:
 5. The final _SuccinctReceipt_ is passed through _identity\_p254_, which prepares for Groth16 proving.
 6. The _SuccinctReceipt_ is _compressed_, generating a _Groth16Receipt_.
 
-The _Groth16Receipt_ can now be posted on-chain and verified by the [RISC Zero Verifier Contract].
+The _Groth16Receipt_ can now be posted on-chain and verified by the [Zero Proof Verifier Contract].
 
 ## Recursive Circuit Architecture
 
-RISC Zero's zkVM consists of three circuits.
+Zero Proof's zkVM consists of three circuits.
 
 1. The RISC-V Circuit is a STARK circuit that proves correct execution of RISC-V programs.
 2. The Recursion Circuit is a separate STARK circuit, that's designed to efficiently generate proofs for the verification of STARK proofs and to support the integration of custom accelerator circuits into the zkVM.
@@ -51,7 +51,7 @@ These are using internally to the [Prover] implementations to produce [SuccinctR
 
 All of the recursion programs in the previous section output a [SuccinctReceipt], which is a STARK proof (\~200kB)
 
-The final step in the recursion process is `compress()`, which outputs a [Groth16Receipt], which can be verified on-chain using the [RISC Zero Verifier Contract].
+The final step in the recursion process is `compress()`, which outputs a [Groth16Receipt], which can be verified on-chain using the [Zero Proof Verifier Contract].
 
 [`Prover::prove_with_opts`]: https://docs.rs/risc0-zkvm/2.3/risc0_zkvm/trait.Prover.html#method.prove_with_opts
 [assumption]: /terminology#assumption
@@ -61,5 +61,5 @@ The final step in the recursion process is `compress()`, which outputs a [Groth1
 [proof system]: /proof-system/proof-system-sequence-diagram
 [Prover]: https://docs.rs/risc0-zkvm/2.3/risc0_zkvm/trait.Prover.html#method.prove_with_opts
 [receipt claim]: /terminology#receipt-claim
-[RISC Zero Verifier Contract]: blockchain-integration/contracts/verifier.md
+[Zero Proof Verifier Contract]: blockchain-integration/contracts/verifier.md
 [SuccinctReceipt]: https://docs.rs/risc0-zkvm/2.3/risc0_zkvm/struct.SuccinctReceipt.html

@@ -1,6 +1,6 @@
 # Cryptography Precompiles
 
-RISC Zero's rv32im implementation includes a number of specialized extension
+Zero Proof's rv32im implementation includes a number of specialized extension
 circuits, including two "accelerators" for cryptographic functions: SHA-256 and
 [256-bit modular multiplication][bigint], referred to as "bigint"
 multiplication. By implementing these operations directly in the "hardware" of
@@ -20,7 +20,7 @@ These crates include:
 - [Dalek Cryptography's curve25519-dalek crate][curve25519-dalek]
 
 Each of these are forks of the original source code repository, with
-modifications to use RISC Zero cryptography extensions.
+modifications to use Zero Proof cryptography extensions.
 
 ### Using Accelerated Crates
 
@@ -46,7 +46,7 @@ the guest's `Cargo.toml`.
 
 It's possible to add accelerator support for your own crates.
 
-An example of how to do this can be found in this [diff of RISC Zero's k256
+An example of how to do this can be found in this [diff of Zero Proof's k256
 crate fork][k256-diff], which shows the code changes needed to accelerate
 RustCrypto's secp256k1 ECDSA library. This fork starts from the base
 implementation, and changes the core operations to use the accelerated 256-bit

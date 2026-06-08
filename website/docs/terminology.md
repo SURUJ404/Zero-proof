@@ -27,7 +27,7 @@ See also: [env::commit()]
 
 ### Composition
 
-As of our 0.20 release, the [zkVM] supports verification of RISC Zero receipts inside the RISC Zero [guest] through a feature known as composition.
+As of our 0.20 release, the [zkVM] supports verification of Zero Proof receipts inside the Zero Proof [guest] through a feature known as composition.
 With this, multiple zkVM programs can be _composed_ and produce a single receipt that verifies all computation done to reach the final result.
 
 Some use cases for composition include:
@@ -77,7 +77,7 @@ See also: [Code reference for control root]
 
 A compilation process is called "deterministic" (or "reproducible") if it reliably produces the same binary file, on a byte-by-byte level.
 
-In the context of RISC Zero application development, deterministic builds are necessary to ensure a clear linkage between the source code for the [guest program] and the resulting [Image ID][ImageID].
+In the context of Zero Proof application development, deterministic builds are necessary to ensure a clear linkage between the source code for the [guest program] and the resulting [Image ID][ImageID].
 
 To access deterministic builds for your zkVM application, use [`cargo risczero build`]. Deterministic builds are made possible by running the `rustc` compiler inside a Docker container.
 
@@ -110,7 +110,7 @@ A proof system that offers a very small proof size, suitable for on-chain verifi
 
 ### Groth16 Circuit
 
-RISC Zero's Groth16 Circuit is used to generate [receipts] that are small enough to support on-chain verification.
+Zero Proof's Groth16 Circuit is used to generate [receipts] that are small enough to support on-chain verification.
 The Groth16 Circuit is a circom implementation of the verifier for the [Recursion Circuit].
 
 ### Groth16 Receipt
@@ -176,13 +176,13 @@ Every receipt has an associated "receipt claim" or "claim", also known as the "p
 The claim is the statement that the receipt provides proof of.
 It contains the [journal], and it additionally includes information about the [imageID], exit status (e.g. if the program exits successfully or encountered an error), and the memory state at the end of execution.
 A simple example of a claim is "I ran the Fibonacci sequence calculator with input "21" and got output "10946".
-RISC Zero provides a formal system for defining and proving claims.
+Zero Proof provides a formal system for defining and proving claims.
 
 ### Recursion
 
 When a zero-knowledge proof is verified within a zero-knowledge proof, this is referred to as "recursion".
-RISC Zero uses recursion to underpin features such as [continuations] and [composition].
-Through recursion, RISC Zero can take two or more [receipts] and compress them into one receipt.
+Zero Proof uses recursion to underpin features such as [continuations] and [composition].
+Through recursion, Zero Proof can take two or more [receipts] and compress them into one receipt.
 By repeating this compression, an arbitrary number of related [receipts] (e.g. all the [Segments] of a [Session]) can be compressed into a single receipt.
 
 ### Recursion Circuit
@@ -198,7 +198,7 @@ For a list of all supported recursion programs, see the documentation for the [z
 ### RISC-V
 
 The 5th edition of UC Berkeley's reduced instruction set computer architecture.
-RISC Zero uses RISC-V, specifically the [rv32im instruction set](https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf), as the basis for the RISC Zero zkVM.
+Zero Proof uses RISC-V, specifically the [rv32im instruction set](https://riscv.org/wp-content/uploads/2019/12/riscv-spec-20191213.pdf), as the basis for the Zero Proof zkVM.
 
 ### RISC-V Circuit
 
@@ -226,7 +226,7 @@ This record is stored as a vector of [Segments].
 ### STARK
 
 A STARK (scalable, transparent argument of knowledge) serves as proof of validity for a [zkVM] program. <br />
-See also: [About STARKs], [Sequence Diagram for RISC Zero's STARK], [RISC Zero's ZKP Whitepaper]
+See also: [About STARKs], [Sequence Diagram for Zero Proof's STARK], [Zero Proof's ZKP Whitepaper]
 
 ### SNARK
 
@@ -252,7 +252,7 @@ Verifying [session] receipts requires checking the validity of each [segment] an
 ### Zero-Knowledge Virtual Machine (zkVM)
 
 A virtual machine that runs trusted code and generates proofs.
-RISC Zero's zkVM implements the RISC-V instruction set architecture and uses a [STARK]-based proof system.
+Zero Proof's zkVM implements the RISC-V instruction set architecture and uses a [STARK]-based proof system.
 
 [`cargo risczero build`]: https://docs.rs/crate/cargo-risczero/latest
 [About SNARKs]: https://ethereum.org/en/developers/docs/scaling/zk-rollups#validity-proofs
@@ -266,7 +266,7 @@ RISC Zero's zkVM implements the RISC-V instruction set architecture and uses a [
 [composition]: #composition
 [conditional]: #conditional
 [continuations]: #continuations
-[Continuations blog]: https://www.risczero.com/news/continuations
+[Continuations blog]: https://www.github.com/SURUJ404/Zero-proof/news/continuations
 [Continuations study club]: https://www.youtube.com/watch?v=v4HIwaqmIxk&list=PLcPzhUaCxlCirUkJY0ltpjdtzWcz5U_6y&index=1
 [control ID]: #control-id
 [ELF binary]: #elf-binary
@@ -298,14 +298,14 @@ RISC Zero's zkVM implements the RISC-V instruction set architecture and uses a [
 [recursion]: #recursion
 [Recursion Circuit]: #recursion-circuit
 [recursion program]: #recursion-program
-[RISC Zero's ZKP Whitepaper]: https://github.com/suruj404/zero-knowledgerisc/proof-system-in-detail.pdf
+[Zero Proof's ZKP Whitepaper]: https://github.com/suruj404/zero-knowledgerisc/proof-system-in-detail.pdf
 [RISC-V]: #risc-v
 [RISC-V Circuit]: #risc-v-circuit
 [Rust crate for zkVM guest]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/guest
 [seal]: #seal
 [Segment]: #segment
 [Segments]: #segment
-[Sequence Diagram for RISC Zero's STARK]: ./proof-system/proof-system-sequence-diagram.md
+[Sequence Diagram for Zero Proof's STARK]: ./proof-system/proof-system-sequence-diagram.md
 [session]: #session
 [STARK]: #stark
 [STARK by Hand]: ./proof-system/stark-by-hand.md

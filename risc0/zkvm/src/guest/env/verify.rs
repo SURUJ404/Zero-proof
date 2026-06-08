@@ -43,7 +43,7 @@ use super::ASSUMPTIONS_DIGEST;
 /// env::verify(HELLO_WORLD_ID, b"hello world".as_slice()).unwrap();
 /// ```
 ///
-/// [composition]: https://dev.risczero.com/terminology#composition
+/// [composition]: https://dev.github.com/SURUJ404/Zero-proof/terminology#composition
 pub fn verify(image_id: impl Into<Digest>, journal: &[impl Pod]) -> Result<(), Infallible> {
     let journal_digest: Digest = bytemuck::cast_slice::<_, u8>(journal).digest();
     let assumption_claim = ReceiptClaim::ok(image_id, MaybePruned::Pruned(journal_digest));
@@ -80,7 +80,7 @@ pub fn verify(image_id: impl Into<Digest>, journal: &[impl Pod]) -> Result<(), I
 /// [ExitCode::SystemSplit][crate::ExitCode]) will not have any encoded assumptions even if [verify] or
 /// [verify_integrity] is called and these receipts will be rejected by this function.
 ///
-/// [composition]: https://dev.risczero.com/terminology#composition
+/// [composition]: https://dev.github.com/SURUJ404/Zero-proof/terminology#composition
 pub fn verify_integrity(claim: &ReceiptClaim) -> Result<(), VerifyIntegrityError> {
     // Check that the assumptions list is empty.
     #[allow(clippy::unnecessary_map_or)]

@@ -174,7 +174,7 @@ pub trait Prover {
     ///
     /// NOTE: Compression to [Groth16Receipt](crate::Groth16Receipt) requires
     /// Docker to be installed. See issue
-    /// [#1749](https://github.com/risc0/risc0/issues/1749) for more information.
+    /// [#1749](https://github.com/SURUJ404/Zero-proof/issues/1749) for more information.
     ///
     /// If the receipt is already at least as compressed as the requested compression level (e.g.
     /// it is already succinct or Groth16 and a succinct receipt is required) this function is a

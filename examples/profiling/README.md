@@ -1,17 +1,17 @@
 # Profiling Guest Code
 
-In this example we demonstrate how to profile on the RISC Zero zkVM guest programs, using the Fibonacci sequence calculation as an example.
+In this example we demonstrate how to profile on the Zero Proof zkVM guest programs, using the Fibonacci sequence calculation as an example.
 
 <!-- NOTE: This content matches the docs under website/api/zkvm/developer-guide/profiling.md -->
 
 ## Background
 
 Profiling tools, like [pprof] and [perf], allow collecting performance information over the entire execution of your program, and help create visualizations for the performance of your program.
-RISC Zero has experimental support for generating pprof files for cycle counts.
+Zero Proof has experimental support for generating pprof files for cycle counts.
 
 [Sampling CPU profilers], as implemented by pprof and perf, provide a view of where your program is spending its time.
 It does so by recording the current call stack at a sampling interval.
-RISC Zero provides a "sampling" [^1] CPU profiler for guest execution.
+Zero Proof provides a "sampling" [^1] CPU profiler for guest execution.
 
 ## Usage
 

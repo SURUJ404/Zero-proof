@@ -1,6 +1,6 @@
 # Receipts 101
 
-_A brief introduction to the RISC Zero [receipt]._
+_A brief introduction to the Zero Proof [receipt]._
 
 ## What Is a Receipt?
 

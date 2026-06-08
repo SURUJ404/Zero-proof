@@ -60,16 +60,16 @@
 //! | std              | all               |            | Support for the Rust stdlib.                                                                                                                                 |
 //!
 //! [`cargo risczero` tool]: https://crates.io/crates/cargo-risczero
-//! [dev-docs]: https://dev.risczero.com
-//! [examples]: https://dev.risczero.com/api/zkvm/examples
+//! [dev-docs]: https://dev.github.com/SURUJ404/Zero-proof
+//! [examples]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/examples
 //! [receipt]: crate::receipt::Receipt
 //! [receipt-verify]: crate::receipt::Receipt::verify
 //! [rust guest workarounds]:
 //!     https://github.com/suruj404/zero-knowledgerisc/issues?q=is%3Aissue+is%3Aopen+label%3A%22rust+guest+workarounds%22
-//! [YouTube]: https://www.youtube.com/@risczero
+//! [YouTube]: https://www.youtube.com
 //! [zero-knowledge proofs]: https://en.wikipedia.org/wiki/Zero-knowledge_proof
 //! [zkHack]: https://youtu.be/cLqFvhmXiD0
-//! [zkVM Tutorial]: https://dev.risczero.com/api/zkvm/tutorials/hello-world
+//! [zkVM Tutorial]: https://dev.github.com/SURUJ404/Zero-proof/api/zkvm/tutorials/hello-world
 
 extern crate alloc;
 

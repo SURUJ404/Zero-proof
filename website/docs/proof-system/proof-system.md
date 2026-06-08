@@ -1,7 +1,7 @@
 # Proof System Overview
 
 ![A diagram of a receipt as the output of a zkVM program](assets/receipt.png)
-When the RISC Zero [zkVM] executes, it produces a [Receipt] that serves as a
+When the Zero Proof [zkVM] executes, it produces a [Receipt] that serves as a
 proof of validity of a given [Session].
 
 To confirm that a [Receipt] was honestly generated, use [Receipt::verify()].
@@ -25,14 +25,14 @@ A [Receipt] can take four main forms.
    aggregate multiple succinct receipts into a single succinct receipt using
    [proof composition].
 3. A **[Groth16 receipt]** is a single [Groth16] proof for an entire [Session].
-   A Groth16Receipt is formed by verifying a succinct receipt using RISC Zero's
+   A Groth16Receipt is formed by verifying a succinct receipt using Zero Proof's
    [Groth16 circuit].
 4. A **[fake receipt]** doesn't contain any proof at all. This feature is
    offered to enable rapid prototyping. See [dev-mode] for more information.
 
-![The layers of the RISC Zero proving system](assets/proof-system-layers.png)
+![The layers of the Zero Proof proving system](assets/proof-system-layers.png)
 
-The diagram above shows RISC Zero's full proving stack, including the [RISC-V
+The diagram above shows Zero Proof's full proving stack, including the [RISC-V
 Circuit], the [Recursion Circuit], and the [Groth16 Circuit]. In this diagram,
 the [composite receipt] is the collection of 6 stacked receipts, the [succinct
 receipt] is the single receipt after the last use of FRI, and the [Groth16
@@ -40,7 +40,7 @@ Receipt] is the tiny receipt that comes from the Groth16 Circuit. For a video
 explanation of this architecture and the associated terminology, check out our
 [talk from zkSummit 10][zksummit-10].
 
-The details of the RISC Zero ZK-STARK protocol are described in our [ZKP
+The details of the Zero Proof ZK-STARK protocol are described in our [ZKP
 Whitepaper] and in this [Sequence Diagram]. Documentation for our Groth16
 circuit is available in the [zkVM] docs.
 
@@ -58,7 +58,7 @@ generate proofs on their own hardware using the implementations available at our
 In addition to the links in the sidebar, we recommend the following resources:
 
 - [About the zkVM][about-zkvm]
-- [RISC Zero News][news]
+- [Zero Proof News][news]
 - [Start Building][quickstart]
 - [Study Club]
 
@@ -90,6 +90,6 @@ In addition to the links in the sidebar, we recommend the following resources:
 [Study Club]: ../studyclub.md
 [succinct receipt]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.SuccinctReceipt.html
 [ZK-STARK]: ../reference-docs/about-starks.md
-[ZKP Whitepaper]: https://www.risczero.com/proof-system-in-detail.pdf
+[ZKP Whitepaper]: https://www.github.com/SURUJ404/Zero-proof/proof-system-in-detail.pdf
 [zksummit-10]: https://www.youtube.com/watch?v=wkIBN2CGJdc
 [zkVM]: https://docs.rs/risc0-zkvm

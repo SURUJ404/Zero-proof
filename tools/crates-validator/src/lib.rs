@@ -122,12 +122,12 @@ pub struct CrateProfile {
 
     /// Toggles if we should inject CC flags
     ///
-    /// Reference: https://github.com/risc0/risc0/issues/443
+    /// Reference: https://github.com/SURUJ404/Zero-proof/issues/443
     pub inject_cc_flags: bool,
 
     /// Toggles injecting a crossbeam atomics fix
     ///
-    /// Reference: https://github.com/risc0/risc0/issues/444
+    /// Reference: https://github.com/SURUJ404/Zero-proof/issues/444
     pub crossbeam_patch: bool,
 
     /// Validation results

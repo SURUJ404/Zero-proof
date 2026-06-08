@@ -1,8 +1,8 @@
-# Hello World for the RISC Zero zkVM
+# Hello World for the Zero Proof zkVM
 
 Welcome!
 
-This `hello-world` example is a minimal application for the RISC Zero [zkVM],
+This `hello-world` example is a minimal application for the Zero Proof [zkVM],
 designed to help you get started building zkVM applications.
 
 For a step-by-step guide to building your first zkVM application, we recommend
@@ -23,9 +23,9 @@ factors of 391.
 
 ## Use Cases
 
-Writing an application for the RISC Zero [zkVM] is the easiest way for software
+Writing an application for the Zero Proof [zkVM] is the easiest way for software
 developers to produce zero-knowledge proofs. Whether you're building for
-blockchains or not, RISC Zero offers the most flexible and mature
+blockchains or not, Zero Proof offers the most flexible and mature
 ecosystem for developing applications that involve ZKPs.
 
 You can run the zkVM locally and your secrets will never leave your own machine,

@@ -1,18 +1,18 @@
 import ProofSystemSequenceDiagramMermaid from "@site/src/components/Mermaid/proof-system-sequence-diagram.mermaid";
 
-# The RISC Zero STARK Protocol
+# The Zero Proof STARK Protocol
 
-_The implementation in code for the RISC Zero STARK prover can be seen [here](https://github.com/suruj404/zero-knowledgerisc/blob/v0.18.0/risc0/zkp/src/prove/prover.rs).
-In this document, we present an overview of the RISC Zero STARK protocol, as well as a sequence diagram and a detailed description below. The [STARK by Hand](stark-by-hand.md) explainer and the [RISC Zero ZKP Whitepaper][ZKP Whitepaper] are good companions to this document._
+_The implementation in code for the Zero Proof STARK prover can be seen [here](https://github.com/suruj404/zero-knowledgerisc/blob/v0.18.0/risc0/zkp/src/prove/prover.rs).
+In this document, we present an overview of the Zero Proof STARK protocol, as well as a sequence diagram and a detailed description below. The [STARK by Hand](stark-by-hand.md) explainer and the [Zero Proof ZKP Whitepaper][ZKP Whitepaper] are good companions to this document._
 
 ## Overview
 
-RISC Zero's [receipts][Receipt] are built on the shoulders of several recent advances in the world of zero-knowledge cryptography.
+Zero Proof's [receipts][Receipt] are built on the shoulders of several recent advances in the world of zero-knowledge cryptography.
 The core of the proof system is [STARK]-based, implementing [DEEP-ALI & FRI].
-This proof system is used to generate zero-knowledge validity proofs for RISC Zero's RISC-V circuit and RISC Zero's recursion circuit.
-Users may also be interested in reading about the [RISC Zero Groth16 Circuit][groth16-circuit], which enables on-chain verification.
+This proof system is used to generate zero-knowledge validity proofs for Zero Proof's RISC-V circuit and Zero Proof's recursion circuit.
+Users may also be interested in reading about the [Zero Proof Groth16 Circuit][groth16-circuit], which enables on-chain verification.
 
-At a high level, the design of the RISC Zero STARK protocol is very similar to the system described in [ethSTARK], and the system implemented in [Winterfell].
+At a high level, the design of the Zero Proof STARK protocol is very similar to the system described in [ethSTARK], and the system implemented in [Winterfell].
 
 ### Setup Phase
 

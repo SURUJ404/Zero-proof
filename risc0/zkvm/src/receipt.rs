@@ -60,7 +60,7 @@ pub use self::{
 /// [Receipt::journal] was produced by executing a guest program based on a
 /// specified memory image. This image is _not_ included in the receipt; the
 /// verifier must provide an
-/// [ImageID](https://dev.risczero.com/terminology#image-id), a cryptographic
+/// [ImageID](https://dev.github.com/SURUJ404/Zero-proof/terminology#image-id), a cryptographic
 /// hash corresponding to the expected image.
 ///
 /// A prover can provide a Receipt to an untrusting party to convince them that
@@ -558,7 +558,7 @@ impl<Claim> From<FakeReceipt<Claim>> for GenericReceipt<Claim> {
 ///
 /// This type solely exists to improve development experience, for further
 /// information about development-only mode see our [dev-mode
-/// documentation](https://dev.risczero.com/api/generating-proofs/dev-mode).
+/// documentation](https://dev.github.com/SURUJ404/Zero-proof/api/generating-proofs/dev-mode).
 #[derive(Clone, Debug, Serialize, Deserialize, BorshSerialize, BorshDeserialize)]
 #[cfg_attr(test, derive(PartialEq))]
 #[non_exhaustive]

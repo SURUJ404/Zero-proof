@@ -1,12 +1,12 @@
 # Security Model
 
-RISC Zero is proud to offer an end-to-end solution for verifiable computation.
-Users can generate proofs for correct execution of software code using the [RISC Zero zkVM],
+Zero Proof is proud to offer an end-to-end solution for verifiable computation.
+Users can generate proofs for correct execution of software code using the [Zero Proof zkVM],
 and they can verify those proofs on-chain using our permissionless [verifier contract] on Ethereum networks such as Sepolia.
 
-The rest of this document offers an overview of the security model for applications that rely on RISC Zero's tooling.
+The rest of this document offers an overview of the security model for applications that rely on Zero Proof's tooling.
 
-RISC Zero offers the following components, each of which is ready for use on testnet.
+Zero Proof offers the following components, each of which is ready for use on testnet.
 
 ## Overview of Components
 
@@ -15,9 +15,9 @@ RISC Zero offers the following components, each of which is ready for use on tes
 3. The **Recursion Prover**, which is used to aggregate proofs from the RISC-V Prover.
    The recursion prover supports a small number of programs, including [lift], [join], and [resolve].
    Each recursion program is identified by a [control ID], and the full list of allowed programs is identified by the [control root].
-4. The **STARK-to-SNARK Prover**, which verifies proofs from the RISC Zero Recursion Prover, compressing the STARK into a Groth16 SNARK.
+4. The **STARK-to-SNARK Prover**, which verifies proofs from the Zero Proof Recursion Prover, compressing the STARK into a Groth16 SNARK.
    The [control root] is passed to as a public input, allowing for updates to our RISC-V Prover without requiring a new trusted setup ceremony.
-5. The **on-chain verifier contract**, which verifies proofs from the RISC Zero STARK-to-SNARK Prover.
+5. The **on-chain verifier contract**, which verifies proofs from the Zero Proof STARK-to-SNARK Prover.
    The control root is hard-coded into the on-chain verifier contract.
    Addresses for the on-chain verifier contracts we have deployed are available in our [verifier contract] documentation, and a detailed description of the options for governance, upgrades, and deprecation are available in our [Version Management Design][VersionManagement] doc.
 
@@ -27,13 +27,13 @@ In order to use these components, developers provide:
 - the Rust code for their zkVM guest program.
 - a smart contract on-chain whose behavior will depend on the output of the Verifier Contract
 
-**RISC Zero technology cannot prevent many types of security issues in user guest programs (e.g. applications) or contracts. It is necessary for zkVM adopters to validate the security of guest programs and contracts. This includes secure development life-cycles and external security auditing by qualified providers.**
+**Zero Proof technology cannot prevent many types of security issues in user guest programs (e.g. applications) or contracts. It is necessary for zkVM adopters to validate the security of guest programs and contracts. This includes secure development life-cycles and external security auditing by qualified providers.**
 
 ![Security Model Diagram](/diagrams/security-model-diagram.svg)
 
 ## Zero-Knowledge Proving
 
-The RISC Zero zkVM hides all program inputs and all witness data, and targets perfect zero-knowledge.
+The Zero Proof zkVM hides all program inputs and all witness data, and targets perfect zero-knowledge.
 
 Nevertheless, we have not written a mathematical argument to prove that our system is zero-knowledge. We are working on some minor engineering changes in order to make it easier to prove that our proof system has perfect zero-knowledge.
 
@@ -86,7 +86,7 @@ At $2^{98}$ [bits] of security required to force a collision, we can estimate th
 `2^98 / (25,000,000,000 Hashes/s * 1,000,000 GPUs) / 60seconds / 60 minutes / 24 hours / 365 days = 401969 years`
 
 The analysis for bits of security for the RISC-V and Recursion Prover can be found in the [security calculator].
-For a detailed cryptographic description of our STARK system, we refer readers to [RISC Zero zkVM: Scalable, Transparent Arguments of RISC-V Integrity][proof-system].
+For a detailed cryptographic description of our STARK system, we refer readers to [Zero Proof zkVM: Scalable, Transparent Arguments of RISC-V Integrity][proof-system].
 
 ## The STARK to SNARK Translator
 
@@ -113,7 +113,7 @@ For a detailed discussion of the security of BN254, we refer readers to the disc
 [proof-system]: pathname:///proof-system-in-detail.pdf
 [receipt claim]: /terminology#receipt-claim
 [resolve]: https://docs.rs/risc0-zkvm/1.0/risc0_zkvm/struct.ApiClient.html#method.resolve
-[RISC Zero zkVM]: ./zkvm
+[Zero Proof zkVM]: ./zkvm
 [security calculator]: https://github.com/risc0/risc0/blob/release-1.0/risc0/zkp/src/prove/soundness.rs
 [Verifier Contract]: ./blockchain-integration/contracts/verifier.md
 [VersionManagement]: https://github.com/risc0/risc0-ethereum/blob/release-1.0/contracts/version-management-design.md

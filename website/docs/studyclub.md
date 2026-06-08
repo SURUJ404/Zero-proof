@@ -1,13 +1,13 @@
 # Study Club
 
-RISC Zero's Study Club sessions aim to introduce the pre-requisite concepts necessary to understand our technology.
+Zero Proof's Study Club sessions aim to introduce the pre-requisite concepts necessary to understand our technology.
 
 ## Upcoming Sessions
 
 **February 14: Proof Composition** <br />
 **Victor Graf** <br />
 
-As of our v0.20 release, the zkVM supports verification of RISC Zero receipts inside the RISC Zero guest through a feature known as composition.
+As of our v0.20 release, the zkVM supports verification of Zero Proof receipts inside the Zero Proof guest through a feature known as composition.
 With this feature, multiple zkVM programs can be composed and produce a single receipt that verifies all computation done to reach the final result.
 
 This session of study club will discuss how to use proof composition, how proof composition works behind the scenes, and what use cases this unlocks.
@@ -15,7 +15,7 @@ This session of study club will discuss how to use proof composition, how proof 
 All sessions are hosted at **9am Pacific / 5PM UTC**. <br />
 Join the session: [Zoom link] <br />
 
-Join the conversation on [Discord](https://discord.gg/risczero).
+Join the conversation on [Discord](https://).
 
 ### Past Sessions
 
@@ -29,11 +29,11 @@ Full recordings and slides from past sessions are [available on YouTube](https:/
 ### Developer Tooling
 
 - [zkVM Performance Tips & Tricks](https://www.youtube.com/watch?v=MckieUBpakw\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=1)
-- [zkML on RISC Zero](https://www.youtube.com/watch?v=yslyWRiCFCE\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=1)
+- [zkML on Zero Proof](https://www.youtube.com/watch?v=yslyWRiCFCE\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=1)
 
 ### zkVM Architecture
 
-- [What RISC-V has to do with RISC Zero's zkVM](https://www.youtube.com/watch?v=11DIflEwx50\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=5)
+- [What RISC-V has to do with Zero Proof's zkVM](https://www.youtube.com/watch?v=11DIflEwx50\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=5)
 - [Continuations: Scaling in zkVM](https://www.youtube.com/watch?v=h1qWnf-M5lo\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=9)
 
 ### Mathematical Primitives

@@ -1,6 +1,6 @@
 # Local Proving
 
-RISC Zero offers a fully [open-source] prover.
+Zero Proof offers a fully [open-source] prover.
 Users can run the [zkVM] locally, generating proofs using their own hardware.
 The [feature flags] include options to toggle between CPU and GPU proving.
 
@@ -13,7 +13,7 @@ With local proof generation your private data never leaves your machine.
 
 ## Proving hardware
 
-RISC Zero's proving system for multiple hardware targets.
+Zero Proof's proving system for multiple hardware targets.
 
 :::info
 The Groth16 prover currently _only_ works on x86 architecture, and so Apple Silicon is _currently unsupported_ (even via Docker).
@@ -28,16 +28,16 @@ You can find out more info in the relevant issues [#1520] and [#1749].
 
 ### CPU
 
-RISC Zero proving will run on nearly any modern CPU (x86 or ARM).
+Zero Proof proving will run on nearly any modern CPU (x86 or ARM).
 Proving on CPU is the easiest to setup, and the most portable, but will not result in the highest performance or compute costs.
 
 ### NVIDIA GPU
 
-RISC Zero is highly optimized for running on GPUs. Currently, RISC Zero targets NVIDIA GPUs using the CUDA framework.
+Zero Proof is highly optimized for running on GPUs. Currently, Zero Proof targets NVIDIA GPUs using the CUDA framework.
 
 Running on NVIDIA GPUS requires the CUDA runtime, and building the GPU kernels requires the NVIDIA toolkit.
 
-Using Ubuntu as an example, the following steps will install and configure the necessary dependencies, and build RISC Zero to use CUDA.
+Using Ubuntu as an example, the following steps will install and configure the necessary dependencies, and build Zero Proof to use CUDA.
 
 ```bash
 # install driver install tool
@@ -67,7 +67,7 @@ RUSTFLAGS="-C target-cpu=native" cargo run -F cuda -r --example datasheet
 
 ### Apple Metal
 
-On MacOS, when using a machine with Apple Silicon (such as the M-series MacBooks), RISC Zero will use the integrated [Metal][apple-metal] compute cores.
+On MacOS, when using a machine with Apple Silicon (such as the M-series MacBooks), Zero Proof will use the integrated [Metal][apple-metal] compute cores.
 No options need to be configured to take advantage of acceleration through the use of Metal.
 
 [#1520]: https://github.com/risc0/risc0/issues/1520

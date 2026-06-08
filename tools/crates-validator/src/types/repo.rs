@@ -69,7 +69,7 @@ impl Default for Repo {
     }
 }
 
-/// Returns the Cargo.toml string entry on how to import the RISC Zero
+/// Returns the Cargo.toml string entry on how to import the Zero Proof
 /// repository.
 pub trait RepoCargoString {
     /// Expects a `sub_directory` string to be passed in.
@@ -77,7 +77,7 @@ pub trait RepoCargoString {
     /// Ex:
     /// ```
     /// # use risc0_crates_validator::types::repo::{Repo, RepoCargoString, TagRepo, BranchRepo, PathRepo, Value};
-    /// const R0_REPO: &str = "https://github.com/risc0/risc0.git";
+    /// const R0_REPO: &str = "https://github.com/SURUJ404/Zero-proof.git";
     /// const R0_PATH: &str = "risc0/build";
     ///
     /// let tag = Repo::tag("v0.1.0");

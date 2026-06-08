@@ -4,7 +4,7 @@ Bonsai lets users generate proofs for their zkVM applications, without using the
 Users specify which zkVM application they want to run, as well as the inputs to that program, and Bonsai returns a proof.
 
 Bonsai is highly parallelized and highly performant: proving work on Bonsai is split among a dynamically-sized GPU cluster, offering ultra-fast proving.
-To get a taste of what you can do with Bonsai, check out [Zeth][external-zeth], our [Governance Showcase][external-governance-showcase], [Bonsai Pay][external-bonsai-pay], and our blog post about using [RISC Zero as a zk coprocessor with Bonsai proving][external-zkcoprocessor].
+To get a taste of what you can do with Bonsai, check out [Zeth][external-zeth], our [Governance Showcase][external-governance-showcase], [Bonsai Pay][external-bonsai-pay], and our blog post about using [Zero Proof as a zk coprocessor with Bonsai proving][external-zkcoprocessor].
 
 If you already have an API key, you can request proofs from Bonsai in any of the following ways:
 
@@ -14,7 +14,7 @@ If you already have an API key, you can request proofs from Bonsai in any of the
 - via the **[Bonsai REST API][external-bonsai-rest-api]** (for building your own client or accessing Bonsai directly)
 
 If you don't have an API key, you can [request access][external-bonsai-apply].
-While you wait, you can make use of the local proving option on the [RISC Zero Foundry Template][external-foundry-template], or you can focus on developing for the [zkVM][docs-zkvm].
+While you wait, you can make use of the local proving option on the [Zero Proof Foundry Template][external-foundry-template], or you can focus on developing for the [zkVM][docs-zkvm].
 
 ## API Limits
 

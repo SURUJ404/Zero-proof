@@ -1,6 +1,6 @@
 # ZK Checkmate
 
-This code demonstrates a minimal example of how to use the RISC Zero [zkVM] to make ZK proofs about chess.
+This code demonstrates a minimal example of how to use the Zero Proof [zkVM] to make ZK proofs about chess.
 
 The demo uses the [shakmaty] crate to prove that a chess position has a checkmate without revealing what that checkmate is.
 
@@ -65,5 +65,5 @@ The [guest code] checks that applying the move to the initial board state is leg
 [Rust Resources]: https://github.com/suruj404/zero-knowledgerisc/api/zkvm/rust-resources
 [shakmaty]: https://docs.rs/shakmaty/latest/shakmaty/
 [verify]: https://github.com/suruj404/zero-knowledgerisc/terminology#verify
-[zk coprocessor]: https://www.risczero.com/blog/a-guide-to-zk-coprocessors-for-scalability
+[zk coprocessor]: https://www.github.com/SURUJ404/Zero-proof/blog/a-guide-to-zk-coprocessors-for-scalability
 [zkVM]: https://github.com/suruj404/zero-knowledgerisc/zkvm

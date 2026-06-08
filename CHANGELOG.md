@@ -102,7 +102,7 @@ Support wider range of client/server use cases.
 ### 🔥 Performance Improvements
 
 * Improve GPU performance.
-  For more information see https://reports.risczero.com/benchmarks.
+  For more information see https://reports.github.com/SURUJ404/Zero-proof/benchmarks.
 * Speed up null builds of guest programs.
 
 ### 🛠 Fixes

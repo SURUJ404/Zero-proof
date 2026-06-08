@@ -18,7 +18,7 @@ cargo run --release
 
 ## Use Cases
 
-Composition is a feature of the zkVM supporting verification of RISC Zero [receipts] in a guest program.
+Composition is a feature of the zkVM supporting verification of Zero Proof [receipts] in a guest program.
 With this, multiple zkVM programs can be _composed_ and produce a single receipt that verifies all computations done to reach the final result.
 
 Composition is supported through the [`env::verify`] method in the [guest program].

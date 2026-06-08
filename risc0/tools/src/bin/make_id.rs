@@ -20,7 +20,7 @@
 //! In particular, users looking to create ImageIDs for Rust code are advised
 //! to instead use the [`risc0-build`](https://crates.io/crates/risc0-build) crate.
 //! Visit our [RISC Zero Rust Starter
-//! repository](https://github.com/risc0/risc0-rust-starter) for help getting
+//! repository](https://github.com/SURUJ404/Zero-proof-rust-starter) for help getting
 //! started.
 
 use clap::Parser;

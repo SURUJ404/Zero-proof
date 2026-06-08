@@ -17,13 +17,13 @@
 
 ## Running the Examples
 
-The examples listed above and others can be found in RISC Zero's repository
+The examples listed above and others can be found in Zero Proof's repository
 under [/examples][examples-dir]. Unless otherwise noted in their own READMEs,
 the examples can be run following the instructions below.
 
 ### Install Dependencies
 
-First, ensure that you have all RISC Zero tools installed. See [installation
+First, ensure that you have all Zero Proof tools installed. See [installation
 instructions][install] for more information.
 
 ### Check Out the Correct Version of the Example

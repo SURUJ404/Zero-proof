@@ -8,9 +8,9 @@ emergent use cases which we are excited to enable. Key among these are:
   moving the expensive part of their application logic off-chain
 - Optimistic rollups with ZK fraud proofs, including [our work with Optimism][optimism]
 
-The RISC Zero [zkVM] can prove the correct execution of arbitrary code, allowing
+The Zero Proof [zkVM] can prove the correct execution of arbitrary code, allowing
 developers to build ZK applications in mature languages like Rust and C++. The release
-of the RISC Zero zkVM marked a major breakthrough in enabling ZK software development:
+of the Zero Proof zkVM marked a major breakthrough in enabling ZK software development:
 the zkVM made it possible to build a ZK application _without having to build a
 circuit_ and _without writing in a custom language_.
 

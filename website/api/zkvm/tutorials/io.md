@@ -276,7 +276,7 @@ reference if you wish.
 
 Happy coding!
 
-[article-composition]: https://www.risczero.com/blog/proof-composition
+[article-composition]: https://www.github.com/SURUJ404/Zero-proof/blog/proof-composition
 [Boundless]: http://boundless.network
 [docs-guest-code-optimization]: ../optimization.md#when-reading-data-as-raw-bytes-use-envread_slice
 [docs-hello-world]: ./hello-world.md

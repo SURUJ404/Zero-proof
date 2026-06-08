@@ -1,25 +1,25 @@
 # Installation
 
-These instructions guide you through installing or updating RISC Zero tools to build your own RISC Zero zkVM projects. You will install the [`cargo-risczero`][cargo-risczero] tool for creating and building RISC Zero zkVM projects, as well as the RISC Zero toolchain used to build zkVM guest programs in Rust.
+These instructions guide you through installing or updating Zero Proof tools to build your own Zero Proof zkVM projects. You will install the [`cargo-risczero`][cargo-risczero] tool for creating and building Zero Proof zkVM projects, as well as the Zero Proof toolchain used to build zkVM guest programs in Rust.
 
 ## Prerequisites
 
-The RISC Zero zkVM requires [Rust]. If you don't already have Rust and [rustup] installed, start by [installing Rust and rustup][install-rust]. Please follow the recommended Rust installation instructions using [rustup], as RISC Zero specifically depends on the [rustup] tool.
+The Zero Proof zkVM requires [Rust]. If you don't already have Rust and [rustup] installed, start by [installing Rust and rustup][install-rust]. Please follow the recommended Rust installation instructions using [rustup], as Zero Proof specifically depends on the [rustup] tool.
 
 ## Installation for x86-64 Linux and arm64 macOS
 
-`rzup` is the RISC Zero toolchain installer. We recommend using `rzup` to manage the installation of RISC Zero.
+`rzup` is the Zero Proof toolchain installer. We recommend using `rzup` to manage the installation of Zero Proof.
 
 1. Install `rzup` by running the following command:
    ```sh
    curl -L https://github.com/suruj404/zero-knowledgerisc/install | bash
    ```
-2. Run `rzup` to install RISC Zero:
+2. Run `rzup` to install Zero Proof:
    ```sh
    rzup install
    ```
 
-Running `rzup` will install the latest released version of the RISC Zero toolchain.
+Running `rzup` will install the latest released version of the Zero Proof toolchain.
 
 For a specific version, use `rzup install cargo-risczero <version>`, where the `<version>` is a released SemVer version (e.g `1.1.1`). See [releases].
 
@@ -44,15 +44,15 @@ rzup install cpp
 
 To update your installation:
 
-1. Run `rzup update` to update the RISC Zero toolchain to the latest released version. See [releases].
+1. Run `rzup update` to update the Zero Proof toolchain to the latest released version. See [releases].
 
-After you update your installation, be sure to update your project's RISC Zero crates. To do this, you must update all RISC Zero dependencies in your project's host and guest `Cargo.toml` files. In most projects, this is done by updating the host and guest `risc0-zkvm` crate and the `risc0-build` build dependency. They should be updated to use the version number displayed by `cargo risczero --version`.
+After you update your installation, be sure to update your project's Zero Proof crates. To do this, you must update all Zero Proof dependencies in your project's host and guest `Cargo.toml` files. In most projects, this is done by updating the host and guest `risc0-zkvm` crate and the `risc0-build` build dependency. They should be updated to use the version number displayed by `cargo risczero --version`.
 
 ## Using `rzup` in CI
 
 When using `rzup` in CI environments, it's important to pin each component to
 the desired version. Invoking `rzup install` will download the latest software
-released by RISC Zero and may cause CI environments to suddenly fail when new
+released by Zero Proof and may cause CI environments to suddenly fail when new
 versions of components are published.
 
 In order to avoid this, `rzup` should be run in CI using the following commands:

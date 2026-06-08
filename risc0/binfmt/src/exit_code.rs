@@ -49,8 +49,8 @@ pub enum ExitCode {
     /// eventually halt. System split is used in [continuations] to split
     /// execution into individually provable [segments].
     ///
-    /// [continuations]: https://dev.risczero.com/terminology#continuations
-    /// [segments]: https://dev.risczero.com/terminology#segment
+    /// [continuations]: https://dev.github.com/SURUJ404/Zero-proof/terminology#continuations
+    /// [segments]: https://dev.github.com/SURUJ404/Zero-proof/terminology#segment
     SystemSplit,
 
     /// This indicates that the guest exited upon reaching the session limit set by the host.

@@ -1,7 +1,7 @@
 # Groth16 Prover
 
 This directory contains utilities for performing a "stark2snark" workflow. This
-is useful for transforming a RISC Zero STARK proof into a Groth16 SNARK proof
+is useful for transforming a Zero Proof STARK proof into a Groth16 SNARK proof
 which is suitable for publishing on-chain.
 
 > Recommended way to produce Groth16 receipts is to use the `Prover` trait in the `risc0-zkvm` crate.

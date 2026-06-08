@@ -5,7 +5,7 @@ executed and proven by the zkVM.
 
 ![From Guest Code to Receipt][from-rust-to-receipt]
 
-This page serves as an introduction to writing RISC Zero [guest code], to help
+This page serves as an introduction to writing Zero Proof [guest code], to help
 you get started building applications for [Bonsai] and the [zkVM].
 
 - For a guide to writing and running your first guest code, check out our [zkVM
@@ -88,7 +88,6 @@ If you run into problems, don't be a stranger! You can file an issue on [these d
 [`env::write`]: https://docs.rs/risc0-zkvm/1.1/risc0_zkvm/guest/env/fn.write.html
 [benchmarks]: ./benchmarks.md
 [Bonsai]: ../generating-proofs/remote-proving.md
-[Discord]: https://discord.gg/risczero
 [examples]: ./examples.md
 [from-rust-to-receipt]: /diagrams/from-rust-to-receipt.png
 [guest]: /terminology#guest

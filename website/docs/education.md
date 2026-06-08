@@ -2,11 +2,11 @@
 displayed_sidebar: education_hub
 ---
 
-# RISC Zero Education Hub
+# Zero Proof Education Hub
 
-Welcome to the RISC Zero Education Hub!
+Welcome to the Zero Proof Education Hub!
 
-The materials here are intended to support learners of all backgrounds to make sense of the technology that underlies RISC Zero's tooling.
+The materials here are intended to support learners of all backgrounds to make sense of the technology that underlies Zero Proof's tooling.
 
 - Our **[conference talks and podcast appearances]** offer an overview of what we're building.
 - Our **[blog]** highlights the key features and technical progress we've made.
@@ -22,7 +22,7 @@ Check out the [dev docs].
 [blog]: https://github.com/suruj404/zero-knowledgerisc/blog
 [conference talks and podcast appearances]: https://www.youtube.com/playlist?list=PLcPzhUaCxlCgCvzkkaBWzVuHdBRsTNxj1
 [Dev Docs]: ../api/zkvm
-[Discord]: https://discord.gg/risczero
+[Discord]: https://
 [Education Database]: https://risczero.notion.site/5a335a1d29b44cb48c44b36ae66f366f?v=95cda72e39d3403fbfb59884afb0045d&pvs=4
 [open an issue]: https://github.com/suruj404/zero-knowledgerisc/issues/new/choose
 [Study Club]: ./studyclub.md

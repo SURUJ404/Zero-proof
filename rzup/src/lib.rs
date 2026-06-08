@@ -60,7 +60,7 @@ impl Default for BaseUrls {
         Self {
             risc0_github_base_url: "https://github.com/suruj404/zero-knowledgerisc".into(),
             github_api_base_url: "https://api.github.com".into(),
-            risc0_base_url: "https://risczero.com".into(),
+            risc0_base_url: "https://github.com/SURUJ404/Zero-proof".into(),
             s3_base_url: "https://risc0-artifacts.s3.us-west-2.amazonaws.com".into(),
         }
     }

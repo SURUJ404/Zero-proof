@@ -26,7 +26,7 @@ transaction ledgers][3].
 
 ECDSA verification is relatively expensive in the zkVM guest. In order to speed this up, the zkVM 
 implements a 256-bit big integer multiplication precompile, which targets
-the main bottleneck for signature verification. Additionally, RISC Zero implements a patched version
+the main bottleneck for signature verification. Additionally, Zero Proof implements a patched version
 of the `p256` crate which uses this precompile. Using these patches, **ECDSA
 signature verification takes about 220k cycles**, down from ~12m cycles.
 

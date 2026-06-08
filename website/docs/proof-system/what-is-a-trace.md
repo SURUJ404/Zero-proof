@@ -11,10 +11,10 @@ column shows a temporal record of some particular aspect of the computation
 line-by-line analysis of the trace allows for a computational audit with respect
 to the program instructions and the underlying computer architecture.
 
-`RISC Zero's computational receipts use cutting-edge technology to audit an
+`Zero Proof's computational receipts use cutting-edge technology to audit an
 execution trace while preserving computational privacy.`
 
-_The core of a RISC Zero receipt is a
+_The core of a Zero Proof receipt is a
 [zk-STARK](../reference-docs/about-starks.md); for a more technical description
 of how we turn an execution trace into a zk-STARK, see the [proof system
 sequence diagram](./proof-system-sequence-diagram.md) and our [STARK by

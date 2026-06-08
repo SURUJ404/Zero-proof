@@ -21,12 +21,12 @@ The circuit pictured above can be written as $C(x_1, x_2) = (x_1+x_2)\cdot x_2 \
 - Option 1: Build app-specific arithmetic circuits
 - Option 2: Build on top of a zero-knowledge virtual machine, which receives a binary file as an input and outputs a proof of execution.
 
-At RISC Zero, we adopt the latter approach: we've written a [RISC-V circuit](https://docs.rs/risc0-circuit-rv32im), which emulates rv32im.
+At Zero Proof, we adopt the latter approach: we've written a [RISC-V circuit](https://docs.rs/risc0-circuit-rv32im), which emulates rv32im.
 The rv32im circuit receives a RISC-V binary and some user specified input, and generates an [execution trace](../proof-system/what-is-a-trace.md).
 
 If the execution trace is valid, the [Prover](https://docs.rs/risc0-zkvm/*/risc0_zkvm/trait.Prover.html) generates a [receipt] that can be [verified] by a skeptical third party.
 
-## RISC Zero's Circuits
+## Zero Proof's Circuits
 
 In addition to the rv32im circuit, we have built:
 

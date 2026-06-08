@@ -21,7 +21,7 @@ git lfs pull
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-#### [RISC Zero toolchain](https://github.com/suruj404/zero-knowledgerisc/api/zkvm/quickstart#1-install-the-risc-zero-toolchain)
+#### [Zero Proof toolchain](https://github.com/suruj404/zero-knowledgerisc/api/zkvm/quickstart#1-install-the-risc-zero-toolchain)
 
 Run `rzup install` to install the latest Rust and C++ toolchains.
 ```bash

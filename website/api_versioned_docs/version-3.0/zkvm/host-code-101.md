@@ -4,7 +4,7 @@ In a [zkVM application][zkVM], the [host] is the machine that is running the
 zkVM. The host is an untrusted agent that sets up the zkVM environment and
 handles inputs/outputs during execution.
 
-This page serves as an introduction to writing RISC Zero host code, to help you
+This page serves as an introduction to writing Zero Proof host code, to help you
 get started building applications for the [zkVM].
 
 - For a step-by-step tutorial for writing your own host code, check out our
@@ -79,7 +79,6 @@ sufficient for you to build your first [zkVM application][zkVM]!
 
 If you run into problems, don't be a stranger! You can file an issue on [these docs] or the [examples], and we're happy to answer questions on [Discord].
 
-[Discord]: https://discord.gg/risczero
 [examples]: ./examples.md
 [execute]: /terminology#execute
 [executor]: /terminology#executor

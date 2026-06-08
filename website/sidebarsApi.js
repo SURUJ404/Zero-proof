@@ -209,17 +209,17 @@ export default {
         {
           type: "link",
           label: "Security Policy",
-          href: "https://github.com/risc0/risc0/security/policy",
+          href: "https://github.com/SURUJ404/Zero-proof/security/policy",
         },
         {
           type: "link",
           label: "Audit Reports",
-          href: "https://github.com/risc0/rz-security/tree/main/audits",
+          href: "https://github.com/SURUJ404/Zero-proof/rz-security/tree/main/audits",
         },
         {
           type: "link",
           label: "Advisories",
-          href: "https://github.com/risc0/risc0/security/advisories",
+          href: "https://github.com/SURUJ404/Zero-proof/security/advisories",
         },
         {
           type: "link",
@@ -239,7 +239,7 @@ export default {
         {
           type: "link",
           label: "Verifier Version Management Design",
-          href: "https://github.com/risc0/risc0-ethereum/blob/main/contracts/version-management-design.md",
+          href: "https://github.com/SURUJ404/Zero-proof-ethereum/blob/main/contracts/version-management-design.md",
         },
       ],
     },

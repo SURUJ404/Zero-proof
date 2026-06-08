@@ -1,6 +1,6 @@
-# RISC Zero Secure Development Life-cycle
+# Zero Proof Secure Development Life-cycle
 
-RISC Zero believes in a comprehensive risk-based approach to security throughout our product and software development life-cycle.
+Zero Proof believes in a comprehensive risk-based approach to security throughout our product and software development life-cycle.
 
 This page provides an outline of the key practices that we utilize to harden our products and services against threats. These security techniques are continuously evolving as we learn from our experiences and adapt to new threats, and we encourage you to provide feedback or suggestions for improvement.
 
@@ -28,7 +28,7 @@ Key security processes or features are identified based on risks factors known a
 
 ## 2. Design
 
-RISC Zero emphasizes secure design and architecture as a key component of our secure development life-cycle. During the design phase, security experts work with product development and engineering resources to ensure that security is built into the product from the ground up.
+Zero Proof emphasizes secure design and architecture as a key component of our secure development life-cycle. During the design phase, security experts work with product development and engineering resources to ensure that security is built into the product from the ground up.
 
 Based on risk, a formal asset-centric threat model may be developed in partnership across security and engineering leads. The high-level process for threat model development used is:
 
@@ -79,4 +79,4 @@ This phase validates if the objectives of the security plan have been met. This 
 [ISO 27002:2022]: https://www.iso.org/standard/75652.html
 [NIST SSDF]: https://csrc.nist.gov/Projects/ssdf
 [OWASP SAAAM]: https://owasp.org/www-project-samm
-[the ReKT test]: https://www.risczero.com/blog/risc-zero-take-the-rekt-test
+[the ReKT test]: https://www.github.com/SURUJ404/Zero-proof/blog/risc-zero-take-the-rekt-test

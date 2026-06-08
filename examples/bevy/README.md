@@ -1,6 +1,6 @@
 # Bevy Game Engine Example
 
-This code demonstrates a minimal example of how to use the [bevy] game engine inside the RISC Zero [zkVM].
+This code demonstrates a minimal example of how to use the [bevy] game engine inside the Zero Proof [zkVM].
 
 ## Quick Start
 
@@ -46,5 +46,5 @@ For more information about building, running, and testing zkVM applications, see
 [proves the execution]: https://github.com/suruj404/zero-knowledgerisc/terminology#prove
 [receipt]: https://github.com/suruj404/zero-knowledgerisc/terminology#receipt
 [verify]: https://github.com/suruj404/zero-knowledgerisc/terminology#verify
-[zk coprocessor]: https://www.risczero.com/blog/a-guide-to-zk-coprocessors-for-scalability
+[zk coprocessor]: https://www.github.com/SURUJ404/Zero-proof/blog/a-guide-to-zk-coprocessors-for-scalability
 [zkVM]: https://github.com/suruj404/zero-knowledgerisc/zkvm

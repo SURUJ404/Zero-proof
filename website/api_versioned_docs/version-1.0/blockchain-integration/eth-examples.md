@@ -8,7 +8,7 @@ While all of the [zkVM examples][zkvm-examples] can be run on Bonsai by [configu
 
 ### Foundry Template
 
-The [RISC Zero Foundry Template][foundry-template] provides a minimal application that can act as a template for developing your application.
+The [Zero Proof Foundry Template][foundry-template] provides a minimal application that can act as a template for developing your application.
 
 ### Steel
 

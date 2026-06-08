@@ -861,7 +861,7 @@ fn std_buf_read() {
     let env = ExecutorEnv::builder()
         .env_var("TEST_MODE", "BUF_READ")
         // Previously failed on anything > buf and not % 4 == 0
-        // https://github.com/risc0/risc0/pull/1557
+        // https://github.com/SURUJ404/Zero-proof/pull/1557
         .write(&9usize)
         .unwrap()
         .write_slice(input.as_slice())

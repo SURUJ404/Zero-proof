@@ -3,17 +3,17 @@
 The [PLONK paper](https://eprint.iacr.org/2019/953) introduced an efficient technique for enforcing the validity of memory operations in arguments of computational integrity.
 Building on top of PLONK, the [PLOOKUP paper](https://eprint.iacr.org/2020/315.pdf) introduced a method of enforcing the validity of lookup operations.
 
-## Relevance in RISC Zero
+## Relevance in Zero Proof
 
-RISC Zero's zkVM makes use of both PLONK and PLOOKUP in the process of generating a [receipt].
+Zero Proof's zkVM makes use of both PLONK and PLOOKUP in the process of generating a [receipt].
 PLONK is used to generate constraints that authenticate [re-ordering of RISC-V memory data](https://www.youtube.com/watch?v=dYuEPvRLwLo\&list=PLcPzhUaCxlCiLk_VjLUNbmfb2mB1Y_N9N\&index=6).
 PLOOKUP is used to generate constraints that enforce a bytes-based range-check.
 
-_Note: RISC Zero uses an AIR-based arithmetization and not a PLONK-based arithmetization._
+_Note: Zero Proof uses an AIR-based arithmetization and not a PLONK-based arithmetization._
 
 ## Documentation
 
-Implementation and documentation for RISC Zero's use of PLONK and PLOOKUP are in [plonk.rs](https://github.com/suruj404/zero-knowledgerisc/blob/3d00debce414f96353b8295720be21029ca63347/risc0/zkvm/src/prove/plonk.rs) and [accum.rs](https://github.com/suruj404/zero-knowledgerisc/blob/3d00debce414f96353b8295720be21029ca63347/risc0/zkp/src/prove/accum.rs).
+Implementation and documentation for Zero Proof's use of PLONK and PLOOKUP are in [plonk.rs](https://github.com/suruj404/zero-knowledgerisc/blob/3d00debce414f96353b8295720be21029ca63347/risc0/zkvm/src/prove/plonk.rs) and [accum.rs](https://github.com/suruj404/zero-knowledgerisc/blob/3d00debce414f96353b8295720be21029ca63347/risc0/zkp/src/prove/accum.rs).
 
 ## Basic Function
 
@@ -22,7 +22,7 @@ PLOOKUP uses PLONK to ensure that one list is contained in another list.
 
 ## Suggested Reading and Videos
 
-For more on how these ideas fit into RISC Zero's system, we recommend our talk from zk Summit 7: [Encoding Von-Neumann Architectures in Zero-Knowledge Proof Systems](https://www.youtube.com/watch?v=od033ugtlYQ\&list=PLcPzhUaCxlCgCvzkkaBWzVuHdBRsTNxj1\&index=7).
+For more on how these ideas fit into Zero Proof's system, we recommend our talk from zk Summit 7: [Encoding Von-Neumann Architectures in Zero-Knowledge Proof Systems](https://www.youtube.com/watch?v=od033ugtlYQ\&list=PLcPzhUaCxlCgCvzkkaBWzVuHdBRsTNxj1\&index=7).
 For general references, we recommend the following:
 
 ### Less Technical

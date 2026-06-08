@@ -4,7 +4,7 @@ import GettingStartedMermaid from "@site/src/components/Mermaid/getting-started.
 
 To harness the power of ZK, you'll need to:
 
-1. [Write an application for the RISC Zero zkVM][zkvm-quickstart].
+1. [Write an application for the Zero Proof zkVM][zkvm-quickstart].
 2. [Generate proofs for your zkVM application][bonsai-quickstart].
 3. [Integrate your proofs into on-chain applications][risc-zero-on-eth].
 

@@ -1,6 +1,6 @@
 # Precompiles
 
-RISC Zero's rv32im implementation includes a number of specialized extension
+Zero Proof's rv32im implementation includes a number of specialized extension
 circuits, including "precompiles" for cryptographic and algebraic functions: SHA-256,
 RSA, elliptic curve, and modular multiplication operations.
 By implementing these operations directly in the "hardware" of
@@ -81,7 +81,7 @@ here, please reach out and let us know!
 
 It's possible to add precompile support for your own crates.
 
-An example of how to do this can be found in this [diff of RISC Zero's k256
+An example of how to do this can be found in this [diff of Zero Proof's k256
 crate fork][k256-diff], which shows the code changes needed to accelerate
 RustCrypto's secp256k1 ECDSA library. This fork starts from the base
 implementation, and changes the core operations to use the precompiled 256-bit
@@ -103,7 +103,7 @@ a message within the zkvm where an observer can measure the proving time or view
 [AES-NI]: https://en.wikipedia.org/wiki/AES_instruction_set#x86_architecture_processors
 [cargo-patch]: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#the-patch-section
 [commit-lockfile]: https://blog.rust-lang.org/2023/08/29/committing-lockfiles.html
-[discord-url]: https://discord.gg/risczero
+[discord-url]: https://
 [ecdsa]: https://github.com/suruj404/zero-knowledgerisc/tree/release-1.2/examples/ecdsa
 [ecdsa-patched]: https://github.com/suruj404/zero-knowledgerisc/blob/release-1.2/examples/ecdsa/k256/methods/guest/Cargo.toml#L13-L18
 [git-dep]: https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-dependencies-from-git-repositories

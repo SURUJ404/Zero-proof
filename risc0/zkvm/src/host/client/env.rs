@@ -390,7 +390,7 @@ impl<'a> ExecutorEnvBuilder<'a> {
     /// must be compressed first, by e.g. proving with
     /// [`ProverOpts::succinct()`][crate::ProverOpts::succinct].
     ///
-    /// [composition]: https://dev.risczero.com/terminology#composition
+    /// [composition]: https://dev.github.com/SURUJ404/Zero-proof/terminology#composition
     pub fn add_assumption(
         &mut self,
         assumption: impl TryInto<AssumptionReceipt, Error = impl Into<anyhow::Error>>,

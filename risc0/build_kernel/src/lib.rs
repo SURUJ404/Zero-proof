@@ -491,7 +491,7 @@ impl KernelBuild {
 }
 
 fn risc0_cache() -> PathBuf {
-    directories::ProjectDirs::from("com.risczero", "RISC Zero", "risc0")
+    directories::ProjectDirs::from("com.zeroproof", "Zero Proof", "risc0")
         .unwrap()
         .cache_dir()
         .into()

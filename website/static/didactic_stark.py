@@ -186,7 +186,7 @@ def main():
     # The trace is organized in columns, which are divided into two types: Data & Control.
 
     print("This is a Python implementation of the STARK by Hand Explainer.")
-    print("https://dev.risczero.com/proof-system/stark-by-hand")
+    print("https://dev.zero-proof.com/proof-system/stark-by-hand")
     print("")
     print("The Padded Execution Trace (See Lessons 1-3 in STARK by Hand)")
     # Trace: Data Columns
@@ -312,10 +312,10 @@ def main():
         'The term "polynomial commitment" describes this process of a Merkle commitment where the leaves of the tree are evaluations of a polynomial. \n'
     )
     print(
-        "The root of these two Merkle Trees are the first entries on the RISC Zero seal."
+        "The root of these two Merkle Trees are the first entries on the Zero Proof seal."
     )
     print(
-        "The third entry on the RISC Zero seal is a `Accum` commitment; that commitment is not necessary in this simplified example. \n"
+        "The third entry on the Zero Proof seal is a `Accum` commitment; that commitment is not necessary in this simplified example. \n"
     )
     trace_zkcommitment = np.array(
         [
@@ -567,7 +567,7 @@ def main():
     # Constructing reciprocals of Zeros Polynomial evals to facilitate computation
     reciprocals_of_zeros_poly = reciprocal_elementwise(zeros_poly_evals_zkcommitment)
 
-    print("Lesson 8: The core of the RISC Zero STARK")
+    print("Lesson 8: The core of the Zero Proof STARK")
     # Constructing Validity Polynomial
     print(
         "The Validity Polynomial is the quotient of the Mixed Constraint Polynomial and the Zeros Polynomial."
@@ -878,14 +878,14 @@ def main():
     print(
         "For a more visual & more verbose walk-through of this example, check out our STARK by Hand explainer:"
     )
-    print("https://dev.risczero.com/proof-system/stark-by-hand")
+    print("https://dev.zero-proof.com/proof-system/stark-by-hand")
     print("")
     print(
-        "We also have videos at https://dev.risczero.com/studyclub that walk through a large portion of these ideas."
+        "We also have videos at https://dev.zero-proof.com/studyclub that walk through a large portion of these ideas."
     )
     print("")
     print("We hope you find these resources useful -- happy learning!")
-    print("Got questions/feedback? Find us on Discord: https://discord.gg/risczero")
+    print("Got questions/feedback? Find us on Discord")
     print("")
 
 

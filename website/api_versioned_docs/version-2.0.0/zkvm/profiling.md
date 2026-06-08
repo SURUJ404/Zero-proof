@@ -1,7 +1,7 @@
 # Guest Profiling Guide
 
 In this guide, we'll explore how to effectively profile guest code within the
-RISC Zero zkVM, offering insights and tools to improve performance.
+Zero Proof zkVM, offering insights and tools to improve performance.
 
 We'll be using a guest program with three different implementations of the
 Fibonacci sequence calculation to provide a base profile to explore. You can
@@ -13,12 +13,12 @@ find all the code used as example in the [profiling example][example-profiling].
 
 Profiling tools, like [pprof] and [perf], allow collecting performance
 information over the entire execution of your program, and help create
-visualizations for the performance of your program. RISC Zero has experimental
+visualizations for the performance of your program. Zero Proof has experimental
 support for generating pprof files for cycle counts.
 
 [Sampling CPU profilers][profiler], as implemented by pprof and perf, provide a
 view of where your program is spending its time. It does so by recording the
-current call stack at a sampling interval. RISC Zero provides a "sampling" [^1]
+current call stack at a sampling interval. Zero Proof provides a "sampling" [^1]
 CPU profiler for guest execution.
 
 ## Usage
@@ -26,7 +26,7 @@ CPU profiler for guest execution.
 ### Step 1: Prerequisites
 
 First, follow the [installation guide][install] if you don't already have the
-RISC Zero tools installed.
+Zero Proof tools installed.
 
 Additionally, you will need to [install Go][golang-install], which bundles with
 it the [pprof] tool.
