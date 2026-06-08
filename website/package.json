@@ -5,7 +5,8 @@
   "description": "ZK Prover Documentation, Education Hub, and Resources",
   "overrides": {
     "mdast-util-to-string": "^4.0.0",
-    "github-slugger": "^1.5.0"
+    "github-slugger": "^1.5.0",
+    "webpack": "^5.98.0"
   },
   "scripts": {
     "build": "docusaurus build",
