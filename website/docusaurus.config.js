@@ -203,7 +203,7 @@ export default async function createConfigAsync() {
               items: [
                 {
                   label: "Twitter",
-                  href: "https://",
+                  href: "https://x.com/ZeroProof",
                 },
                 {
                   label: "YouTube",
