@@ -14,7 +14,7 @@ env:
 
 jobs:
   fuzz:
-    runs-on: [self-hosted, cluster, Linux, fuzz]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:

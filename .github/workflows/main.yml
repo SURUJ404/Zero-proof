@@ -178,7 +178,7 @@ jobs:
   clippy:
     if: needs.changes.outputs.risc0 == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, "${{ matrix.os }}", "${{ matrix.arch }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -215,7 +215,7 @@ jobs:
   test:
     if: needs.changes.outputs.test == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, "${{ matrix.os }}", "${{ matrix.arch }}", "${{ matrix.device }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -295,7 +295,7 @@ jobs:
   extra:
     if: needs.changes.outputs.test == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, "${{ matrix.os }}", "${{ matrix.arch }}", "${{ matrix.device }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -360,7 +360,7 @@ jobs:
   compute-sanitizer:
     if: needs.changes.outputs.test == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, "${{ matrix.os }}", "${{ matrix.arch }}", "${{ matrix.device }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -412,7 +412,7 @@ jobs:
   examples:
     if: needs.changes.outputs.examples == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, "${{ matrix.os }}", "${{ matrix.arch }}", "${{ matrix.device }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -470,7 +470,7 @@ jobs:
   cargo-risczero-test:
     if: needs.changes.outputs.cargo-risczero-test == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, Linux, cpu]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
     steps:
@@ -497,7 +497,7 @@ jobs:
   doc:
     if: needs.changes.outputs.doc == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, macOS, cpu]
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -515,7 +515,7 @@ jobs:
   docs-rs:
     if: needs.changes.outputs.doc == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, macOS, cpu]
+    runs-on: macos-latest
     env:
       RUSTDOCFLAGS: "--cfg docsrs -D warnings"
     steps:
@@ -536,7 +536,7 @@ jobs:
   check-external:
     if: needs.changes.outputs.check-external == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, macOS, cpu]
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/rustup
@@ -548,7 +548,7 @@ jobs:
   check-semver:
     if: needs.changes.outputs.check-semver == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, cpu, "${{ matrix.os }}", "${{ matrix.arch }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -578,7 +578,7 @@ jobs:
   check-template:
     if: needs.changes.outputs.check-template == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, cpu, "${{ matrix.os }}", "${{ matrix.arch }}"]
+    runs-on: ubuntu-latest
     env:
       RUST_TOOLCHAIN_VERSION: 1.94.1
     strategy:
@@ -631,7 +631,7 @@ jobs:
   browser:
     if: needs.changes.outputs.browser == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, Linux, X64, cpu]
+    runs-on: ubuntu-latest
     env:
       RISC0_BUILD_LOCKED: 1
     steps:
@@ -662,7 +662,7 @@ jobs:
   docker:
     if: needs.changes.outputs.test == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, Linux, X64, cpu, docker]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -688,7 +688,7 @@ jobs:
   bazel:
     if: needs.changes.outputs.bazel == 'true'
     needs: changes
-    runs-on: [self-hosted, cluster, "${{ matrix.os }}", "${{ matrix.device }}"]
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
