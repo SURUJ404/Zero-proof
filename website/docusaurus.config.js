@@ -12,18 +12,18 @@ const baseUrl = process.env.BASE_URL ?? "/";
 export default async function createConfigAsync() {
   /** @type {import('@docusaurus/types').Config} */
   return {
-    title: "RISC Zero Developer Docs",
-    tagline: "Hyper-Efficient General Purpose Zero-Knowledge Computing.",
+    title: "Zero Proof",
+    tagline: "",
     favicon: "img/favicon.ico",
 
-    url: "https://dev.risczero.com",
+    url: "https://zero-proof.vercel.app",
     baseUrl: baseUrl,
 
-    organizationName: "risc0",
-    projectName: "devdocs",
+    organizationName: "suruj404",
+    projectName: "zero-proof",
 
-    onBrokenLinks: "throw",
-    onBrokenMarkdownLinks: "throw",
+    onBrokenLinks: "warn",
+    onBrokenMarkdownLinks: "warn",
 
     i18n: {
       defaultLocale: "en",
