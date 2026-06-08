@@ -29,11 +29,12 @@ jobs:
       - name: Deploy to Vercel
         id: vercel
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCELID }}
-          VERCEL_PROJECT_ID: ${{ secrets.PROJECTID }}
+          BASE_URL: /
         run: |
-          vercel pull --yes --environment=production --token=${{ secrets.ZEROTOKEN }}
-          vercel build --prod --token=${{ secrets.ZEROTOKEN }}
-          vercel deploy --prebuilt --prod --token=${{ secrets.ZEROTOKEN }} > vercel-url.txt
+          vercel deploy --prod \
+            --token=${{ secrets.ZEROTOKEN }} \
+            --scope=${{ secrets.VERCELID }} \
+            --name=zero-proof \
+            --yes > vercel-url.txt
           echo "url=$(cat vercel-url.txt)" >> $GITHUB_OUTPUT
         working-directory: website
