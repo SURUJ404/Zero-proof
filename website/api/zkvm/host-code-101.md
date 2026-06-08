@@ -79,7 +79,7 @@ sufficient for you to build your first [zkVM application][zkVM]!
 
 If you run into problems, don't be a stranger! You can file an issue on [these docs] or the [examples], and we're happy to answer questions on [Discord].
 
-[Discord]: https://
+[Discord]: https://discord.gg
 [examples]: ./examples.md
 [execute]: /terminology#execute
 [executor]: /terminology#executor

@@ -103,7 +103,7 @@ a message within the zkvm where an observer can measure the proving time or view
 [AES-NI]: https://en.wikipedia.org/wiki/AES_instruction_set#x86_architecture_processors
 [cargo-patch]: https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#the-patch-section
 [commit-lockfile]: https://blog.rust-lang.org/2023/08/29/committing-lockfiles.html
-[discord-url]: https://
+[discord-url]: https://discord.gg
 [ecdsa]: https://github.com/suruj404/zero-knowledgerisc/tree/release-1.2/examples/ecdsa
 [ecdsa-patched]: https://github.com/suruj404/zero-knowledgerisc/blob/release-1.2/examples/ecdsa/k256/methods/guest/Cargo.toml#L13-L18
 [git-dep]: https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#specifying-dependencies-from-git-repositories

@@ -87,7 +87,7 @@ If you run into problems, don't be a stranger! You can file an issue on [these d
 [`env::write_slice`]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/guest/env/fn.write_slice.html
 [`env::write`]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/guest/env/fn.write.html
 [benchmarks]: ./benchmarks.md
-[Discord]: https://
+[Discord]: https://discord.gg
 [examples]: ./examples.md
 [from-rust-to-receipt]: /diagrams/from-rust-to-receipt.png
 [guest]: /terminology#guest

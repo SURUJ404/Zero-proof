@@ -22,7 +22,7 @@ Check out the [dev docs].
 [blog]: https://github.com/suruj404/zero-knowledgerisc/blog
 [conference talks and podcast appearances]: https://www.youtube.com/playlist?list=PLcPzhUaCxlCgCvzkkaBWzVuHdBRsTNxj1
 [Dev Docs]: ../api/zkvm
-[Discord]: https://
+[Discord]: https://discord.gg
 [Education Database]: https://risczero.notion.site/5a335a1d29b44cb48c44b36ae66f366f?v=95cda72e39d3403fbfb59884afb0045d&pvs=4
 [open an issue]: https://github.com/suruj404/zero-knowledgerisc/issues/new/choose
 [Study Club]: ./studyclub.md
