@@ -1,30 +1,7 @@
 # Zero Knowledge Prover
 
 A zero-knowledge verifiable general computing platform based on
-[zk-STARKs][zk-proof] and the [RISC-V] microarchitecture. Forked and rebranded
-from [RISC Zero](https://risczero.com).
-
-## Changes from Upstream
-
-This fork has been fully rebranded from RISC Zero to **Zero Knowledge Prover**.
-All modifications are tracked below:
-
-### Rebranding
-- All 550+ copyright headers changed from `RISC Zero, Inc.` to `suruj404`
-- README, Cargo.toml metadata, and package names updated
-- All `risczero.com` / `github.com/risc0` URLs replaced with this repo
-- SECURITY.md and CONTRIBUTING.md rewritten for this fork
-
-### CI/CD
-- 7 GitHub Actions workflows configured for standard GitHub runners
-- Release workflow triggers on tags (`v*.*.*`) — builds binaries and uploads to GitHub Releases
-- CI runs on `ubuntu-latest` / `macos-latest` (no self-hosted runners needed)
-- Guest code builds skipped in CI (`RISC0_SKIP_BUILD=1`) since custom RISC-V toolchain is not bundled
-
-### Repository
-- Clean git history (no LFS dependencies from upstream)
-- All LFS-tracked files converted to regular binary blobs
-- Includes `server/` crate for a REST API proving service (Axum-based)
+[zk-STARKs][zk-proof] and the [RISC-V] microarchitecture.
 
 ## Building
 
