@@ -316,7 +316,7 @@ impl BuildCommand {
         }
 
         rzup.build_rust_toolchain(
-            "https://github.com/suruj404/zero-knowledgerisc/rust.git",
+            "https://github.com/SURUJ404/Zero-proof/rust.git",
             &self.tag_or_commit,
             &self.path,
         )

@@ -7,7 +7,7 @@
 `rzup` can be installed with:
 
 ```sh
-curl -L https://github.com/suruj404/zero-knowledgerisc/install | bash
+curl -L https://github.com/SURUJ404/Zero-proof/install | bash
 ```
 
 ## Commands
