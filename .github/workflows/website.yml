@@ -24,10 +24,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Deploy to Vercel
+      - name: Link and Deploy to Vercel
         id: vercel
         run: |
-          npx --yes vercel@latest deploy website --prod \
+          npx --yes vercel@latest link --confirm --project zero-proof \
+            --token=${{ secrets.ZEROTOKEN }} \
+            --scope=${{ secrets.VERCELID }} \
+            --yes
+          npx --yes vercel@latest deploy --prod \
             --token=${{ secrets.ZEROTOKEN }} \
             --scope=${{ secrets.VERCELID }} \
             --yes > vercel-url.txt
