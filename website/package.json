@@ -27,11 +27,11 @@
     ]
   },
   "dependencies": {
-    "@docusaurus/core": "3.7.0",
-    "@docusaurus/module-type-aliases": "3.7.0",
-    "@docusaurus/plugin-client-redirects": "3.7.0",
-    "@docusaurus/preset-classic": "3.7.0",
-    "@docusaurus/theme-mermaid": "3.7.0",
+    "@docusaurus/core": "3.10.1",
+    "@docusaurus/module-type-aliases": "3.10.1",
+    "@docusaurus/plugin-client-redirects": "3.10.1",
+    "@docusaurus/preset-classic": "3.10.1",
+    "@docusaurus/theme-mermaid": "3.10.1",
     "@mdx-js/react": "3.1.0",
     "clsx": "1.2.1",
     "prism-react-renderer": "2.4.1",
@@ -41,7 +41,7 @@
     "svg-pan-zoom": "3.6.2"
   },
   "devDependencies": {
-    "@docusaurus/types": "3.7.0",
+    "@docusaurus/types": "3.10.1",
     "prettier": "3.4.2",
     "remark": "15.0.1",
     "remark-cli": "12.0.1",
