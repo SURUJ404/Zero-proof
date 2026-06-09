@@ -30,4 +30,4 @@ jobs:
       - name: Install RISC Zero C++ toolchain
         run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - name: Full build
-        run: cargo build --release -F prove
+        run: cargo build --release -F prove --quiet
