@@ -48,8 +48,8 @@ exclude = ["tools/crates-validator"]
 version = "5.0.0"
 edition = "2024"
 license = "Apache-2.0 OR MIT"
-homepage = "https://github.com/suruj404/zero-knowledgerisc"
-repository = "https://github.com/suruj404/zero-knowledgerisc"
+homepage = "https://github.com/SURUJ404/Zero-proof"
+repository = "https://github.com/SURUJ404/Zero-proof"
 
 [workspace.dependencies]
 bonsai-sdk = { version = "1.4.3", default-features = false, path = "bonsai/sdk" }

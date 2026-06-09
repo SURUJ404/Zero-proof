@@ -146,7 +146,7 @@ impl NewCommand {
 
         if let Some(branch) = self.use_git_branch.as_ref() {
             let spec =
-                format!("git = \"https://github.com/suruj404/zero-knowledgerisc.git\", branch = \"{branch}\"");
+                format!("git = \"https://github.com/SURUJ404/Zero-proof.git\", branch = \"{branch}\"");
             template_variables.push((Regex::new(r"\{\{ *risc0_build *\}\}")?, spec.clone()));
             template_variables.push((Regex::new(r"\{\{ *risc0_zkvm *\}\}")?, spec));
         } else if let Some(path) = self.path.as_ref() {
@@ -354,7 +354,7 @@ mod tests {
         assert!(proj_path.exists());
         assert!(!proj_path.join(".git").exists());
         assert!(find_in_file(
-            "risc0-zkvm = { git = \"https://github.com/suruj404/zero-knowledgerisc.git\", branch = \"main\"",
+            "risc0-zkvm = { git = \"https://github.com/SURUJ404/Zero-proof.git\", branch = \"main\"",
             &proj_path.join("host/Cargo.toml")
         ));
     }
