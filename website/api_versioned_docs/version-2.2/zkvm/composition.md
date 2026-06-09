@@ -50,4 +50,4 @@ For a more detailed dive into proof composition and Zero Proof's approach to rec
 [composition-resolve]: /diagrams/composition-resolve.png
 [ReceiptClaim]: https://docs.rs/risc0-zkvm/2.2/risc0_zkvm/struct.ReceiptClaim.html
 [recursion circuit]: ../recursion.md
-[Study Club recording]: https://www.youtube.com/watch?v=x0-7Y46bQO0&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl&index=1
+[Study Club recording]: https://www.youtube.com/@hacksprints

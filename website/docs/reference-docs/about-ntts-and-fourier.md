@@ -35,10 +35,10 @@ The polynomial associated with the array $(u_0,u_1,\ldots,u_{n-1})$ is the uniqu
 
 ## Suggested Reading and Videos
 
-- [Slides](https://docs.google.com/presentation/d/18EMbRUihd8lUOMd1cIvqpCL1qI0JcCqp/edit#slide=id.p1) and [recording](https://youtu.be/Pct3rS4Y0IA) from Zero Proof Study Club.
+- [Slides](https://docs.google.com/presentation/d/18EMbRUihd8lUOMd1cIvqpCL1qI0JcCqp/edit#slide=id.p1) and [recording](https://www.youtube.com/@hacksprints) from Zero Proof Study Club.
 - NTTs are just a finite field version of the FFT algorithm; to translate from FFTs to NTTs, replace the complex root of unity with a finite field root of unity.
-  - This [DFT video](https://www.youtube.com/watch?v=nl9TZanwbBk) and [FFT video](https://www.youtube.com/watch?v=E8HeD-MUrjY) from UW professor Steve Brunton are brief and instructive.
-  - [3blue1brown video](https://www.youtube.com/watch?v=spUNpyF58BY) and [lecture](https://www.youtube.com/watch?v=g8RkArhtCc4) on FFTs
-  - [Veritasium](https://www.youtube.com/watch?v=nmgFG7PUHfo) on FFTs
+  - This [DFT video](https://www.youtube.com/@hacksprints) and [FFT video](https://www.youtube.com/@hacksprints) from UW professor Steve Brunton are brief and instructive.
+  - [3blue1brown video](https://www.youtube.com/@hacksprints) and [lecture](https://www.youtube.com/@hacksprints) on FFTs
+  - [Veritasium](https://www.youtube.com/@hacksprints) on FFTs
 
-For a deeper look into the algorithm at both a software and hardware level, we recommend this [FFT video from Reducible](https://www.youtube.com/watch?v=h7apO7q16V0). And here's [Vitalik's take](https://vitalik.eth.limo/general/2019/05/12/fft.html) on FFTs/NTTs.
+For a deeper look into the algorithm at both a software and hardware level, we recommend this [FFT video from Reducible](https://www.youtube.com/@hacksprints). And here's [Vitalik's take](https://vitalik.eth.limo/general/2019/05/12/fft.html) on FFTs/NTTs.

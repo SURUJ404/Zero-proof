@@ -20,7 +20,7 @@ _Looking for documentation?_<br />
 Check out the [dev docs].
 
 [blog]: https://github.com/suruj404/zero-knowledgerisc/blog
-[conference talks and podcast appearances]: https://www.youtube.com/playlist?list=PLcPzhUaCxlCgCvzkkaBWzVuHdBRsTNxj1
+[conference talks and podcast appearances]: https://www.youtube.com/@hacksprints
 [Dev Docs]: ../api/zkvm
 [Discord]: https://discord.gg
 [Education Database]: https://risczero.notion.site/5a335a1d29b44cb48c44b36ae66f366f?v=95cda72e39d3403fbfb59884afb0045d&pvs=4

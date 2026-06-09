@@ -39,7 +39,7 @@ The Zero Proof ZKP system uses the original FRI protocol.
 
 ### Explanatory References
 
-- Zero Proof Study Club [Slides](https://drive.google.com/file/d/1TuufbM8py2mGDkjMUg5FWZzw8VqNri4O/view?usp=share_link) & [Video Recording](https://www.youtube.com/watch?v=j35yz22OVGE)
+- Zero Proof Study Club [Slides](https://drive.google.com/file/d/1TuufbM8py2mGDkjMUg5FWZzw8VqNri4O/view?usp=share_link) & [Video Recording](https://www.youtube.com/@hacksprints)
 - [FRI Sequence Diagram](https://twitter.com/EllipticHector/status/1641842245337743367)
 - [A summary on the FRI low degree test (Ulrich Haböck, Orbis Labs, 2022)](https://eprint.iacr.org/2022/1216.pdf) (PDF)
 - [Low Degree Testing](https://medium.com/starkware/low-degree-testing-f7614f5172db), part 3 of the STARK Math series

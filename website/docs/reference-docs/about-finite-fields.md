@@ -42,14 +42,14 @@ $z$ is called an **$n^{th}$ Root of Unity** if $z^n=1$.
 `Example: 3 is a 4th root of unity modulo 5.`
 
 Roots of unity come up constantly in a wide variety of applications: you'll most frequently see the $n^{th}$ root of unity written as $e^\frac{2\pi i}{n}$, and they come up so frequently because they give an easy way to describe rotations.
-This is what [Euler's Formula](https://www.youtube.com/watch?v=mvmuCPvRoWQ) is about.
+This is what [Euler's Formula](https://www.youtube.com/@hacksprints) is about.
 
 `Example: Multiplying by `$i$ `is a rotation of order 4 in` $\mathbb{C}$`.
 More generally, multiplying by a 4th root of unity is a rotation of order 4.`
 
 ## Additional References:
 
-- [Slides](https://drive.google.com/file/d/146BOC_hHH0703OcKT-LwjIb3S0NYkGh0/view?usp=share_link), [video recording](https://www.youtube.com/watch?v=BKViygqOW3I\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=3), and [practice problems](./about-finite-fields-exercises.md) from Zero Proof Study Club
+- [Slides](https://drive.google.com/file/d/146BOC_hHH0703OcKT-LwjIb3S0NYkGh0/view?usp=share_link), [video recording](https://www.youtube.com/@hacksprints), and [practice problems](./about-finite-fields-exercises.md) from Zero Proof Study Club
 - [David Forney's Introduction to Finite Fields (Chapter 7)](https://ocw.mit.edu/courses/6-451-principles-of-digital-communication-ii-spring-2005/pages/readings-and-lecture-notes)
 - [Guruswami's Basics of Finite Fields](http://www.cs.cmu.edu/~venkatg/teaching/codingtheory-au14/notes/finite-fields.pdf) (PDF)
 - [A. Sutherland's notes on finite fields and integer arithmetic](https://math.mit.edu/classes/18.783/2017/LectureNotes3.pdf) (PDF)

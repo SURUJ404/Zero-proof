@@ -41,7 +41,7 @@ These enhancements are described well in [From AIRs to RAPs].
 
 We use this Auxiliary Execution Trace to support:
 
-1. A permutation argument for [memory verification](https://www.youtube.com/watch?v=dYuEPvRLwLo\&list=PLcPzhUaCxlCiLk_VjLUNbmfb2mB1Y_N9N\&index=5)<br />
+1. A permutation argument for [memory verification](https://www.youtube.com/@hacksprints)<br />
    The permutation argument is currently implemented as a grand product accumulator argument, as in [PLONK](https://eprint.iacr.org/2019/953.pdf).
    We plan to change this to a [log derivative] accumulator argument in the next version of the circuit.<br />
    Here, operations corresponding to memory are committed to the main trace both in the original ordering and the permuted ordering, and grand product accumulators are committed in the auxiliary trace.

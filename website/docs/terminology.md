@@ -267,7 +267,7 @@ Zero Proof's zkVM implements the RISC-V instruction set architecture and uses a 
 [conditional]: #conditional
 [continuations]: #continuations
 [Continuations blog]: https://www.github.com/SURUJ404/Zero-proof/news/continuations
-[Continuations study club]: https://www.youtube.com/watch?v=v4HIwaqmIxk&list=PLcPzhUaCxlCirUkJY0ltpjdtzWcz5U_6y&index=1
+[Continuations study club]: https://www.youtube.com/@hacksprints
 [control ID]: #control-id
 [ELF binary]: #elf-binary
 [env::commit()]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/guest/env/fn.commit.html
@@ -283,7 +283,7 @@ Zero Proof's zkVM implements the RISC-V instruction set architecture and uses a 
 [host]: #host
 [imageID]: #image-id
 [ImageID documentation]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.SystemState.html
-[ImageID excerpt from Study Club]: https://www.youtube.com/watch?v=QwzrBHHkzFE&list=PLcPzhUaCxlCirUkJY0ltpjdtzWcz5U_6y&index=4
+[ImageID excerpt from Study Club]: https://www.youtube.com/@hacksprints
 [journal]: #journal
 [method]: #method
 [proof]: #validity-proof

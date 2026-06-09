@@ -186,7 +186,7 @@ export default async function createConfigAsync() {
                 },
                 {
                   label: "YouTube",
-                  href: "https://www.youtube.com",
+                  href: "https://www.youtube.com/@hacksprints",
                 },
                 {
                   label: "Stack Overflow",
@@ -236,7 +236,7 @@ export default async function createConfigAsync() {
                 },
                 {
                   label: "YouTube",
-                  href: "https://www.youtube.com",
+                  href: "https://www.youtube.com/@hacksprints",
                 },
               ],
             },

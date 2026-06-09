@@ -11,5 +11,5 @@ This page contains a few practice problems to test your understanding of finite 
 ## Links
 
 - [Main reference page](../reference-docs/about-finite-fields.md)
-- [Slides](https://drive.google.com/file/d/146BOC_hHH0703OcKT-LwjIb3S0NYkGh0/view) & [recording](https://www.youtube.com/watch?v=BKViygqOW3I\&list=PLcPzhUaCxlCjdhONxEYZ1dgKjZh3ZvPtl\&index=3) from Zero Proof Study Club
+- [Slides](https://drive.google.com/file/d/146BOC_hHH0703OcKT-LwjIb3S0NYkGh0/view) & [recording](https://www.youtube.com/@hacksprints) from Zero Proof Study Club
 - Zero Proof Discord

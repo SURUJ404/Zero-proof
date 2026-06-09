@@ -6,7 +6,7 @@ export default {
     {
       type: "link",
       label: "Talks and Podcasts",
-      href: "https://www.youtube.com/playlist?list=PLcPzhUaCxlCgCvzkkaBWzVuHdBRsTNxj1",
+      href: "https://www.youtube.com/@hacksprints",
     },
     {
       type: "link",

@@ -91,5 +91,5 @@ In addition to the links in the sidebar, we recommend the following resources:
 [succinct receipt]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.SuccinctReceipt.html
 [ZK-STARK]: ../reference-docs/about-starks.md
 [ZKP Whitepaper]: https://www.github.com/SURUJ404/Zero-proof/proof-system-in-detail.pdf
-[zksummit-10]: https://www.youtube.com/watch?v=wkIBN2CGJdc
+[zksummit-10]: https://www.youtube.com/@hacksprints
 [zkVM]: https://docs.rs/risc0-zkvm

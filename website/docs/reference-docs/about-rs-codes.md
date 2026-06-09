@@ -24,12 +24,12 @@ This error amplification means that even a single error in the execution trace c
 
 ## Suggested Reading and Videos
 
-- [Slides](https://drive.google.com/file/d/1p0AZ3E4kLIDmFslW_c47YGb-EgeXc_YZ/view), [recording](https://youtu.be/Yu9DHhdSqQo), and [practice problems](https://drive.google.com/file/d/1JtzBGxz1c-PDVIIRmWa85_A22NS9dlL-/view?usp=share_link) from Zero Proof Study Club
-- 3blue1brown has two videos that offer a great introduction to error correcting codes: [Part 1](https://www.youtube.com/watch?v=X8jsijhllIA) and [Part 2](https://www.youtube.com/watch?v=b3NxrZOu_CE\&t=0s).
-- Mary Wootters has a fantastic course on Algebraic Coding Theory. The [YouTube](https://www.youtube.com/playlist?list=PLkvhuSoxwjI_UudECvFYArvG0cLbFlzSr) and the [course website](https://web.stanford.edu/class/cs250) are both great resources.
-  - [Reed-Solomon Lesson](https://www.youtube.com/watch?v=yQkEnde2lNg\&list=PLkvhuSoxwjI_UudECvFYArvG0cLbFlzSr\&index=16)
+- [Slides](https://drive.google.com/file/d/1p0AZ3E4kLIDmFslW_c47YGb-EgeXc_YZ/view), [recording](https://www.youtube.com/@hacksprints), and [practice problems](https://drive.google.com/file/d/1JtzBGxz1c-PDVIIRmWa85_A22NS9dlL-/view?usp=share_link) from Zero Proof Study Club
+- 3blue1brown has two videos that offer a great introduction to error correcting codes: [Part 1](https://www.youtube.com/@hacksprints) and [Part 2](https://www.youtube.com/@hacksprints).
+- Mary Wootters has a fantastic course on Algebraic Coding Theory. The [YouTube](https://www.youtube.com/@hacksprints) and the [course website](https://web.stanford.edu/class/cs250) are both great resources.
+  - [Reed-Solomon Lesson](https://www.youtube.com/@hacksprints)
 - The [Reed-Solomon paper](https://epubs.siam.org/doi/10.1137/0108018) is quite clear and only a few pages long.
 - The [Proximity Gaps for Reed-Solomon Codes](https://eprint.iacr.org/2020/654.pdf) paper is central to the soundness of the Zero Proof proof system.
-  - See also [Dan Carmon's talk](https://www.youtube.com/watch?v=v0ZHUPzKotY) at the IEEE Symposium on the Foundations of Computer Science
+  - See also [Dan Carmon's talk](https://www.youtube.com/@hacksprints) at the IEEE Symposium on the Foundations of Computer Science
 
 [receipt]: https://docs.rs/risc0-zkvm/*/risc0_zkvm/struct.Receipt.html
