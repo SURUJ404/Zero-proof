@@ -1,0 +1,7 @@
+{
+  "framework": "docusaurus-3",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
+  "nodeVersion": "20.x"
+}
