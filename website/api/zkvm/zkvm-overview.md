@@ -62,11 +62,11 @@ _Looking for information about remote proving?_ <br />
 Check out [Boundless].
 
 _Looking for information about blockchain integration?_ <br />
-Check out our [Risc Zero on Eth] page.
+Check out our [TSC on Eth] page.
 
 [benchmarks]: ./benchmarks.md
 [Boundless]: http://boundless.network
-[Risc Zero on Eth]: ../blockchain-integration/risc-zero-on-eth.md
+[TSC on Eth]: ../blockchain-integration/risc-zero-on-eth.md
 [ELF binary]: /terminology#elf-binary
 [examples]: ./examples.md
 [executor]: /terminology#executor

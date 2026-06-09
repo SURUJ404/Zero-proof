@@ -16,7 +16,7 @@ export default {
     },
     {
       type: "doc",
-      label: "What does RISC Zero enable?",
+      label: "What does TSC enable?",
       id: "use-cases",
     },
     {
@@ -175,7 +175,7 @@ export default {
       items: [
         {
           type: "doc",
-          label: "RISC Zero on Ethereum",
+          label: "TSC on Ethereum",
           id: "blockchain-integration/risc-zero-on-eth",
         },
         {

@@ -25,8 +25,8 @@ sorting=ynt
 \SetWatermarkScale{5}
 \SetWatermarkColor[gray]{0.9}
 
-\author{Jeremy Bruestle, Paul Gafni, and the RISC Zero Team}
-\title{RISC Zero zkVM: Scalable, Transparent Arguments of RISC-V Integrity}
+\author{Jeremy Bruestle, Paul Gafni, and the TSC Team}
+\title{TSC zkVM: Scalable, Transparent Arguments of RISC-V Integrity}
 \newcommand{\N}[0]{\mathbb{N}}
 \newcommand{\GF}[1]{\mathbb{F}_{#1}}
 \newcommand{\PC}[0]{\mathcal{P}}
@@ -46,17 +46,17 @@ sorting=ynt
 \begin{document}
 \maketitle
 \begin{abstract}
-RISC Zero offers an open source virtual machine coupled with a zero-knowledge proof system.
+TSC offers an open source virtual machine coupled with a zero-knowledge proof system.
 Together this is referred to as a zero-knowledge virtual machine, or \textit{zkVM}.
 When a RISC-V binary executes inside the zkVM, the output is paired with a computational receipt, which serves as a zero-knowledge argument of computational integrity.
-The RISC Zero proof system implements a zk-STARK instantiated using the FRI protocol, DEEP-ALI, and an HMAC-SHA-256 based PRF. 
-In this paper, we formally articulate the RISC Zero Proof System with as few technical barriers to understanding as possible, including a detailed construction of a RISC Zero cryptographic seal.
+The TSC proof system implements a zk-STARK instantiated using the FRI protocol, DEEP-ALI, and an HMAC-SHA-256 based PRF. 
+In this paper, we formally articulate the TSC Proof System with as few technical barriers to understanding as possible, including a detailed construction of a TSC cryptographic seal.
 \end{abstract}
 
 \tableofcontents
 
 \section*{Acknowledgements}
-Many thanks to Bolton Bailey, Lennart Beringer, Tim Carstens, Victor Graf, Tim Zerrell, and the rest of the RISC Zero team for their support and feedback. 
+Many thanks to Bolton Bailey, Lennart Beringer, Tim Carstens, Victor Graf, Tim Zerrell, and the rest of the TSC team for their support and feedback. 
 
 \clearpage
 
@@ -72,28 +72,28 @@ In a world where trust is becoming more and more scarce, verifiable computing pr
 \\
 Thousands upon thousands of developers are eager to start writing verifiable software.
 But current systems for writing verifiable software require developers to learn brand new languages with various limitations and challenges. 
-In order to make verifiable software development possible in languages like Rust and C++, \textbf{RISC Zero has built a mechanism for demonstrating the integrity of any RISC-V computation.} 
+In order to make verifiable software development possible in languages like Rust and C++, \textbf{TSC has built a mechanism for demonstrating the integrity of any RISC-V computation.} 
 
 \subsection{Verifiable RISC-V}
-When a \href{https://riscv.org/} {RISC-V} binary executes in the RISC Zero zkVM, the output is paired with a computational receipt.
+When a \href{https://riscv.org/} {RISC-V} binary executes in the TSC zkVM, the output is paired with a computational receipt.
 The receipt contains a cryptographic seal, which serves as a zero-knowledge argument of computational integrity. 
 By offering computational receipts for any code that will compile to RISC-V, our zkVM offers a platform to build truly trustable software, where skeptical third parties can verify authenticity in milliseconds. The idea of ``running a verifier'' to assure the integrity of massive computations is a novel addition to the world of digital security.
 
 \subsection{A Formally Verified Verifier}
 Formal verification is a process of translating code into a model that can be reasoned about with mathematical tools to ensure properties relevant to security and correctness.
 Formal verification is used to ensure that a piece of code is actually doing what it's supposed to be doing. 
-To ensure that the RISC Zero verifier (which checks the receipts) is functioning without security bugs, we're working on a formal verification of the verifier implementation. 
+To ensure that the TSC verifier (which checks the receipts) is functioning without security bugs, we're working on a formal verification of the verifier implementation. 
 This formal verification work is available at \url{https://www.github.com/risc0/risc0-lean4}.\\
 \\
-\subsection{The RISC Zero Argument System}
-RISC Zero's argument system is based on \cite{stark}; 
-the seal on a RISC Zero receipt is a zk-STARK.
+\subsection{The TSC Argument System}
+TSC's argument system is based on \cite{stark}; 
+the seal on a TSC receipt is a zk-STARK.
 The arithmetization scheme is a randomized AIR with preprocessing \cite{RAP}.
 The randomized preprocessing constructs constraints for a PLONK-based memory permutation argument and a PLOOKUP-based range-check \cite{plonk, plookup}.
 After preprocessing, the STARK is instantiated using the DEEP-ALI protocol and the FRI protocol \cite{deepFRI, fri}.
 
 \subsection{Paper Organization}
-In this paper, we specify the RISC Zero protocol and analyze its knowledge soundness. 
+In this paper, we specify the TSC protocol and analyze its knowledge soundness. 
 The paper is organized as follows:\\
 \\
 In Section \ref{background}, we introduce some key ideas and background. 
@@ -103,14 +103,14 @@ In particular, we introduce the following idea:
 In Section \ref{iop}, we present the interactive version of the protocol and analyze its soundness in the Interactive Oracle Proof model \cite{iop}. \\
 \section{Background}
 \label{background}
-The argument system behind RISC Zero's receipts is built in terms of an \textit{execution trace} and a number of \textit{constraints} that enforce checks of computational integrity.
-We start by introducing those terms as they're used in the context of the RISC Zero protocol.
+The argument system behind TSC's receipts is built in terms of an \textit{execution trace} and a number of \textit{constraints} that enforce checks of computational integrity.
+We start by introducing those terms as they're used in the context of the TSC protocol.
 \subsection{The Columns of the Execution Trace}
 \label{trace}
 When a piece of code runs on a machine, the \textit{execution trace} (or simply, the \textit{trace}) is a record of the full state of the machine at each clock cycle of the computation.
 It's typical to write an execution trace as a rectangular array, where each row shows the complete state of the machine at a given moment in time, and each column shows a temporal record of some particular aspect of the computation (say, the value stored in a particular RISC-V register) at each clock cycle. \\
 \\
-The columns of the RISC Zero execution trace are categorized as follows:
+The columns of the TSC execution trace are categorized as follows:
 \begin{description}
   \item[Control Columns - Public] The data in these columns describe the RISC-V architecture, and various control signals that define the stage of execution and therefore what constraints are applied.%
   \footnote{In the source code, the Control Columns are referred to as ``Code" Columns; we intend to update the terminology to align with this document.} 
@@ -147,7 +147,7 @@ At a high level, the constraints enforce that each of the following phases of th
 Together, these constraints enforce that the purported output of the computation agrees with the expected rv32im \cite{rv32im} execution. 
 \subsection{Arguments and Proofs of Knowledge} 
 \label{arguments}
-The seal on the RISC Zero receipt is a STARK -- a scalable, transparent argument of knowledge \cite{stark}. 
+The seal on the TSC receipt is a STARK -- a scalable, transparent argument of knowledge \cite{stark}. 
 An argument of knowledge allows a Prover to justify an ``assertion of knowledge.'' 
 More formally, the Prover asserts knowledge of a witness $\mathbb{w}$ that satisfies some constraints $\mathbb{x}$. 
 In the case of an assertion of computational integrity, the witness is the execution trace and the constraints are the various rules that define computational integrity. \\
@@ -161,9 +161,9 @@ In the context of the IOP protocol, the seal constitutes a proof of knowledge. I
 More specifically, the seal is a STARK. 
 The Fiat-Shamir Heuristic allows us to derive security results for our STARK based on soundness analysis of the IOP protocol \cite{fiat-shamir}.
 
-\section{The RISC Zero IOP Protocol}
+\section{The TSC IOP Protocol}
 \label{iop}
-In this section, we present the interactive version of the RISC Zero protocol and analyze the knowledge soundness of the protocol in the context of the IOP model \cite{iop}. 
+In this section, we present the interactive version of the TSC protocol and analyze the knowledge soundness of the protocol in the context of the IOP model \cite{iop}. 
 
 \subsection{Overview of the Protocol}
 In an interactive oracle proof, a Prover convinces a skeptical Verifier of some assertion via a series of interactions. 
@@ -172,7 +172,7 @@ The Verifier may \textit{query} these Prover messages without reading them in fu
 The IOP model idealizes these queries using the concept of \textit{oracle access}. 
 This theoretical model allows us to prove soundness of our protocol without reference to any cryptographic primitives.%
 \\
-The seal on a RISC Zero receipt is the transcript of the interactive protocol, with a random oracle as the verifier.
+The seal on a TSC receipt is the transcript of the interactive protocol, with a random oracle as the verifier.
 When the zkVM finishes execution of a method, the resultant seal serves as a zero-knowledge proof of computational integrity, linking a cryptographic imageID (which identifies the RISC-V binary file that was executed) to the asserted code output in a way that third-parties can quickly verify.\\
 \\
 The protocol consists of a transparent \textit{set-up phase}, a \textit{randomized preprocessing phase}, and a \textit{main phase}. 
@@ -458,10 +458,10 @@ Again, our results here align with \cite{FRIsummary} (with a batch size of $\mat
 \begin{appendices}
 \section{Preliminaries}
 \label{preliminaries}
-\subsection{Cyclic Domains (Indexing in RISC Zero)}
+\subsection{Cyclic Domains (Indexing in TSC)}
 \label{sequential time}
 \label{cyclic domains}
-In this section, we define the indexing for an execution trace. RISC Zero's architecture is finite-field based, and the indexing is based on powers of $\w\in\GF{p}$. \\
+In this section, we define the indexing for an execution trace. TSC's architecture is finite-field based, and the indexing is based on powers of $\w\in\GF{p}$. \\
 \\
 In order to index a sequence of $l$ elements of $\GF{q}$, we choose an element of the base field $\w\in\GF{p}$ with multiplicative order $l$ and use the sequence $\{\w^0, \w^1, \ldots, \w^{l-1}\}$ as an indexing set. 
 This indexing is cyclical, in the sense that $\w^z=\w^{z-l}$ for any integer $z$. 
@@ -601,7 +601,7 @@ we construct $b$-\textbf{split}$(\mathbf{u})=\mathbf{v}_0,\mathbf{v}_1,\ldots,\m
 \end{enumerate}
 \subsection{Reed Solomon Encoding}
 \label{reed solomon}
-In this section, we define Reed Solomon codes and outline their place in the RISC Zero proof system.
+In this section, we define Reed Solomon codes and outline their place in the TSC proof system.
 \subsubsection{Intuition}
 A Reed-Solomon encoding is a method of translating a \textit{message} into a \textit{codeword}. 
 Intuitively, you can think of the messages as columns of the execution trace; 
@@ -617,7 +617,7 @@ For an RS encoding of \textit{rate} $\frac{1}{4}$, distinct codewords will agree
 This means that the Verifier's probabilistic queries are very likely to check a discrepancy in the trace.
 \\
 \\
-For zero-knowledge purposes, RISC Zero adds random padding to the trace columns before implementing Reed-Solomon encoding and evaluates the NTT on a domain that does not intersect the domain of the message. 
+For zero-knowledge purposes, TSC adds random padding to the trace columns before implementing Reed-Solomon encoding and evaluates the NTT on a domain that does not intersect the domain of the message. 
 
 \subsubsection{Formal Definition of Reed-Solomon Encoding}
 Let $\w\in\GF{q}$ have multiplicative order $bl$ and let $\D(\w^b)\subseteq\D(\omega)\subseteq\GF{q}$. 
@@ -903,7 +903,7 @@ The trace columns ($\mathbf{m}_i$) are encoded as \textbf{trace \hyperref[blocks
 \item Each (padded) column, $\mathbf{m}_i$ is treated as a Reed-Solomon\cite{reed-solomon} ``message.'' 
 Each message is used to construct a low-degree polynomial, $P_{\mathbf{u_i}}(x)$ using an iNTT (over $\D(\w^4)$, as defined in Appendix \ref{cyclic domains}).
 \item The resulting polynomial $P_{\mathbf{u_i}}(x)$ is then evaluated over $\beta\D(\w)$ using an NTT, where $\beta\D(\w)$ is a multiplicative coset%
-\footnote{Note that while most discussions of NTTs and iNTTs occur over a multiplicative subgroup of a finite field, RISC Zero's NTT and iNTT implementation works over a coset of a multiplicative subgroup as well. 
+\footnote{Note that while most discussions of NTTs and iNTTs occur over a multiplicative subgroup of a finite field, TSC's NTT and iNTT implementation works over a coset of a multiplicative subgroup as well. 
 We write NTTs and iNTTs as two-argument functions that receive (1) an array over an (implied) finite field and (2) a cyclic domain or a coset of a cyclic domain. 
 See Appendix \ref{ntt} for more details.} of $\D(\w)$:
 \begin{equation*}
@@ -1023,7 +1023,7 @@ The Verifier can now check%
 that $V(z)C(z)=Z(z)$. 
 \subsection{The Batched FRI Protocol}
 \label{FRI}
-RISC Zero uses the batched FRI protocol as described in Section 8.2 of the Proximity Gaps for Reed-Solomon Codes paper. \\
+TSC uses the batched FRI protocol as described in Section 8.2 of the Proximity Gaps for Reed-Solomon Codes paper. \\
 \\
 First, the DEEP blocks are batched and then re-indexed to form a single block $f^{(0)}$. 
 At this stage, the Prover has reduced the assertion of computational integrity to an assertion that $\mathsf{deg}(f^{(0))}$ is less than some $n$. \\
@@ -1047,7 +1047,7 @@ The seal now reads:
 \subsubsection*{FRI Commit Rounds}
 Over the course of $r$ rounds of FRI, the Prover constructs $f^{(1)},\ldots,f^{(r)}$, committing a Merkle root $M_{f^{(i)}}$ for each. \\
 \\
-RISC Zero uses a \textit{split factor} of 16 throughout FRI, but we write the split factor as $l$ for generality.%
+TSC uses a \textit{split factor} of 16 throughout FRI, but we write the split factor as $l$ for generality.%
 \footnote{Ben-Sasson, et. al., write the split factor as $l^{(i)}$ to allow for the possibility of varying the split factor throughout the protocol.}.
 Each Merkle tree $M_{f^{(i)}}$ is constructed by evaluating $f^{(i)}$ over $\D^{(i)}=\D(\w^{l^i})$.%
 \footnote{Note that $\D^{(r)}\subset\ldots\subset\D^{(0)}$ and that $\frac{|\D^{(i)}|}{|\D^{(i+1)}|}=l$.}
@@ -1170,7 +1170,7 @@ Depending on the decoding regime, the following values for $\epsilon$ are obtain
 \end{theorem}
 \noindent
 \textbf{RS Codes over Subfields}\\
-One important performance enhancement used in RISC Zero's protocol involves the use of a subfield $\GF{p}$ of a larger field $\GF{q}=\GF{p^n}$ for some of the protocol.
+One important performance enhancement used in TSC's protocol involves the use of a subfield $\GF{p}$ of a larger field $\GF{q}=\GF{p^n}$ for some of the protocol.
 The idea is that many of the RS codes will use the smaller subfield to reduce the computational burden, but will interpreted later as RS codes in the full field.
 Of course it is immediately clear that for $\w \in \GF{p}$, $\mathsf{RS}[\GF{p}, \D(w), k] \subseteq \mathsf{RS}[\GF{p^n}, \D(w), k]$.
 That is, all elements of the RS code of the small field are elements of the RS code of the larger field.

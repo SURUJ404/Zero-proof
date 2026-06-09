@@ -13,7 +13,7 @@
   account, without revealing the exploit
 - **[ECDSA signature verification][example-ecdsa]**: prove the validity of an
   ECDSA signature
-- **[zkEVM][example-zkevm]**: demo of running EVM engine on the Risc Zero zkVM
+- **[zkEVM][example-zkevm]**: demo of running EVM engine on the TSC zkVM
 
 ## Running the Examples
 
