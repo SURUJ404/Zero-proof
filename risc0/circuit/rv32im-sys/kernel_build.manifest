@@ -181,6 +181,7 @@ cxx/rv32im/emu/verify.h
 cxx/rv32im/emu/verify_impl.h
 cxx/rv32im/ffi.cpp
 cxx/rv32im/ffi.h
+cxx/rv32im/ffi_stubs.cpp
 cxx/rv32im/rvtest/emu_kernel.cpp
 cxx/rv32im/rvtest/riscv_test.h
 cxx/rv32im/rvtest/test.cpp
