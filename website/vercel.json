@@ -1,4 +1,5 @@
 {
+  "name": "zero-proof-pearl",
   "framework": "docusaurus-2",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
