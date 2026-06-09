@@ -37,6 +37,17 @@ const FeatureList = [
       </>
     ),
   },
+  {
+    title: "Any Chain",
+    png: require("@site/static/img/feature/anychain.png").default,
+    description: (
+      <>
+        Deploy and verify proofs on any blockchain. Zero Proof's
+        flexible verification system integrates with your target chain
+        of choice.
+      </>
+    ),
+  },
 ];
 
 function Feature({ png, title, description }) {

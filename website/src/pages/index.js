@@ -1,34 +1,41 @@
 import React from "react";
+import clsx from "clsx";
+import Layout from "@theme/Layout";
+import Link from "@docusaurus/Link";
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import HomepageFeatures from "@site/src/components/HomepageFeatures";
 
-const Home = () => {
+import styles from "./index.module.css";
+
+function HomepageHeader() {
+  const { siteConfig } = useDocusaurusContext();
   return (
-    <div
-      style={{
-        backgroundColor: "#000000",
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        margin: 0,
-        padding: 0,
-      }}
-    >
-      <h1
-        style={{
-          color: "#ffffff",
-          fontSize: "clamp(3rem, 10vw, 8rem)",
-          fontWeight: 300,
-          letterSpacing: "0.15em",
-          textTransform: "uppercase",
-          fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
-          margin: 0,
-          userSelect: "none",
-        }}
-      >
-        ZERO PROOF
-      </h1>
-    </div>
+    <header className={clsx("hero hero--dark", styles.heroBanner)}>
+      <div className="container">
+        <h1 className={styles.heroTitle}>ZERO PROOF</h1>
+        <p className={styles.heroSubtitle}>
+          A verifiable RISC-V computer that lets you write ZK proofs like any other code
+        </p>
+        <div className={styles.buttons}>
+          <Link className="button button--primary button--lg" to="/proof-system/">
+            Get Started
+          </Link>
+          <Link className="button button--secondary button--lg" to="https://github.com/SURUJ404/Zero-proof">
+            GitHub
+          </Link>
+        </div>
+      </div>
+    </header>
   );
-};
+}
 
-export default Home;
+export default function Home() {
+  return (
+    <Layout description="Zero Proof — a verifiable RISC-V computer for ZK proofs">
+      <HomepageHeader />
+      <main>
+        <HomepageFeatures />
+      </main>
+    </Layout>
+  );
+}
