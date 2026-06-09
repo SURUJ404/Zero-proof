@@ -27,7 +27,7 @@ jobs:
       - name: Link and Deploy to Vercel
         id: vercel
         run: |
-          npx --yes vercel@latest link --confirm --project zero-proof \
+          npx --yes vercel@latest link --confirm --project zero-proof-pearl \
             --token=${{ secrets.ZEROTOKEN }} \
             --scope=${{ secrets.VERCELID }} \
             --yes
