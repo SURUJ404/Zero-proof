@@ -27,7 +27,7 @@ jobs:
       - name: Deploy to Vercel
         id: vercel
         run: |
-          npx --yes vercel@latest deploy --prod \
+          npx --yes vercel@latest deploy website --prod \
             --token=${{ secrets.ZEROTOKEN }} \
             --scope=${{ secrets.VERCELID }} \
             --yes > vercel-url.txt
