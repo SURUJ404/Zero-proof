@@ -3,7 +3,11 @@ use std::sync::Arc;
 use axum::{
     Router,
     extract::{Json, State},
-    http::StatusCode,
+    http::{
+        Method,
+        header::{AUTHORIZATION, CONTENT_TYPE},
+        HeaderValue, StatusCode,
+    },
     response::IntoResponse,
     routing::{get, post},
 };
@@ -160,6 +164,141 @@ impl IntoResponse for AppError {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::body::Body;
+    use axum::http::Request;
+    use bytes::Bytes;
+    use http_body_util::Full;
+    use tower::ServiceExt;
+
+    fn json_body<T: Serialize>(value: &T) -> Body {
+        let json = serde_json::to_string(value).unwrap();
+        Body::new(Full::new(Bytes::from(json)))
+    }
+
+    #[tokio::test]
+    async fn test_health_ok() {
+        let state = Arc::new(AppState {
+            start_time: std::time::Instant::now(),
+        });
+        let app = Router::new()
+            .route("/api/health", get(health))
+            .with_state(state);
+        let resp = app
+            .oneshot(Request::builder().uri("/api/health").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn test_prove_rejects_bad_base64() {
+        let state = Arc::new(AppState {
+            start_time: std::time::Instant::now(),
+        });
+        let app = Router::new()
+            .route("/api/prove", post(prove))
+            .with_state(state);
+        let req = ProveRequest {
+            elf: "!!!invalid".into(),
+            input: serde_json::Value::Null,
+        };
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .method(Method::POST)
+                    .uri("/api/prove")
+                    .header(CONTENT_TYPE, "application/json")
+                    .body(json_body(&req))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_verify_rejects_bad_base64() {
+        let state = Arc::new(AppState {
+            start_time: std::time::Instant::now(),
+        });
+        let app = Router::new()
+            .route("/api/verify", post(verify))
+            .with_state(state);
+        let req = VerifyRequest {
+            receipt_b64: "!!!invalid".into(),
+            image_id: "abcd".into(),
+        };
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .method(Method::POST)
+                    .uri("/api/verify")
+                    .header(CONTENT_TYPE, "application/json")
+                    .body(json_body(&req))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn test_verify_rejects_short_image_id() {
+        let state = Arc::new(AppState {
+            start_time: std::time::Instant::now(),
+        });
+        let app = Router::new()
+            .route("/api/verify", post(verify))
+            .with_state(state);
+        let req = VerifyRequest {
+            receipt_b64: base64_encode(b"some garbage bytes"),
+            image_id: "a1b2".into(),
+        };
+        let resp = app
+            .oneshot(
+                Request::builder()
+                    .method(Method::POST)
+                    .uri("/api/verify")
+                    .header(CONTENT_TYPE, "application/json")
+                    .body(json_body(&req))
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp.status(), StatusCode::BAD_REQUEST);
+    }
+
+    #[test]
+    fn test_base64_roundtrip() {
+        let data = b"hello world";
+        let encoded = base64_encode(data);
+        let decoded = base64_decode(&encoded).unwrap();
+        assert_eq!(decoded, data);
+    }
+
+    #[test]
+    fn test_base64_decode_invalid() {
+        assert!(base64_decode("!!!").is_err());
+    }
+
+    #[test]
+    fn test_app_error_bad_request() {
+        let err = AppError::bad_request("test".into());
+        assert_eq!(err.status, StatusCode::BAD_REQUEST);
+        assert_eq!(err.message, "test");
+    }
+
+    #[test]
+    fn test_app_error_internal() {
+        let err = AppError::internal("test".into());
+        assert_eq!(err.status, StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(err.message, "test");
+    }
+}
+
 #[tokio::main]
 async fn main() {
     tracing_subscriber::fmt()
@@ -174,14 +313,23 @@ async fn main() {
         start_time: std::time::Instant::now(),
     });
 
+    let cors_origin = std::env::var("CORS_ORIGIN").ok();
+    let cors = match cors_origin {
+        Some(origin) => CorsLayer::new()
+            .allow_origin(origin.parse::<HeaderValue>().expect("Invalid CORS_ORIGIN"))
+            .allow_methods([Method::GET, Method::POST])
+            .allow_headers([AUTHORIZATION, CONTENT_TYPE]),
+        None => CorsLayer::permissive(),
+    };
+
     let app = Router::new()
         .route("/api/health", get(health))
         .route("/api/prove", post(prove))
         .route("/api/verify", post(verify))
-        .layer(CorsLayer::permissive())
+        .layer(cors)
         .with_state(state);
 
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".into());
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8080".into());
     let addr = format!("0.0.0.0:{port}");
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     info!("Listening on http://{addr}");

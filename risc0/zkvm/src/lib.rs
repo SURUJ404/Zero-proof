@@ -128,13 +128,15 @@ pub use {
         env::{ExecutorEnv, ExecutorEnvBuilder},
         prove::{
             Executor, Prover, SegmentInfo, SessionInfo,
-            default::DefaultProver,
             default_executor, default_prover,
             opts::{ProverOpts, ReceiptKind},
         },
     },
     risc0_circuit_rv32im::trace::{TraceCallback, TraceEvent},
 };
+
+#[cfg(all(feature = "client", unix))]
+pub use self::host::client::prove::default::DefaultProver;
 
 /// RPC protocol types for prover client-server communication.
 #[cfg(not(target_os = "zkvm"))]

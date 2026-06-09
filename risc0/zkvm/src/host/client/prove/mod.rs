@@ -15,6 +15,7 @@
 
 #[cfg(feature = "bonsai")]
 pub(crate) mod bonsai;
+#[cfg(unix)]
 pub(crate) mod default;
 #[cfg(feature = "prove")]
 pub(crate) mod local;
@@ -22,19 +23,27 @@ pub(crate) mod opts;
 
 use core::ops::Deref;
 use serde::{Deserialize, Serialize};
-use std::{path::PathBuf, rc::Rc};
+use std::rc::Rc;
 
-use anyhow::{Result, anyhow};
+use anyhow::Result;
+#[cfg(unix)]
+use std::path::PathBuf;
+#[cfg(unix)]
+use anyhow::anyhow;
 
 #[cfg(feature = "bonsai")]
 use self::bonsai::BonsaiProver;
 
-use self::{default::DefaultProver, opts::ProverOpts};
+#[cfg(unix)]
+use self::default::DefaultProver;
+use self::opts::ProverOpts;
 
 use crate::{
-    ExecutorEnv, ExitCode, Journal, Receipt, ReceiptClaim, VerifierContext, get_version,
+    ExecutorEnv, ExitCode, Journal, Receipt, ReceiptClaim, VerifierContext,
     host::prove_info::ProveInfo,
 };
+#[cfg(unix)]
+use crate::get_version;
 
 /// Provides information about a segment of execution.
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -229,8 +238,10 @@ pub trait Executor {
 /// * [DefaultProver] otherwise.
 pub fn default_prover() -> Rc<dyn Prover> {
     let explicit = std::env::var("RISC0_PROVER").unwrap_or_default();
+    #[cfg(any(unix, feature = "bonsai", feature = "prove"))]
     if !explicit.is_empty() {
         return match explicit.to_lowercase().as_str() {
+            #[cfg(unix)]
             "ipc" => Rc::new(DefaultProver::new(get_r0vm_path().unwrap()).unwrap()),
             #[cfg(feature = "bonsai")]
             "bonsai" => Rc::new(BonsaiProver::new("bonsai")),
@@ -255,7 +266,10 @@ pub fn default_prover() -> Rc<dyn Prover> {
         return Rc::new(self::local::LocalProver::new("local"));
     }
 
-    Rc::new(DefaultProver::new(get_r0vm_path().unwrap()).unwrap())
+    #[cfg(unix)]
+    return Rc::new(DefaultProver::new(get_r0vm_path().unwrap()).unwrap());
+    #[cfg(not(unix))]
+    panic!("DefaultProver is not supported on this platform; use the 'local' prover (enable the 'prove' feature) or Bonsai");
 }
 
 /// Return a default [Executor] based on environment variables and feature
@@ -274,7 +288,9 @@ pub fn default_prover() -> Rc<dyn Prover> {
 /// * LocalProver if the `prove` feature flag is enabled.
 /// * [DefaultProver] otherwise.
 pub fn default_executor() -> Rc<dyn Executor> {
+    #[cfg_attr(not(unix), expect(unused_variables))]
     let explicit = std::env::var("RISC0_EXECUTOR").unwrap_or_default();
+    #[cfg(unix)]
     if !explicit.is_empty() {
         return match explicit.to_lowercase().as_str() {
             "ipc" => Rc::new(DefaultProver::new(get_r0vm_path().unwrap()).unwrap()),
@@ -289,7 +305,10 @@ pub fn default_executor() -> Rc<dyn Executor> {
         return Rc::new(self::local::LocalProver::new("local"));
     }
 
-    Rc::new(DefaultProver::new(get_r0vm_path().unwrap()).unwrap())
+    #[cfg(unix)]
+    return Rc::new(DefaultProver::new(get_r0vm_path().unwrap()).unwrap());
+    #[cfg(not(unix))]
+    panic!("DefaultExecutor is not supported on this platform; use the 'local' executor (enable the 'prove' feature) or Bonsai");
 }
 
 /// Return a local [Executor].
@@ -298,6 +317,7 @@ pub fn local_executor() -> Rc<dyn Executor> {
     Rc::new(self::local::LocalProver::new("local"))
 }
 
+#[cfg(unix)]
 pub(crate) fn get_r0vm_path() -> Result<PathBuf> {
     if let Ok(path) = std::env::var("RISC0_SERVER_PATH") {
         let path = PathBuf::from(path);

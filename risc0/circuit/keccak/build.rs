@@ -30,14 +30,15 @@ fn generate_zkr_table() {
     for po2 in 14..=18 {
         let zkr_name = format!("keccak_lift_{po2}.zkr.xz");
         let zkr_path = std::fs::canonicalize(Path::new("src/prove").join(&zkr_name)).unwrap();
-        println!("cargo:rerun-if-changed={}", zkr_path.display());
+        let zkr_path_str = zkr_path.to_str().unwrap().replace('\\', "/");
+        println!("cargo:rerun-if-changed={}", zkr_path_str);
         let mut decoder = XzDecoder::new(std::fs::File::open(&zkr_path).unwrap());
         std::io::copy(&mut decoder, &mut std::io::sink()).unwrap();
         let size = decoder.total_out();
         writeln!(
             &mut output,
             "(include_bytes!(\"{}\"), {size}),",
-            zkr_path.display()
+            zkr_path_str
         )
         .unwrap();
     }

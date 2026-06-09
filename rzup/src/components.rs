@@ -319,8 +319,13 @@ fn symlink(original: &Path, link: &Path) -> Result<()> {
             ))
         })?
     }
+    #[cfg(unix)]
     std::os::unix::fs::symlink(original, link)
-        .map_err(|e| RzupError::Other(format!("Failed to create symlink: {e}")))
+        .map_err(|e| RzupError::Other(format!("Failed to create symlink: {e}")))?;
+    #[cfg(windows)]
+    std::os::windows::fs::symlink_file(original, link)
+        .map_err(|e| RzupError::Other(format!("Failed to create symlink: {e}")))?;
+    Ok(())
 }
 
 #[cfg(not(feature = "install"))]

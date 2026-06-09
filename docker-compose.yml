@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  zk-prover-server:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - RISC0_DEV_MODE=${RISC0_DEV_MODE:-true}
+      - RISC0_PROVER=${RISC0_PROVER:-local}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
+    healthcheck:
+      test: curl -f http://localhost:8080/api/health || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

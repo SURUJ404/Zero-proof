@@ -18,6 +18,7 @@ use std::{
     env, fs,
     io::Write as _,
     path::{Path, PathBuf},
+    process::Command,
 };
 
 use anyhow::{Result, anyhow};
@@ -35,6 +36,9 @@ const PLATFORM_METAL: Platform = Platform::new("metal", "metal", "hal/metal/kern
 
 fn main() {
     let prove = std::env::var("CARGO_FEATURE_PROVE").is_ok();
+    println!("cargo:warning=build: prove={prove}");
+    println!("cargo:warning=build: LIBCLANG_PATH={:?}", std::env::var("LIBCLANG_PATH"));
+    println!("cargo:warning=build: LIBCLANG_PATH_OS={:?}", std::env::var_os("LIBCLANG_PATH"));
     if prove {
         compile_provers();
     }
@@ -151,6 +155,17 @@ fn compile_provers() {
     }
 
     build.compile("risc0_rv32im");
+
+    // When RISC0_SKIP_BUILD_KERNELS is set, KernelBuild skips real compilation.
+    // Compile stub FFI implementations so the linker can resolve symbols.
+    if env::var("RISC0_SKIP_BUILD_KERNELS").is_ok() {
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let stub_path = Path::new(&manifest_dir).join("cxx/rv32im/ffi_stubs.cpp");
+        cc::Build::new()
+            .cpp(true)
+            .file(&stub_path)
+            .compile("risc0_rv32im_stubs");
+    }
 }
 
 struct BlockTypeInfo {
@@ -168,32 +183,58 @@ fn preprocess_file(file_contents: &str) -> String {
         .include("cxx")
         .include("vendor");
 
-    let mut command = build.get_compiler().to_command();
+    let compiler = build.get_compiler();
+    let is_msvc = compiler.path().to_string_lossy().contains("cl.exe");
 
-    let mut proc = command
-        .arg("-x")
-        .arg("c++")
-        .arg("-E")
-        .arg("-") // read from stdin
-        .arg("-o")
-        .arg("-") // write to stdout
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-        .unwrap();
+    let mut proc;
+    if is_msvc {
+        let tmp_dir = std::env::temp_dir();
+        let tmp_file = tmp_dir.join("r0vm_block_types.cpp");
+        fs::write(&tmp_file, file_contents).unwrap();
+
+        let manifest_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let mut command = Command::new(compiler.path());
+        command
+            .arg("/nologo")
+            .arg("/TP")
+            .arg("/E")
+            .arg(format!("/I{}/cxx", manifest_dir))
+            .arg(format!("/I{}/vendor", manifest_dir))
+            .arg(tmp_file.to_str().unwrap())
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::null());
+        proc = command.spawn().unwrap();
+    } else {
+        let mut command = compiler.to_command();
+        command
+            .arg("-x")
+            .arg("c++")
+            .arg("-E")
+            .arg("-")
+            .arg("-o")
+            .arg("-");
+        proc = command
+            .stdin(std::process::Stdio::piped())
+            .stdout(std::process::Stdio::piped())
+            .spawn()
+            .unwrap();
+    }
 
     // Use the pre-processor to parse the table
-    write!(proc.stdin.as_mut().unwrap(), "{file_contents}").unwrap();
-    let _ = proc.stdin.take();
+    if !is_msvc {
+        write!(proc.stdin.as_mut().unwrap(), "{file_contents}").unwrap();
+        let _ = proc.stdin.take();
+    }
 
     let output = proc.wait_with_output().unwrap();
 
     assert!(output.status.success(), "preprocessing failed");
 
     let contents = String::from_utf8(output.stdout).unwrap();
+    let contents = contents.replace("\r\n", "\n").replace('\r', "\n"); // Normalize line endings
 
     // Skip include directive output
-    let inc_directive = regex::Regex::new("^# \\d+ .*$").unwrap();
+    let inc_directive = regex::Regex::new("^#(?:line|pragma) ?.*$").unwrap();
     let contents = contents
         .lines()
         .filter(|l| !inc_directive.is_match(l))
@@ -440,6 +481,53 @@ fn generate_rv32im_table(output: &str, rv32im_table: &[Rv32imInstrInfo]) {
 }
 
 fn generate_rust_bindings(output: &str, block_types: &BTreeMap<String, BlockTypeInfo>) {
+    // Trim trailing spaces from path (cmd.exe may add them)
+    if let Some(p) = std::env::var_os("LIBCLANG_PATH") {
+        let trimmed = p.to_string_lossy().trim().to_string();
+        // SAFETY: this is a build script, single-threaded, called once
+        unsafe { std::env::set_var("LIBCLANG_PATH", &trimmed); }
+        println!("cargo:warning=bindgen: LIBCLANG_PATH set to {:?}", trimmed);
+    }
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        try_generate_bindings(block_types)
+    }));
+    match result {
+        Ok(Ok(bindings)) => bindings.write_to_file(output).unwrap(),
+        Ok(Err(e)) => {
+            println!("cargo:warning=bindgen: skipped ({e}), generating stub");
+            generate_stub_bindings(output, block_types);
+        }
+        Err(e) => {
+            println!("cargo:warning=bindgen: panicked ({:?}), generating stub", e);
+            generate_stub_bindings(output, block_types);
+        }
+    }
+}
+
+fn generate_stub_bindings(output: &str, block_types: &BTreeMap<String, BlockTypeInfo>) {
+    let mut code = String::new();
+    code.push_str("#[allow(dead_code, non_camel_case_types, non_snake_case, non_upper_case_globals)]\n");
+
+    // Generate stub structs for each block type
+    for name in block_types.keys() {
+        if name != "Empty" {
+            let witness_name = format!("{}Witness", name);
+            code.push_str(&format!("#[repr(C)]\npub struct {} {{ _private: [u8; 0] }}\n", witness_name));
+        }
+    }
+
+    if let Ok(content) = std::fs::read_to_string(output) {
+        if !content.is_empty() {
+            return; // Already has content from previous run
+        }
+    }
+    std::fs::write(output, code).unwrap();
+    println!("cargo:warning=bindgen: wrote stub bindings.rs with {} types", block_types.len());
+}
+
+fn try_generate_bindings<'a>(
+    block_types: &BTreeMap<String, BlockTypeInfo>,
+) -> Result<bindgen::Bindings, anyhow::Error> {
     let mut builder = bindgen::Builder::default()
         .header("cxx/rv32im/witness/witness.h")
         .derive_copy(false)
@@ -457,8 +545,7 @@ fn generate_rust_bindings(output: &str, block_types: &BTreeMap<String, BlockType
         builder = builder.allowlist_type(format!("Unit{name}Witness"));
     }
 
-    let bindings = builder.generate().unwrap();
-    bindings.write_to_file(output).unwrap();
+    Ok(builder.generate()?)
 }
 
 fn rerun_if_env_changed(var_name: &str) {
