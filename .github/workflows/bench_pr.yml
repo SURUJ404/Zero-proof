@@ -12,7 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  id-token: write
   contents: read
 
 env:
@@ -31,6 +30,8 @@ jobs:
       - run: git lfs pull
       - uses: ./.github/actions/rustup
       - uses: ./.github/actions/sccache
+        with:
+          disable_s3: true
       - uses: ./.github/actions/protoc
       - name: Install RISC Zero Rust toolchain
         run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
