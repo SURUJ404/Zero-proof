@@ -1,6 +1,9 @@
 # Dependencies
 node_modules
 
+# Lockfile (Vercel generates its own)
+package-lock.json
+
 # Production
 build
 

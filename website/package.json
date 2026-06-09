@@ -4,8 +4,6 @@
   "private": true,
   "description": "ZK Prover Documentation, Education Hub, and Resources",
   "overrides": {
-    "mdast-util-to-string": "^4.0.0",
-    "github-slugger": "^1.5.0",
     "webpack": "5.95.0"
   },
   "scripts": {
