@@ -16,7 +16,7 @@ export default async function createConfigAsync() {
     tagline: "Hyper-Efficient General Purpose Zero-Knowledge Computing.",
     favicon: "img/favicon.ico",
 
-    url: "https://zero-proof.vercel.app",
+    url: "https://zero-proof-pearl.vercel.app",
     baseUrl: baseUrl,
 
     organizationName: "zero-proof",
