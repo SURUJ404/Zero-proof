@@ -2,10 +2,6 @@
   "name": "zk-prover-website",
   "version": "0.0.0",
   "private": true,
-  "description": "ZK Prover Documentation, Education Hub, and Resources",
-  "overrides": {
-    "webpack": "5.95.0"
-  },
   "scripts": {
     "build": "docusaurus build",
     "check-link-versions": "python ./link-version-check.py",
