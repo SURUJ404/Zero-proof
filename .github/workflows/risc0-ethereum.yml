@@ -107,8 +107,8 @@ jobs:
       - name: Install zero-proof toolchain
         run: |
           cargo install --locked --force --path risc0/cargo-risczero
-          cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-          cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+          cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+          cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
         working-directory: ${{ env.RISC0_PATH }}
       - uses: foundry-rs/foundry-toolchain@v1
       # Apply local patch

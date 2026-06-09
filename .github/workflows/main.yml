@@ -275,10 +275,10 @@ jobs:
         with:
           crate: cargo-nextest
           version: "0.9.96"
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install gdb $RISC0_CPP_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install risc0-groth16 $RISC0_GROTH16_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install gdb $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install risc0-groth16 $RISC0_GROTH16_VERSION
       - name: Install gdb dependencies
         run: brew install zstd gettext lz4 mpfr gmp
         if: matrix.os == 'macOS'
@@ -338,9 +338,9 @@ jobs:
         with:
           crate: cargo-nextest
           version: "0.9.96"
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install risc0-groth16 $RISC0_GROTH16_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install risc0-groth16 $RISC0_GROTH16_VERSION
       - run: ${{ matrix.test_command }} -p cargo-risczero -F experimental
       - name: run datasheet generator (smoke test)
         run: cargo run --locked -F $FEATURE -F prove --example datasheet -- --json tmp/datasheet.json lift
@@ -387,9 +387,9 @@ jobs:
       - uses: ./.github/actions/rustup
       - uses: ./.github/actions/sccache
       - uses: ./.github/actions/protoc
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install risc0-groth16 $RISC0_GROTH16_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install risc0-groth16 $RISC0_GROTH16_VERSION
       - run: cargo build --package risc0-r0vm -F cuda
       - run: cargo build --package risc0-zkvm-methods
       - name: compute-sanitizer memcheck
@@ -456,8 +456,8 @@ jobs:
         with:
           crate: cargo-nextest
           version: "0.9.96"
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - run: cargo build --release -p risc0-r0vm -F $FEATURE
       - name: test in dev mode
         run: RISC0_DEV_MODE=1 ${{ matrix.test_command }} --release --locked -F $FEATURE --workspace
@@ -483,9 +483,9 @@ jobs:
         working-directory: risc0
       - uses: ./risc0/.github/actions/rustup
       - uses: ./risc0/.github/actions/sccache
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
         working-directory: risc0
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
         working-directory: risc0
       - run: cargo install --force --path ./risc0/cargo-risczero -F experimental
         working-directory: risc0
@@ -506,8 +506,8 @@ jobs:
       - run: git lfs pull
       - uses: ./.github/actions/rustup
       - uses: ./.github/actions/sccache
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - run: cargo doc --no-deps --exclude=risc0-zkvm-methods --workspace
       - run: sccache --show-stats
 
@@ -566,8 +566,8 @@ jobs:
       - run: git lfs pull
       - uses: ./.github/actions/rustup
       - uses: ./.github/actions/sccache
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - name: run SemVer checks
         run: cargo run --bin xtask --no-default-features -- semver-checks --locked $UPDATE
         env:
@@ -603,8 +603,8 @@ jobs:
         run: brew install gnu-sed
         if: matrix.os == 'macOS'
       - run: cargo install --force --path risc0/cargo-risczero --locked
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - run: |
           cargo risczero new \
             --path $(pwd) \
@@ -651,8 +651,8 @@ jobs:
         with:
           crate: wasm-pack
           version: "0.13.1"
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - run: cargo run --bin xtask -- gen-receipt
       - run: |
           npm install
@@ -677,8 +677,8 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_CI_USER }}
           password: ${{ secrets.DOCKERHUB_CI_PAT }}
-      - run: cargo run --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
-      - run: cargo run --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install rust $RISC0_RUST_TOOLCHAIN_VERSION
+      - run: cargo run --no-default-features -F cli,install --bin rzup -- --verbose install cpp $RISC0_CPP_TOOLCHAIN_VERSION
       - run: cargo test -p risc0-build -F docker
       - run: cargo test -p risc0-groth16 -F prove --release
       - run: cargo test -p risc0-zkvm -F docker -F prove -- docker
