@@ -2,6 +2,5 @@
   "framework": "docusaurus-2",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
-  "installCommand": "npm install",
-  "nodeVersion": "20.x"
+  "installCommand": "npm install"
 }
