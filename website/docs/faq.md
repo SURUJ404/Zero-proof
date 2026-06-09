@@ -9,7 +9,7 @@
   - [Code Troubleshooting](#code-troubleshooting)
   - [zkVM Application Design](#zkvm-application-design)
   - [Features, Performance, and Limitations](#features-performance-and-limitations)
-- [The Zero Proof Circuits](#the-risc-zero-circuits)
+- [The Zero Proof Circuits](#the-zero-proof-circuits)
 - [Security](#security)
 
 ---

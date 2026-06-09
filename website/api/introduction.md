@@ -4,7 +4,7 @@ slug: ./
 
 # Introduction
 
-Welcome to the [Zero Proof][external-risc-zero] documentation!
+Welcome to the [TSC][external-tsc] documentation!
 
 Zero Proof is creating the infrastructure & tooling necessary for
 developers around the globe to build software that leverages **verifiable computation**. With verifiable computation, you can be cryptographically confident that a specific blob of data was produced by a specific algorithm.
@@ -27,5 +27,5 @@ Check out our [Getting Started][docs-getting-started] page.
 ![From Guest Code to Receipt][from-rust-to-receipt]
 
 [docs-getting-started]: ./getting-started.md
-[external-risc-zero]: https://github.com/suruj404/zero-knowledgerisc
+[external-tsc]: https://github.com/suruj404/zero-knowledgerisc
 [from-rust-to-receipt]: /img/comic-bob-meets-r0vm-01.png

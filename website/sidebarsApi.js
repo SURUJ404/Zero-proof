@@ -176,7 +176,7 @@ export default {
         {
           type: "doc",
           label: "TSC on Ethereum",
-          id: "blockchain-integration/risc-zero-on-eth",
+          id: "blockchain-integration/tsc-on-eth",
         },
         {
           type: "doc",
@@ -262,7 +262,7 @@ export default {
     },
     {
       type: "link",
-      label: "Awesome risc0",
+      label: "Awesome TSC",
       href: "https://github.com/inversebrah/awesome-risc0",
     },
   ],

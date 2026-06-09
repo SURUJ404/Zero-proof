@@ -4,7 +4,7 @@ slug: ./
 
 # Introduction
 
-Welcome to the [Zero Proof][external-risc-zero] documentation!
+Welcome to the [TSC][external-tsc] documentation!
 
 Zero Proof is creating the infrastructure & tooling necessary for
 developers around the globe to build software that leverages ZK technology.
@@ -23,4 +23,4 @@ program!
 Check out our [Getting Started][docs-getting-started] page.
 
 [docs-getting-started]: ./getting-started.md
-[external-risc-zero]: https://github.com/suruj404/zero-knowledgerisc
+[external-tsc]: https://github.com/suruj404/zero-knowledgerisc

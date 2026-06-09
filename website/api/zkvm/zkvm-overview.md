@@ -66,7 +66,7 @@ Check out our [TSC on Eth] page.
 
 [benchmarks]: ./benchmarks.md
 [Boundless]: http://boundless.network
-[TSC on Eth]: ../blockchain-integration/risc-zero-on-eth.md
+[TSC on Eth]: ../blockchain-integration/tsc-on-eth.md
 [ELF binary]: /terminology#elf-binary
 [examples]: ./examples.md
 [executor]: /terminology#executor
