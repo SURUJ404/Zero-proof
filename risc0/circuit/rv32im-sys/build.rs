@@ -233,8 +233,8 @@ fn preprocess_file(file_contents: &str) -> String {
     let contents = String::from_utf8(output.stdout).unwrap();
     let contents = contents.replace("\r\n", "\n").replace('\r', "\n"); // Normalize line endings
 
-    // Skip include directive output
-    let inc_directive = regex::Regex::new("^#(?:line|pragma) ?.*$").unwrap();
+    // Skip preprocessor directive output (GCC line markers, #line, #pragma)
+    let inc_directive = regex::Regex::new(r"^#.*$").unwrap();
     let contents = contents
         .lines()
         .filter(|l| !inc_directive.is_match(l))
