@@ -10,31 +10,58 @@ const SERVICE_ICONS = {
 };
 
 const METHOD_CLASSES = {
-  GET: styles.methodGet,
-  POST: styles.methodPost,
-  ANY: styles.methodAny,
-  CLI: styles.methodCli,
-  TCP: styles.methodTcp,
-  CONFIG: styles.methodConfig,
+  GET: styles.methodGet, POST: styles.methodPost,
+  PUT: styles.methodPut, DELETE: styles.methodDelete,
+  ANY: styles.methodAny, CLI: styles.methodCli,
+  TCP: styles.methodTcp, CONFIG: styles.methodConfig,
 };
 
 const TAG_CLASSES = {
-  health: styles.tagHealth,
-  prover: styles.tagProver,
-  verifier: styles.tagVerifier,
-  shadow: styles.tagShadow,
-  config: styles.tagConfig,
-  docker: styles.tagDocker,
-  cli: styles.tagCli,
-  command: styles.tagCli,
+  health: styles.tagHealth, prover: styles.tagProver,
+  verifier: styles.tagVerifier, shadow: styles.tagShadow,
+  config: styles.tagConfig, docker: styles.tagDocker,
+  cli: styles.tagCli, command: styles.tagCommand,
+  build: styles.tagBuild, upstream: styles.tagUpstream,
 };
+
+function buildMermaid(data) {
+  const lines = ["graph TB"];
+  lines.push("  title[Zero Proof Attack Surface Architecture]");
+  lines.push("  style title fill:#8d4c4c,color:#fff,font-size:16px");
+  lines.push("");
+
+  for (const svc of data.services) {
+    const id = svc.name.replace(/[^a-zA-Z0-9]/g, "_");
+    const label = `${svc.name}\\n${svc.type}${svc.port ? ` :${svc.port}` : ""}`;
+    lines.push(`  ${id}["${label}"]`);
+    for (const ep of svc.endpoints) {
+      if (ep.method === "CLI" || ep.method === "TCP" || ep.method === "CONFIG") continue;
+      const eid = `${id}_${ep.method}_${ep.path.replace(/[^a-zA-Z0-9]/g, "_")}`;
+      lines.push(`  ${eid}["${ep.method} ${ep.path}"]`);
+      lines.push(`  ${id} --> ${eid}`);
+    }
+  }
+
+  lines.push("");
+  for (let i = 0; i < data.services.length - 1; i++) {
+    const a = data.services[i].name.replace(/[^a-zA-Z0-9]/g, "_");
+    const b = data.services[i + 1].name.replace(/[^a-zA-Z0-9]/g, "_");
+    lines.push(`  ${a} -.-> ${b}`);
+  }
+
+  return lines.join("\n");
+}
 
 export default function ScanDog() {
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [methodFilter, setMethodFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("endpoints");
+  const [rawTab, setRawTab] = useState("json");
   const [expandedServices, setExpandedServices] = useState(new Set());
-  const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
+  const [mermaidSvg, setMermaidSvg] = useState("");
 
   useEffect(() => {
     fetch("/scandog-data.json")
@@ -47,16 +74,34 @@ export default function ScanDog() {
       .catch(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (!data || activeTab !== "architecture") return;
+    const def = buildMermaid(data);
+
+    const renderMermaid = async () => {
+      try {
+        const mermaid = await import("mermaid");
+        mermaid.default.initialize({
+          theme: document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "default",
+        });
+        const { svg } = await mermaid.default.render("scandog-mermaid-svg", def);
+        setMermaidSvg(svg);
+      } catch {}
+    };
+
+    const timer = setTimeout(renderMermaid, 200);
+    return () => clearTimeout(timer);
+  }, [data, activeTab]);
+
   const toggleService = (name) => {
-    setExpandedServices((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
+    setExpandedServices((p) => {
+      const n = new Set(p);
+      if (n.has(name)) n.delete(name); else n.add(name);
+      return n;
     });
   };
 
-  const filteredEndpoints = useMemo(() => {
+  const allEndpoints = useMemo(() => {
     if (!data) return [];
     const eps = [];
     for (const svc of data.services) {
@@ -64,61 +109,135 @@ export default function ScanDog() {
         eps.push({ ...ep, _service: svc.name, _type: svc.type });
       }
     }
+    return eps;
+  }, [data]);
 
-    return eps.filter((ep) => {
+  const filteredEndpoints = useMemo(() => {
+    return allEndpoints.filter((ep) => {
       if (methodFilter !== "all" && ep.method !== methodFilter) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        return (
-          ep.path.toLowerCase().includes(q) ||
-          ep.method.toLowerCase().includes(q) ||
-          ep._service.toLowerCase().includes(q) ||
-          ep.tags.some((t) => t.toLowerCase().includes(q))
-        );
-      }
-      return true;
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
+        ep.path.toLowerCase().includes(q) ||
+        ep.method.toLowerCase().includes(q) ||
+        ep._service.toLowerCase().includes(q) ||
+        ep.tags.some((t) => t.toLowerCase().includes(q)) ||
+        ep.source.file.toLowerCase().includes(q)
+      );
     });
-  }, [data, search, methodFilter]);
+  }, [allEndpoints, search, methodFilter]);
 
-  const download = (format) => {
-    if (!data) return;
-    let content = "";
-    let ext = format;
-    const mimeTypes = {
-      json: "application/json",
-      yaml: "text/yaml",
-      openapi: "application/json",
-      sarif: "application/json",
-      html: "text/html",
-      mermaid: "text/plain",
-    };
+  const getRawContent = (fmt) => {
+    if (!data) return "";
+    if (fmt === "json") return JSON.stringify(data, null, 2);
 
-    if (format === "json") {
-      content = JSON.stringify(data, null, 2);
-    } else {
-      content = [
-        "---",
-        `# Zero Proof Attack Surface — ${format.toUpperCase()} Export`,
-        `# Generated by ScanDog`,
-        "---",
-        JSON.stringify(data, null, 2),
-      ].join("\n");
+    const lines = [`# Zero Proof Attack Surface — ${fmt.toUpperCase()}`, `# Generated by ScanDog v1.0.0`, `# ${data.scannedAt}`, ""];
+
+    if (fmt === "yaml") {
+      lines.push("project:");
+      lines.push(`  name: ${data.projectName}`);
+      lines.push(`  version: ${data.projectVersion}`);
+      lines.push(`  scanned: ${data.scannedAt}`);
+      lines.push(`  total_endpoints: ${data.totalEndpoints}`);
+      lines.push("");
+      lines.push("services:");
+      for (const svc of data.services) {
+        lines.push(`  ${svc.name}:`);
+        lines.push(`    type: ${svc.type}`);
+        if (svc.port) lines.push(`    port: ${svc.port}`);
+        lines.push("    endpoints:");
+        for (const ep of svc.endpoints) {
+          lines.push(`      - method: ${ep.method}`);
+          lines.push(`        path: ${ep.path}`);
+          lines.push(`        tags: [${ep.tags.join(", ")}]`);
+          lines.push(`        source: ${ep.source.file}:${ep.source.line}`);
+        }
+      }
     }
 
+    if (fmt === "openapi") {
+      const paths = {};
+      for (const svc of data.services) {
+        for (const ep of svc.endpoints) {
+          if (ep.method === "CLI" || ep.method === "TCP" || ep.method === "CONFIG") continue;
+          const path = ep.path;
+          if (!paths[path]) paths[path] = {};
+          const m = ep.method.toLowerCase();
+          paths[path][m] = {
+            summary: `${ep.method} ${ep.path}`,
+            tags: [svc.name, ...ep.tags],
+            responses: { "200": { description: "OK" } },
+            "x-zero-proof": { service: svc.name, source: `${ep.source.file}:${ep.source.line}` },
+          };
+        }
+      }
+      const spec = {
+        openapi: "3.1.0",
+        info: { title: `${data.projectName} API`, version: data.projectVersion, description: "Auto-discovered by ScanDog" },
+        servers: [
+          { url: "http://localhost:8080", description: "Gateway" },
+          { url: "http://localhost:8081", description: "Build Service" },
+          { url: "http://localhost:8082", description: "Prover Service" },
+        ],
+        paths,
+      };
+      lines.push(JSON.stringify(spec, null, 2));
+    }
+
+    if (fmt === "sarif") {
+      const results = [];
+      data.services.forEach((svc) => {
+        svc.endpoints.forEach((ep, i) => {
+          results.push({
+            ruleId: `ZP-${String(i + 1).padStart(4, "0")}`,
+            level: "note",
+            message: { text: `${ep.method} ${ep.path} in ${svc.name}` },
+            locations: [{ physicalLocation: { artifactLocation: { uri: ep.source.file }, region: { startLine: ep.source.line } } }],
+            properties: { tags: ep.tags, service: svc.name },
+          });
+        });
+      });
+      const sarif = {
+        $schema: "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-2.1.0-errata01-os-schema.json",
+        version: "2.1.0",
+        runs: [{ tool: { driver: { name: "zero-noir", version: "1.0.0" } }, results }],
+      };
+      lines.push(JSON.stringify(sarif, null, 2));
+    }
+
+    return lines.join("\n");
+  };
+
+  const download = (format) => {
+    const content = format === "json"
+      ? JSON.stringify(data, null, 2)
+      : getRawContent(format);
+    const mimeTypes = {
+      json: "application/json", yaml: "text/yaml",
+      openapi: "application/json", sarif: "application/json",
+      html: "text/html", mermaid: "text/plain",
+    };
     const blob = new Blob([content], { type: mimeTypes[format] || "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `zero-proof-attack-surface.${ext}`;
+    a.download = `zero-proof-attack-surface.${format === "openapi" ? "json" : format}`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const copyRaw = () => {
+    navigator.clipboard.writeText(getRawContent(rawTab));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (loading) {
     return (
       <div className={styles.container}>
         <div className={styles.hero}>
-          <div className={styles.heroIcon}>ScanDog is sniffing around your codebase...</div>
+          <div className={styles.heroBadge}>Loading...</div>
+          <h1 className={styles.heroTitle}>ScanDog is sniffing your codebase</h1>
         </div>
       </div>
     );
@@ -128,43 +247,48 @@ export default function ScanDog() {
     return (
       <div className={styles.container}>
         <div className={styles.hero}>
-          <div className={styles.heroIcon}>Could not load scan data. Run the scanner first.</div>
+          <div className={styles.heroBadge}>Offline</div>
+          <h1 className={styles.heroTitle}>No scan data available</h1>
+          <p className={styles.heroSub}>Run <code>npx tsx tools/zero-noir/src/index.ts scan .</code> and place the JSON in <code>website/static/scandog-data.json</code></p>
         </div>
       </div>
     );
   }
 
-  const serviceTypeIcons = {
-    health: "\u2764\uFE0F",
-    shadow: "\uD83D\uDC7B",
-    prover: "\u2705",
-    verifier: "\uD83D\uDD0D",
-    config: "\u2699\uFE0F",
-    docker: "\uD83D\uDC33",
-  };
+  const endpointMap = {};
+  for (const svc of data.services) {
+    for (const ep of svc.endpoints) {
+      const key = `${ep.method} ${ep.path}`;
+      if (!endpointMap[key]) endpointMap[key] = [];
+      endpointMap[key].push(svc.name);
+    }
+  }
 
   return (
     <div className={styles.container}>
+      {/* Hero */}
       <div className={styles.hero}>
-        <div className={styles.heroIcon}>ScanDog</div>
+        <div className={styles.heroBadge}>ScanDog v1.0.0</div>
         <h1 className={styles.heroTitle}>{data.projectName}</h1>
         <p className={styles.heroSub}>
-          Attack Surface Report \u2022 {data.totalEndpoints} endpoints discovered across{" "}
-          {data.services.length} services \u2022 {data.scannedAt}
+          Attack Surface Report &mdash; {data.totalEndpoints} endpoints &middot;{" "}
+          {data.services.length} services &middot; {data.clis.length} CLI tools &middot;{" "}
+          {new Date(data.scannedAt).toLocaleDateString()}
         </p>
       </div>
 
+      {/* Stats */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{data.totalEndpoints}</div>
           <div className={styles.statLabel}>Total Endpoints</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{data.services.length}</div>
+          <div className={`${styles.statValue} ${styles.statInfo}`}>{data.services.length}</div>
           <div className={styles.statLabel}>Services</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{data.clis.length}</div>
+          <div className={`${styles.statValue} ${styles.statInfo}`}>{data.clis.length}</div>
           <div className={styles.statLabel}>CLI Tools</div>
         </div>
         <div className={styles.statCard}>
@@ -174,185 +298,240 @@ export default function ScanDog() {
           <div className={styles.statLabel}>Shadow APIs</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{data.tags.prover}</div>
-          <div className={styles.statLabel}>Prover Endpoints</div>
+          <div className={`${styles.statValue} ${styles.statSuccess}`}>{data.tags.prover}</div>
+          <div className={styles.statLabel}>Prover</div>
         </div>
         <div className={styles.statCard}>
-          <div className={styles.statValue}>{data.tags.verifier}</div>
-          <div className={styles.statLabel}>Verifier Endpoints</div>
+          <div className={`${styles.statValue} ${styles.statSuccess}`}>{data.tags.verifier}</div>
+          <div className={styles.statLabel}>Verifier</div>
         </div>
       </div>
 
-      <div className={styles.filterBar}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          placeholder="Search endpoints, services, or tags..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <select
-          className={styles.filterSelect}
-          value={methodFilter}
-          onChange={(e) => setMethodFilter(e.target.value)}
-        >
-          <option value="all">All Methods</option>
-          <option value="GET">GET</option>
-          <option value="POST">POST</option>
-          <option value="ANY">ANY</option>
-          <option value="CLI">CLI</option>
-          <option value="TCP">TCP</option>
-          <option value="CONFIG">CONFIG</option>
-        </select>
-        <span style={{ fontSize: "0.8rem", color: "var(--ifm-color-emphasis-500)" }}>
-          {filteredEndpoints.length} of {data.totalEndpoints} endpoints
-        </span>
-      </div>
-
-      {data.services.map((svc) => {
-        const isExpanded = expandedServices.has(svc.name);
-        const icon = SERVICE_ICONS[svc.type] || "\uD83D\uDCA1";
-        const hasFiltered = svc.endpoints.some((ep) => {
-          if (methodFilter !== "all" && ep.method !== methodFilter) return false;
-          if (search) {
-            const q = search.toLowerCase();
-            return (
-              ep.path.toLowerCase().includes(q) ||
-              ep.method.toLowerCase().includes(q) ||
-              ep.tags.some((t) => t.toLowerCase().includes(q))
-            );
-          }
-          return true;
-        });
-        if (!hasFiltered && (search || methodFilter !== "all")) return null;
-
-        return (
-          <div className={styles.serviceCard} key={svc.name}>
-            <div className={styles.serviceHeader} onClick={() => toggleService(svc.name)}>
-              <span className={styles.serviceIcon}>{icon}</span>
-              <span className={styles.serviceName}>{svc.name}</span>
-              <span className={styles.serviceBadge}>{svc.type}</span>
-              {svc.port ? <span className={styles.servicePort}>:{svc.port}</span> : null}
-              <span className={`${styles.chevron} ${isExpanded ? styles.chevronOpen : ""}`}>&#9654;</span>
-            </div>
-            {isExpanded && (
-              <table className={styles.endpointTable}>
-                <thead>
-                  <tr>
-                    <th>Method</th>
-                    <th>Path</th>
-                    <th>Tags</th>
-                    <th>Source</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {svc.endpoints
-                    .filter((ep) => {
-                      if (methodFilter !== "all" && ep.method !== methodFilter) return false;
-                      if (search) {
-                        const q = search.toLowerCase();
-                        return (
-                          ep.path.toLowerCase().includes(q) ||
-                          ep.method.toLowerCase().includes(q) ||
-                          ep.tags.some((t) => t.toLowerCase().includes(q))
-                        );
-                      }
-                      return true;
-                    })
-                    .map((ep, i) => (
-                      <tr key={i}>
-                        <td>
-                          <span className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`}>
-                            {ep.method}
-                          </span>
-                        </td>
-                        <td>
-                          <code>{ep.path}</code>
-                        </td>
-                        <td>
-                          <div className={styles.tagList}>
-                            {ep.tags.map((t, j) => (
-                              <span key={j} className={`${styles.tag} ${TAG_CLASSES[t] || ""}`}>
-                                {t}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td>
-                          <a className={styles.sourceLink} href={`https://github.com/SURUJ404/Zero-proof/blob/main/${ep.source.file}`} target="_blank" rel="noopener">
-                            {ep.source.file}:{ep.source.line}
-                          </a>
-                        </td>
-                      </tr>
-                    ))}
-                  {svc.endpoints.filter((ep) => {
-                    if (methodFilter !== "all" && ep.method !== methodFilter) return false;
-                    if (search) {
-                      const q = search.toLowerCase();
-                      return (
-                        ep.path.toLowerCase().includes(q) ||
-                        ep.method.toLowerCase().includes(q) ||
-                        ep.tags.some((t) => t.toLowerCase().includes(q))
-                      );
-                    }
-                    return true;
-                  }).length === 0 && (
-                    <tr className={styles.emptyRow}>
-                      <td colSpan={4}>No matching endpoints</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            )}
+      {/* Alerts */}
+      {data.tags.shadow > 0 && (
+        <div className={styles.alertBar}>
+          <div className={`${styles.alert} ${styles.alertDanger}`}>
+            <strong>{data.tags.shadow} shadow API{data.tags.shadow !== 1 ? "s" : ""} detected</strong>
+            &mdash; These endpoints may expose internal functionality. Review access controls.
           </div>
-        );
-      })}
-
-      {data.clis.length > 0 && (
-        <div className={styles.serviceCard}>
-          <div className={styles.serviceHeader} onClick={() => toggleService("cli-tools")}>
-            <span className={styles.serviceIcon}>&#x1F4BB;</span>
-            <span className={styles.serviceName}>CLI Tools</span>
-            <span className={styles.serviceBadge}>&#x1F4CB; {data.clis.length}</span>
-          </div>
-          {expandedServices.has("cli-tools") && (
-            <div style={{ padding: "1rem 1.25rem" }}>
-              {data.clis.map((cli, i) => (
-                <div key={i} style={{ marginBottom: "0.75rem" }}>
-                  <strong style={{ color: "var(--ifm-color-primary)" }}>{cli.binary}</strong>
-                  <p style={{ margin: "0.2rem 0 0.4rem", fontSize: "0.85rem", color: "var(--ifm-color-emphasis-600)" }}>
-                    {cli.description}
-                  </p>
-                  <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-                    {cli.commands.map((cmd, j) => (
-                      <code key={j} style={{ fontSize: "0.75rem", padding: "0.15rem 0.4rem" }}>
-                        {cli.binary} {cmd.name}
-                      </code>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        <button className={`${styles.tab} ${activeTab === "endpoints" ? styles.tabActive : ""}`} onClick={() => setActiveTab("endpoints")}>
+          Endpoints
+        </button>
+        <button className={`${styles.tab} ${activeTab === "architecture" ? styles.tabActive : ""}`} onClick={() => setActiveTab("architecture")}>
+          Architecture
+        </button>
+        <button className={`${styles.tab} ${activeTab === "report" ? styles.tabActive : ""}`} onClick={() => setActiveTab("report")}>
+          Full Report
+        </button>
+        <button className={`${styles.tab} ${activeTab === "raw" ? styles.tabActive : ""}`} onClick={() => setActiveTab("raw")}>
+          Raw Data
+        </button>
+      </div>
+
+      {/* Tab: Endpoints */}
+      {activeTab === "endpoints" && (
+        <>
+          <div className={styles.filterBar}>
+            <input className={styles.searchInput} type="text" placeholder="Search paths, methods, services, tags..." value={search} onChange={(e) => setSearch(e.target.value)} />
+            <select className={styles.filterSelect} value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)}>
+              <option value="all">All Methods</option>
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="ANY">ANY</option>
+              <option value="CLI">CLI</option>
+              <option value="TCP">TCP</option>
+              <option value="CONFIG">CONFIG</option>
+            </select>
+            <span className={styles.filterCount}>{filteredEndpoints.length} of {allEndpoints.length}</span>
+          </div>
+
+          {data.services.map((svc) => {
+            const svcEp = svc.endpoints;
+            const isExpanded = expandedServices.has(svc.name);
+            const hasMatch = svcEp.some((ep) => {
+              if (methodFilter !== "all" && ep.method !== methodFilter) return false;
+              if (!search) return true;
+              const q = search.toLowerCase();
+              return ep.path.toLowerCase().includes(q) || ep.method.toLowerCase().includes(q) || ep.tags.some((t) => t.toLowerCase().includes(q)) || ep.source.file.toLowerCase().includes(q);
+            });
+            if ((search || methodFilter !== "all") && !hasMatch) return null;
+
+            const icon = SERVICE_ICONS[svc.type] || "\uD83D\uDCA1";
+
+            return (
+              <div className={styles.serviceCard} key={svc.name}>
+                <div className={styles.serviceHeader} onClick={() => toggleService(svc.name)}>
+                  <span className={styles.serviceIcon}>{icon}</span>
+                  <span className={styles.serviceName}>{svc.name}</span>
+                  <span className={styles.serviceBadge}>{svc.type}</span>
+                  {svc.port ? <span className={styles.servicePort}>:{svc.port}</span> : null}
+                  <span className={styles.serviceEpCount}>{svcEp.length}</span>
+                  <span className={`${styles.chevron} ${isExpanded ? styles.chevronOpen : ""}`}>&#9654;</span>
+                </div>
+                {isExpanded && (
+                  <table className={styles.endpointTable}>
+                    <thead>
+                      <tr><th>Method</th><th>Path</th><th>Tags</th><th>Source</th></tr>
+                    </thead>
+                    <tbody>
+                      {svcEp.filter((ep) => {
+                        if (methodFilter !== "all" && ep.method !== methodFilter) return false;
+                        if (!search) return true;
+                        const q = search.toLowerCase();
+                        return ep.path.toLowerCase().includes(q) || ep.method.toLowerCase().includes(q) || ep.tags.some((t) => t.toLowerCase().includes(q)) || ep.source.file.toLowerCase().includes(q);
+                      }).map((ep, i) => (
+                        <tr key={i}>
+                          <td><span className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`}>{ep.method}</span></td>
+                          <td className={styles.pathCell}><code>{ep.path}</code></td>
+                          <td>
+                            <div className={styles.tagList}>
+                              {ep.tags.map((t, j) => (
+                                <span key={j} className={`${styles.tag} ${TAG_CLASSES[t] || ""}`}>{t}</span>
+                              ))}
+                            </div>
+                          </td>
+                          <td>
+                            <a className={styles.sourceLink} href={`https://github.com/SURUJ404/Zero-proof/blob/main/${ep.source.file}`} target="_blank" rel="noopener">
+                              {ep.source.file}:{ep.source.line}
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                      {svcEp.filter((ep) => {
+                        if (methodFilter !== "all" && ep.method !== methodFilter) return false;
+                        if (!search) return true;
+                        const q = search.toLowerCase();
+                        return ep.path.toLowerCase().includes(q) || ep.method.toLowerCase().includes(q) || ep.tags.some((t) => t.toLowerCase().includes(q)) || ep.source.file.toLowerCase().includes(q);
+                      }).length === 0 && (
+                        <tr className={styles.emptyRow}><td colSpan={4}>No matching endpoints</td></tr>
+                      )}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            );
+          })}
+
+          {/* CLI Tools */}
+          <div className={styles.cliSection}>
+            <div className={styles.cliHeader}>CLI Tools ({data.clis.length})</div>
+            <div className={styles.cliBody}>
+              {data.clis.map((cli, i) => (
+                <div className={styles.cliItem} key={i}>
+                  <div className={styles.cliName}>{cli.binary}</div>
+                  <div className={styles.cliDesc}>{cli.description}</div>
+                  <div>{cli.commands.map((cmd, j) => (
+                    <code className={styles.cliCmd} key={j}>{cli.binary} {cmd.name}</code>
+                  ))}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Tab: Architecture */}
+      {activeTab === "architecture" && (
+        <div className={styles.diagramSection}>
+          {mermaidSvg ? (
+            <div dangerouslySetInnerHTML={{ __html: mermaidSvg }} />
+          ) : (
+            <div style={{ textAlign: "center", padding: "2rem", color: "var(--ifm-color-emphasis-500)" }}>
+              Generating architecture diagram...
+            </div>
+          )}
+          <div style={{ textAlign: "center", marginTop: "0.75rem" }}>
+            <button className={styles.downloadBtn} onClick={() => download("mermaid")}>Download Mermaid Source</button>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Full Report */}
+      {activeTab === "report" && (
+        <div className={styles.fullReport}>
+          <h2>Service Inventory</h2>
+          <table className={styles.reportTable}>
+            <thead><tr><th>Service</th><th>Type</th><th>Port</th><th>Endpoints</th><th>Methods</th></tr></thead>
+            <tbody>
+              {data.services.map((svc, i) => {
+                const methods = [...new Set(svc.endpoints.map((e) => e.method))].join(", ");
+                return (
+                  <tr key={i} className={i % 2 === 1 ? styles.reportRowEven : ""}>
+                    <td><strong>{svc.name}</strong></td>
+                    <td><span className={styles.serviceBadge}>{svc.type}</span></td>
+                    <td>{svc.port || "-"}</td>
+                    <td>{svc.endpoints.length}</td>
+                    <td style={{ fontSize: "0.7rem" }}>{methods}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+
+          <h2 style={{ marginTop: "1.5rem" }}>Endpoint Catalog</h2>
+          <table className={styles.reportTable}>
+            <thead><tr><th>#</th><th>Method</th><th>Path</th><th>Service</th><th>Tags</th><th>Source</th></tr></thead>
+            <tbody>
+              {allEndpoints.map((ep, i) => (
+                <tr key={i} className={i % 2 === 1 ? styles.reportRowEven : ""}>
+                  <td style={{ color: "var(--ifm-color-emphasis-500)", fontSize: "0.7rem" }}>{i + 1}</td>
+                  <td><span className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`}>{ep.method}</span></td>
+                  <td className={styles.pathCell}><code>{ep.path}</code></td>
+                  <td style={{ fontSize: "0.75rem" }}>{ep._service}</td>
+                  <td><div className={styles.tagList}>{ep.tags.map((t, j) => (<span key={j} className={`${styles.tag} ${TAG_CLASSES[t] || ""}`}>{t}</span>))}</div></td>
+                  <td><a className={styles.sourceLink} href={`https://github.com/SURUJ404/Zero-proof/blob/main/${ep.source.file}`} target="_blank" rel="noopener">{ep.source.file}:{ep.source.line}</a></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2 style={{ marginTop: "1.5rem" }}>Security Posture</h2>
+          <div className={styles.alertBar}>
+            <div className={`${styles.alert} ${data.tags.shadow === 0 ? styles.alertSuccess : styles.alertDanger}`}>
+              <strong>Shadow APIs:</strong> {data.tags.shadow === 0 ? "None detected" : `${data.tags.shadow} found`}
+            </div>
+            <div className={`${styles.alert} ${styles.alertSuccess}`}>
+              <strong>Prover endpoints:</strong> {data.tags.prover} &mdash; proof generation surface
+            </div>
+            <div className={`${styles.alert} ${styles.alertSuccess}`}>
+              <strong>Verifier endpoints:</strong> {data.tags.verifier} &mdash; proof verification surface
+            </div>
+            <div className={`${styles.alert} ${styles.alertWarning}`}>
+              <strong>Infrastructure:</strong> {data.services.filter((s) => s.port).length} services expose container ports
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Raw Data */}
+      {activeTab === "raw" && (
+        <div className={styles.rawSection}>
+          <div className={styles.rawTabs}>
+            {["json", "yaml", "openapi", "sarif"].map((fmt) => (
+              <button key={fmt} className={`${styles.rawTab} ${rawTab === fmt ? styles.rawTabActive : ""}`} onClick={() => setRawTab(fmt)}>
+                {fmt.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <div className={styles.rawBody}>
+            <button className={styles.copyBtn} onClick={copyRaw}>{copied ? "Copied!" : "Copy"}</button>
+            <pre className={styles.rawPre}>{getRawContent(rawTab)}</pre>
+          </div>
+        </div>
+      )}
+
+      {/* Download bar */}
       <div className={styles.downloadBar}>
-        <button className={styles.downloadBtn} onClick={() => download("json")}>
-          Download JSON
-        </button>
-        <button className={styles.downloadBtn} onClick={() => download("yaml")}>
-          Download YAML
-        </button>
-        <button className={styles.downloadBtn} onClick={() => download("openapi")}>
-          Download OpenAPI
-        </button>
-        <button className={styles.downloadBtn} onClick={() => download("sarif")}>
-          Download SARIF
-        </button>
-        <button className={styles.downloadBtn} onClick={() => download("mermaid")}>
-          Download Mermaid
-        </button>
+        <button className={styles.downloadBtn} onClick={() => download("json")}>JSON</button>
+        <button className={styles.downloadBtn} onClick={() => download("yaml")}>YAML</button>
+        <button className={styles.downloadBtn} onClick={() => download("openapi")}>OpenAPI</button>
+        <button className={styles.downloadBtn} onClick={() => download("sarif")}>SARIF</button>
+        <button className={styles.downloadBtn} onClick={() => download("mermaid")}>Mermaid</button>
       </div>
     </div>
   );
