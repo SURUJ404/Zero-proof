@@ -16,3 +16,4 @@ risc0-zkvm = { path = "../../risc0/zkvm", features = ["prove"] }
 risc0-binfmt = { path = "../../risc0/binfmt" }
 base64 = "0.22"
 hex = "0.4"
+bincode = "1.3"

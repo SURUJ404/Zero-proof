@@ -91,7 +91,7 @@ async fn prove_handler(
             let elapsed = start.elapsed().as_millis() as u64;
             let receipt_bytes = bincode::serialize(&receipt).unwrap();
             let receipt_b64 = BASE64_STANDARD.encode(&receipt_bytes);
-            let image_id = hex::encode(receipt.inner.claim().unwrap().image_id.as_bytes());
+            let image_id = hex::encode(receipt.receipt.inner.claim().unwrap().image_id.as_bytes());
 
             (StatusCode::OK, Json(ProveResponse {
                 success: true,
