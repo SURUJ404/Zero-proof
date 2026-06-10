@@ -11,7 +11,7 @@ export function registerListCommand(program: Command): void {
     .command("formats")
     .description("List available output formats")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  Zero Noir — Available Output Formats\n"));
+      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Available Output Formats\n"));
       for (const fmt of OUTPUT_FORMATS) {
         console.log(`  ${chalk.green("▸")} ${fmt}`);
       }

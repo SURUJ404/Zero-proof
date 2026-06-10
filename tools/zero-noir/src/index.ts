@@ -15,7 +15,6 @@ const program = new Command();
 
 program
   .name("zn")
-  .alias("zn")
   .description("Zero Proof Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface")
   .version(pkg.version, "-v, --version", "Show version");
 

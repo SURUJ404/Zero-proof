@@ -23,7 +23,7 @@ export function registerScanCommand(program: Command): void {
     .action(async (path, options) => {
       const scanner = new Scanner();
 
-      console.log(chalk.hex("#db8b8b")("\n  ⚡ Zero Noir — Attack Surface Detector"));
+      console.log(chalk.hex("#db8b8b")("\n  ⚡ ScanDog — Attack Surface Detector"));
       console.log(chalk.gray(`  Scanning: ${path}\n`));
 
       const result = scanner.scan(path, {
