@@ -2,19 +2,21 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 
 use axum::{
-    extract::State,
-    http::StatusCode,
+    body::Body,
+    extract::{Path, State},
+    http::{Request, StatusCode},
     Json, Router,
-    routing::get,
+    routing::{any, get},
 };
 use serde::Serialize;
 use tower_http::cors::CorsLayer;
-use tracing::info;
+use tracing::{error, info};
 
 #[derive(Clone)]
 struct AppState {
     build_service_url: String,
     prover_service_url: String,
+    client: reqwest::Client,
 }
 
 #[derive(Serialize)]
@@ -30,16 +32,41 @@ struct HealthSummary {
     prover_service: String,
 }
 
+#[derive(Serialize)]
+struct RootResponse {
+    service: &'static str,
+    version: &'static str,
+    endpoints: serde_json::Value,
+}
+
 async fn health(State(state): State<Arc<AppState>>) -> Json<HealthResponse> {
-    let build_status = reqwest::get(format!("{}/api/health", state.build_service_url))
+    let build_status = state
+        .client
+        .get(format!("{}/api/health", state.build_service_url))
+        .send()
         .await
-        .map(|r| if r.status().is_success() { "up" } else { "degraded" })
+        .map(|r| {
+            if r.status().is_success() {
+                "up"
+            } else {
+                "degraded"
+            }
+        })
         .unwrap_or("down")
         .to_string();
 
-    let prover_status = reqwest::get(format!("{}/api/health", state.prover_service_url))
+    let prover_status = state
+        .client
+        .get(format!("{}/api/health", state.prover_service_url))
+        .send()
         .await
-        .map(|r| if r.status().is_success() { "up" } else { "degraded" })
+        .map(|r| {
+            if r.status().is_success() {
+                "up"
+            } else {
+                "degraded"
+            }
+        })
         .unwrap_or("down")
         .to_string();
 
@@ -53,15 +80,57 @@ async fn health(State(state): State<Arc<AppState>>) -> Json<HealthResponse> {
     })
 }
 
-async fn proxy_health() -> Json<serde_json::Value> {
-    Json(serde_json::json!({
-        "service": "gateway",
-        "version": "0.1.0",
-        "endpoints": {
-            "build": "http://localhost:8081",
-            "prover": "http://localhost:8082",
+async fn root() -> Json<RootResponse> {
+    Json(RootResponse {
+        service: "gateway",
+        version: "0.1.0",
+        endpoints: serde_json::json!({
+            "build": "POST /api/build",
+            "prove": "POST /api/prove",
+            "verify": "POST /api/verify",
+            "health": "GET /api/health",
+        }),
+    })
+}
+
+async fn proxy_handler(
+    State(state): State<Arc<AppState>>,
+    Path(path): Path<String>,
+    req: Request<Body>,
+) -> Result<axum::response::Response, StatusCode> {
+    let upstream = if path.starts_with("build") {
+        &state.build_service_url
+    } else if path.starts_with("prove") || path.starts_with("verify") {
+        &state.prover_service_url
+    } else {
+        return Err(StatusCode::NOT_FOUND);
+    };
+
+    let upstream_uri = format!("{}/api/{path}", upstream.trim_end_matches('/'));
+    let method = req.method().clone();
+    let body = axum::body::to_bytes(req.into_body(), usize::MAX)
+        .await
+        .map_err(|_| StatusCode::BAD_REQUEST)?;
+
+    let upstream_req = state
+        .client
+        .request(method, &upstream_uri)
+        .body(body)
+        .header("content-type", "application/json");
+
+    match upstream_req.send().await {
+        Ok(resp) => {
+            let status = resp.status();
+            let body = resp.bytes().await.unwrap_or_default();
+            let mut response = axum::response::Response::new(Body::from(body));
+            *response.status_mut() = status;
+            Ok(response)
         }
-    }))
+        Err(e) => {
+            error!("Upstream request failed: {e}");
+            Err(StatusCode::BAD_GATEWAY)
+        }
+    }
 }
 
 #[tokio::main]
@@ -82,11 +151,13 @@ async fn main() {
     let state = Arc::new(AppState {
         build_service_url,
         prover_service_url,
+        client: reqwest::Client::new(),
     });
 
     let app = Router::new()
+        .route("/", get(root))
         .route("/api/health", get(health))
-        .route("/", get(proxy_health))
+        .route("/api/*path", any(proxy_handler))
         .layer(CorsLayer::permissive())
         .with_state(state);
 

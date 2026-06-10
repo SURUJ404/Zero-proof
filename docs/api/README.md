@@ -9,30 +9,37 @@ This directory documents all APIs for the Zero Proof microservice architecture.
                     │   CLI (zp)          │
                     │   zp build/prove    │
                     └──────┬──────────────┘
-                           │
+                           │  all requests
                     ┌──────▼──────────────┐
                     │  Gateway (:8080)    │
-                    │  /api/* health      │
-                    └──┬─────────────┬────┘
-                       │             │
-              ┌────────▼──┐   ┌──────▼────────┐
-              │ Build      │   │ Prover        │
-              │ Service    │   │ Service       │
-              │ (:8081)    │   │ (:8082)       │
-              │ /api/build │   │ /api/prove    │
-              │            │   │ /api/verify   │
-              └────────────┘   └───────────────┘
+                    │  /api/build  ───────┼───┐
+                    │  /api/prove  ───────┼───┼──┐
+                    │  /api/verify ───────┼───┼──┼──┐
+                    │  /api/health (agg)  │   │  │  │
+                    └─────────────────────┘   │  │  │
+              ┌───────────────────────────────┘  │  │
+              │          ┌───────────────────────┘  │
+              │          │          ┌────────────────┘
+              ▼          ▼          ▼
+       ┌──────────┐ ┌──────────┐ ┌──────────┐
+       │ Build    │ │ Prover   │ │ Prover   │
+       │ (:8081)  │ │ (:8082)  │ │ (:8082)  │
+       │ /api/    │ │ /api/    │ │ /api/    │
+       │ build    │ │ prove    │ │ verify   │
+       └──────────┘ └──────────┘ └──────────┘
 ```
 
 ## Services
 
 | Service | Port | Description |
 |---------|------|-------------|
-| [Gateway](gateway.md) | 8080 | Unified entry point, routes requests |
+| [Gateway](gateway.md) | 8080 | **Single entry point** — proxies to backends |
 | [Build Service](build-service.md) | 8081 | Compiles guest ELF programs |
 | [Prover Service](prover-service.md) | 8082 | Generates and verifies ZK proofs |
 
 ## CLI
+
+All CLI commands route through the **Gateway** by default.
 
 See [CLI Documentation](cli.md) for the `zp` command-line tool.
 

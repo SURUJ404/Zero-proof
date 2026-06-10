@@ -13,8 +13,8 @@ pub struct ZpConfig {
 impl Default for ZpConfig {
     fn default() -> Self {
         Self {
-            build_service_url: "http://localhost:8081".to_string(),
-            prover_service_url: "http://localhost:8082".to_string(),
+            build_service_url: "http://localhost:8080".to_string(),
+            prover_service_url: "http://localhost:8080".to_string(),
             gateway_url: "http://localhost:8080".to_string(),
             data_dir: dirs::data_dir()
                 .unwrap_or_else(|| PathBuf::from("."))

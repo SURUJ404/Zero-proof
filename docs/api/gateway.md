@@ -3,6 +3,15 @@
 **Port:** 8080 (configurable via `GATEWAY_PORT` env)
 **Base URL:** `http://localhost:8080`
 
+The gateway is the **single entry point** for all microservices. It proxies requests to the appropriate backend.
+
+| Client request | Gateway proxies to |
+|---|---|
+| `POST /api/build` | Build Service `POST /api/build` |
+| `POST /api/prove` | Prover Service `POST /api/prove` |
+| `POST /api/verify` | Prover Service `POST /api/verify` |
+| `GET /api/health` | Aggregated (local) |
+
 ## Endpoints
 
 ### GET /
@@ -15,8 +24,10 @@ Root endpoint with service information.
   "service": "gateway",
   "version": "0.1.0",
   "endpoints": {
-    "build": "http://localhost:8081",
-    "prover": "http://localhost:8082"
+    "build": "POST /api/build",
+    "prove": "POST /api/prove",
+    "verify": "POST /api/verify",
+    "health": "GET /api/health"
   }
 }
 ```
@@ -40,6 +51,24 @@ Aggregated health check across all services.
 ```
 
 Each service reports one of: `"up"`, `"degraded"`, or `"down"`.
+
+---
+
+### POST /api/build
+
+Proxied to Build Service. See [Build Service API](build-service.md#post-apibuild).
+
+---
+
+### POST /api/prove
+
+Proxied to Prover Service. See [Prover Service API](prover-service.md#post-apiprove).
+
+---
+
+### POST /api/verify
+
+Proxied to Prover Service. See [Prover Service API](prover-service.md#post-apiverify).
 
 ## Environment Variables
 

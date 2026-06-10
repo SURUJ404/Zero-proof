@@ -99,6 +99,15 @@ Actions:
 - `gateway_url`
 - `data_dir`
 
+## Routing
+
+By default, all CLI commands route through the **Gateway** (`http://localhost:8080`) which proxies to the appropriate backend service. You can bypass the gateway and hit services directly by configuring:
+
+```
+zp config set build_service_url http://localhost:8081
+zp config set prover_service_url http://localhost:8082
+```
+
 ## Configuration File
 
 Located at:
