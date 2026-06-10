@@ -141,6 +141,11 @@ export default async function createConfigAsync() {
           items: [
             {
               position: "left",
+              label: "ScanDog",
+              to: "/scandog",
+            },
+            {
+              position: "left",
               label: "Playground",
               to: "/playground",
             },

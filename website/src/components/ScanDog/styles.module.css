@@ -1,0 +1,296 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.hero {
+  text-align: center;
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  margin-bottom: 2rem;
+}
+
+.heroIcon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.heroTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  margin: 0;
+}
+
+.heroSub {
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--ifm-color-primary);
+  line-height: 1;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--ifm-color-emphasis-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 0.35rem;
+}
+
+.statDanger { color: var(--ifm-color-danger); }
+
+.serviceCard {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+}
+
+.serviceHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.serviceHeader:hover {
+  background: var(--ifm-hover-overlay);
+}
+
+.serviceIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.serviceName {
+  font-weight: 600;
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+.serviceBadge {
+  font-size: 0.65rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--ifm-color-primary) 20%, transparent);
+  color: var(--ifm-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 600;
+}
+
+.servicePort {
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-600);
+  font-family: monospace;
+}
+
+.chevron {
+  color: var(--ifm-color-emphasis-500);
+  transition: transform 0.2s;
+  font-size: 0.8rem;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.endpointTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.endpointTable th {
+  text-align: left;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.7rem;
+  color: var(--ifm-color-emphasis-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-color);
+}
+
+.endpointTable td {
+  padding: 0.45rem 1.25rem;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.endpointTable tr:last-child td {
+  border-bottom: none;
+}
+
+.endpointTable tr:hover td {
+  background: var(--ifm-hover-overlay);
+}
+
+.methodBadge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+  font-family: var(--ifm-font-family-monospace);
+  min-width: 40px;
+  text-align: center;
+}
+
+.methodGet { background: #1f3a5f; color: #58a6ff; }
+.methodPost { background: #1f3f2a; color: #3fb950; }
+.methodAny { background: #2d2d2d; color: #8b949e; }
+.methodCli { background: #2d1f3d; color: #d2a8ff; }
+.methodTcp { background: #1f2a3f; color: #79c0ff; }
+.methodConfig { background: #2d2d2d; color: #d29922; }
+
+.sourceLink {
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.72rem;
+  text-decoration: none;
+}
+
+.sourceLink:hover {
+  color: var(--ifm-color-primary);
+  text-decoration: underline;
+}
+
+.tagList {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  padding: 0.08rem 0.35rem;
+  border-radius: 3px;
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-emphasis-700);
+}
+
+.tagHealth { background: #1f3f2a; color: #3fb950; }
+.tagProver { background: #1f3a5f; color: #58a6ff; }
+.tagVerifier { background: #2d1f3d; color: #d2a8ff; }
+.tagShadow { background: #3d1f1f; color: #f85149; }
+.tagConfig { background: #3d2e0f; color: #d29922; }
+.tagDocker { background: #1f3a5f20; color: var(--ifm-color-emphasis-600); }
+.tagCli { background: #2d1f3d40; color: #d2a8ff; }
+
+.filterBar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--ifm-color-primary);
+}
+
+.filterSelect {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.downloadBar {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--ifm-toc-border-color);
+  flex-wrap: wrap;
+}
+
+.downloadBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+
+.downloadBtn:hover {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.emptyRow td {
+  text-align: center;
+  color: var(--ifm-color-emphasis-500);
+  font-style: italic;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .statCard {
+    padding: 0.75rem;
+  }
+  .statValue {
+    font-size: 1.25rem;
+  }
+  .filterBar {
+    flex-direction: column;
+  }
+  .searchInput {
+    width: 100%;
+  }
+}

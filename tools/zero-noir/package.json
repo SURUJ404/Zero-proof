@@ -1,0 +1,32 @@
+{
+  "name": "zero-noir",
+  "version": "1.0.0",
+  "description": "Zero Proof Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface",
+  "type": "module",
+  "bin": {
+    "zero-noir": "dist/index.js",
+    "zn": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "scan": "node dist/index.js scan",
+    "dev": "tsx src/index.ts",
+    "dev:scan": "tsx src/index.ts scan"
+  },
+  "keywords": ["zero-proof", "security", "sast", "endpoints", "attack-surface", "zkp"],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "glob": "^11.0.1",
+    "js-yaml": "^4.1.0",
+    "strip-comments": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.13.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
