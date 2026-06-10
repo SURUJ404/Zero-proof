@@ -1,0 +1,248 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--ifm-navbar-height));
+  background: var(--ifm-background-color);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+  flex-shrink: 0;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ifm-heading-color);
+  margin: 0;
+}
+
+.select {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.select:focus {
+  border-color: var(--ifm-color-primary);
+}
+
+.runButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.runButton:hover {
+  opacity: 0.85;
+}
+
+.runButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.runButton.running {
+  background: var(--ifm-color-primary-dark);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.editorContainer {
+  flex: 1;
+  min-height: 0;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.editorWrapper {
+  height: 100%;
+}
+
+.outputPanel {
+  height: 35%;
+  min-height: 120px;
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+  background: var(--ifm-background-surface-color);
+  flex-shrink: 0;
+}
+
+.outputHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 1rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-700);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.clearOutput {
+  background: none;
+  border: none;
+  color: var(--ifm-color-emphasis-600);
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.clearOutput:hover {
+  color: var(--ifm-color-emphasis-900);
+  background: var(--ifm-hover-overlay);
+}
+
+.outputContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.75rem 1rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.outputEmpty {
+  color: var(--ifm-color-emphasis-500);
+  font-style: italic;
+}
+
+.outputSuccess {
+  color: var(--ifm-color-success);
+}
+
+.outputError {
+  color: var(--ifm-color-danger);
+}
+
+.outputInfo {
+  color: var(--ifm-color-info);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.4rem;
+}
+
+.statusDot.ready {
+  background: var(--ifm-color-success);
+}
+
+.statusDot.running {
+  background: var(--ifm-color-warning);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.fileTabs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 1rem;
+  background: var(--ifm-background-surface-color);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.fileTab {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  color: var(--ifm-color-emphasis-600);
+  white-space: nowrap;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.fileTab:hover {
+  color: var(--ifm-color-emphasis-900);
+  background: var(--ifm-hover-overlay);
+}
+
+.fileTab.active {
+  color: var(--ifm-color-primary);
+  border-bottom-color: var(--ifm-color-primary);
+  font-weight: 600;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--ifm-color-emphasis-500);
+  gap: 0.5rem;
+}
+
+.emptyStateIcon {
+  font-size: 2rem;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .headerLeft, .headerRight {
+    width: 100%;
+  }
+  .headerRight {
+    justify-content: flex-end;
+  }
+  .outputPanel {
+    height: 45%;
+    min-height: 150px;
+  }
+}

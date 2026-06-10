@@ -263,8 +263,8 @@ impl KernelBuild {
             .debug(false)
             .files(&files)
             .includes(&includes)
-            .flag_if_supported("/std:c++17")
-            .flag_if_supported("-std=c++17")
+            .flag_if_supported("/std:c++20")
+            .flag_if_supported("-std=c++20")
             .flag_if_supported("-fno-var-tracking")
             .flag_if_supported("-fno-var-tracking-assignments");
 
