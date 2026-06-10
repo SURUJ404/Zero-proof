@@ -1,5 +1,5 @@
 {
-  "name": "zero-noir",
+  "name": "@suruj/scan-dog",
   "version": "1.0.0",
   "description": "Zero Proof Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface",
   "type": "module",
@@ -13,6 +13,9 @@
     "scan": "node dist/index.js scan",
     "dev": "tsx src/index.ts",
     "dev:scan": "tsx src/index.ts scan"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": ["zero-proof", "security", "sast", "endpoints", "attack-surface", "zkp"],
   "license": "MIT",
