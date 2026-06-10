@@ -43,7 +43,7 @@ export class SARIFOutput {
       runs: [{
         tool: {
           driver: {
-            name: "zero-noir",
+            name: "ScanDog",
             version: "1.0.0",
             informationUri: "https://zero-proof-pearl.vercel.app",
             rules,

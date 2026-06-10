@@ -37,6 +37,31 @@
   margin-top: 0.5rem;
   font-size: 0.95rem;
 }
+.ctaBar {
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.ctaBtn {
+  display: inline-block;
+  padding: 0.85rem 2.5rem;
+  border-radius: 8px;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: opacity 0.15s, transform 0.15s;
+  border: none;
+  cursor: pointer;
+}
+.ctaBtn:hover {
+  color: #fff;
+  opacity: 0.9;
+  text-decoration: none;
+  transform: scale(1.03);
+}
 
 /* Tabs */
 .tabs {

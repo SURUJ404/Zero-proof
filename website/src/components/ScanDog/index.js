@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import Link from "@docusaurus/Link";
 import styles from "./styles.module.css";
 
 const SERVICE_ICONS = {
@@ -200,7 +201,7 @@ export default function ScanDog() {
       const sarif = {
         $schema: "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-2.1.0-errata01-os-schema.json",
         version: "2.1.0",
-        runs: [{ tool: { driver: { name: "zero-noir", version: "1.0.0" } }, results }],
+        runs: [{ tool: { driver: { name: "ScanDog", version: "1.0.0" } }, results }],
       };
       lines.push(JSON.stringify(sarif, null, 2));
     }
@@ -232,9 +233,16 @@ export default function ScanDog() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const cta = (
+    <Link className={styles.ctaBtn} to="/scandog-setup">
+      Get Started
+    </Link>
+  );
+
   if (loading) {
     return (
       <div className={styles.container}>
+        <div className={styles.ctaBar}>{cta}</div>
         <div className={styles.hero}>
           <div className={styles.heroBadge}>Loading...</div>
           <h1 className={styles.heroTitle}>ScanDog is sniffing your codebase</h1>
@@ -246,10 +254,11 @@ export default function ScanDog() {
   if (!data) {
     return (
       <div className={styles.container}>
+        <div className={styles.ctaBar}>{cta}</div>
         <div className={styles.hero}>
           <div className={styles.heroBadge}>Offline</div>
           <h1 className={styles.heroTitle}>No scan data available</h1>
-          <p className={styles.heroSub}>Run <code>npx tsx tools/zero-noir/src/index.ts scan .</code> and place the JSON in <code>website/static/scandog-data.json</code></p>
+          <p className={styles.heroSub}>Run <code>zn scan . --format json</code> and place the output in <code>website/static/scandog-data.json</code></p>
         </div>
       </div>
     );
@@ -266,6 +275,8 @@ export default function ScanDog() {
 
   return (
     <div className={styles.container}>
+      <div className={styles.ctaBar}>{cta}</div>
+
       {/* Hero */}
       <div className={styles.hero}>
         <div className={styles.heroBadge}>ScanDog v1.0.0</div>

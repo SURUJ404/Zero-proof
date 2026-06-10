@@ -14,7 +14,7 @@ const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
 const program = new Command();
 
 program
-  .name("zero-noir")
+  .name("zn")
   .alias("zn")
   .description("Zero Proof Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface")
   .version(pkg.version, "-v, --version", "Show version");
