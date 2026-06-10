@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "bonsai/sdk",
+    "cli",
     "risc0/bigint2",
     "risc0/bigint2/methods",
     "risc0/binfmt",
@@ -35,6 +36,9 @@ members = [
     "risc0/zkvm/receipts",
     "rzup",
     "server",
+    "services/build-service",
+    "services/gateway",
+    "services/prover-service",
     "tools/gpu-guard",
     "tools/gpu-guard/macros",
     "tools/hotbench",

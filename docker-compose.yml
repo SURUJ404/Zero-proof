@@ -1,18 +1,50 @@
-version: "3.9"
-
 services:
-  zk-prover-server:
-    build: .
+  build-service:
+    build:
+      context: .
+      dockerfile: services/build-service/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - BUILD_SERVICE_PORT=8081
+      - ZP_DATA_DIR=/data
+    volumes:
+      - zp-data:/data
+    networks:
+      - zp-net
+
+  prover-service:
+    build:
+      context: .
+      dockerfile: services/prover-service/Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      - PROVER_SERVICE_PORT=8082
+      - RISC0_DEV_MODE=${RISC0_DEV_MODE:-true}
+    volumes:
+      - zp-data:/data
+    networks:
+      - zp-net
+
+  gateway:
+    build:
+      context: .
+      dockerfile: services/gateway/Dockerfile
     ports:
       - "8080:8080"
     environment:
-      - PORT=8080
-      - RISC0_DEV_MODE=${RISC0_DEV_MODE:-true}
-      - RISC0_PROVER=${RISC0_PROVER:-local}
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3000}
-    healthcheck:
-      test: curl -f http://localhost:8080/api/health || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
+      - GATEWAY_PORT=8080
+      - BUILD_SERVICE_URL=http://build-service:8081
+      - PROVER_SERVICE_URL=http://prover-service:8082
+    depends_on:
+      - build-service
+      - prover-service
+    networks:
+      - zp-net
+
+volumes:
+  zp-data:
+
+networks:
+  zp-net:
