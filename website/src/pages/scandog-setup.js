@@ -237,7 +237,7 @@ npm run build
 node dist/index.js scan ../../`}</Pre>
 
           <h3 style={subheading}>Install Globally (optional)</h3>
-          <Pre>{`npm install -g .
+          <Pre>{`npm install -g @suruj/scan-dog
 
 # Then run from anywhere
 zn scan /path/to/zero-proof
