@@ -83,12 +83,14 @@ async fn build_handler(
             .unwrap_or_else(|| "guest".to_string())
     });
 
-    match risc0_build::build_package(&guest_path, &out_dir) {
+    let pkg = risc0_build::get_package(&guest_path);
+    match risc0_build::build_package(&pkg, &out_dir, Default::default()) {
         Ok(artifacts) => {
             let elf_path = out_dir.join(format!("{}.elf", &pkg_name));
             let image_id = artifacts
-                .get(&pkg_name)
-                .map(|a| hex::encode(a.image_id.0.as_bytes()));
+                .iter()
+                .find(|a| a.name == pkg_name)
+                .map(|a| hex::encode(a.image_id.as_bytes()));
             (StatusCode::OK, Json(BuildResponse {
                 success: true,
                 elf_path: Some(elf_path.to_string_lossy().to_string()),

@@ -13,3 +13,4 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 anyhow = "1"
 risc0-build = { path = "../../risc0/build" }
+hex = "0.4"

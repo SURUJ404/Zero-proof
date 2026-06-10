@@ -38,6 +38,18 @@ zp server stop
 zp build examples\hello-world\methods\guest --local
 ```
 
+## Examples Compatible with `zp build`
+
+Out of 25 example projects, **3** use the `zp build` CLI directly:
+
+| Example | Guest Path |
+|---|---|
+| **hello-world** | `examples\hello-world\methods\guest` |
+| **digital-signature** | `examples\digital-signature\methods\guest` |
+| **voting-machine** (3 binaries) | `examples\voting-machine\methods\guest` |
+
+The remaining 22 examples (chess, ecdsa, json, password-checker, sha, etc.) use the older `cargo run` + `build.rs` workflow instead of `zp build`.
+
 ## Useful Commands
 
 | Command | Description |

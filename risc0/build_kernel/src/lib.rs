@@ -39,7 +39,7 @@ const DISABLED_WARNINGS: [&str; 5] = [
 fn read_manifest(manifest_path: &Path) -> Vec<PathBuf> {
     let contents = std::fs::read_to_string(manifest_path).unwrap();
     contents
-        .split("\n")
+        .lines()
         .filter(|l| !l.trim().is_empty())
         .map(PathBuf::from)
         .collect()
