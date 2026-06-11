@@ -1,6 +1,6 @@
 {
   "name": "@suruj/scan-dog",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface",
   "type": "module",
   "bin": {
