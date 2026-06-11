@@ -56,6 +56,7 @@ class Scanner {
 
     const frameworks = this.detectFrameworks(contents);
     const endpoints = this.detectEndpoints(contents);
+    const clis = this.detectCLIs(files, contents);
 
     const deduped = dedup(endpoints);
     const services = buildServices(groupBy(deduped));
@@ -70,7 +71,7 @@ class Scanner {
       scannedAt: new Date().toISOString(),
       totalEndpoints: deduped.length,
       services,
-      clis: [],
+      clis,
       tags,
       technologies: allTechs.length > 0 ? allTechs : ["unknown"],
       warnings,
@@ -155,6 +156,56 @@ class Scanner {
     return frameworks;
   }
 
+  detectCLIs(files, contents) {
+    const clis = [];
+    const seen = new Set();
+
+    const tryAdd = (binary, description) => {
+      if (!binary || seen.has(binary)) return;
+      seen.add(binary);
+      clis.push({ binary, description, commands: [{ name: "--help", description: `Show ${binary} help` }] });
+    };
+
+    for (const { path, content } of contents) {
+      const fileName = path.split("/").pop().toLowerCase();
+
+      if (fileName === "cargo.toml") {
+        const pkg = content.match(/^\[package\]\s*\n(?:[^[]*\n)*/m);
+        if (pkg) {
+          const nameM = pkg[0].match(/^\s*name\s*=\s*"([^"]+)"/m);
+          if (nameM) tryAdd(nameM[1], "Rust binary crate") ;
+        }
+        const binRe = /\[\[bin\]\][^[]*?name\s*=\s*"([^"]+)"/g;
+        let bm;
+        while ((bm = binRe.exec(content)) !== null) tryAdd(bm[1], "Rust CLI tool");
+      }
+
+      if (fileName === "package.json") {
+        try {
+          const pkg = JSON.parse(content);
+          if (pkg.bin) {
+            if (typeof pkg.bin === "string") tryAdd(pkg.name || "node-cli", "Node.js CLI tool");
+            else for (const [name] of Object.entries(pkg.bin)) tryAdd(name, "Node.js CLI tool");
+          }
+        } catch {}
+      }
+    }
+
+    for (const f of files) {
+      const seg = f.path.toLowerCase().split("/");
+      if (seg.some(s => ["cli", "cmd", "bin"].includes(s)) && f.path.endsWith("/main.rs")) {
+        const name = f.path.split("/").slice(-2, -1)[0];
+        tryAdd(name, "Rust CLI tool (main)");
+      }
+      if (seg.some(s => ["cli", "cmd", "bin"].includes(s)) && (f.path.endsWith(".sh") || f.path.endsWith(".ps1"))) {
+        const name = f.path.split("/").pop().replace(/\.(sh|ps1)$/, "");
+        tryAdd(name, "Shell CLI tool");
+      }
+    }
+
+    return clis;
+  }
+
   detectEndpoints(contents) {
     const endpoints = [];
     for (const { path, content } of contents) {
@@ -198,7 +249,7 @@ class EndpointDetector {
         const routePath = pathGroup ? m[pathGroup] : (() => { const ex = extractFilePathRoute(path, method); return ex ? ex.path : null; })();
         if (!routePath) continue;
         const normalized = routePath === "/" ? "/" : normalizePath(routePath);
-        eps.push({ path: normalized, method, source: { file: path, line: getLine(content, m.index) }, tags: inferTags(normalized), service: classify(path), technology: tech || this.techs[0] });
+        eps.push({ path: normalized, method, source: { file: path, line: getLine(content, m.index) }, tags: inferTags(normalized, path), service: classify(path), technology: tech || this.techs[0] });
       }
     }
     return eps;
@@ -219,7 +270,7 @@ class FileRouterDetector {
     if (!apiPath) return eps;
     const methods = this.methodFn(path, content);
     for (const method of methods) {
-      eps.push({ path: apiPath, method, source: { file: path, line: 0 }, tags: inferTags(apiPath), service: classify(path), technology: this.tech });
+      eps.push({ path: apiPath, method, source: { file: path, line: 0 }, tags: inferTags(apiPath, path), service: classify(path), technology: this.tech });
     }
     return eps;
   }
@@ -406,14 +457,15 @@ function classify(path) {
 
 // ── Tag Inference ───────────────────────────────────────────────────
 
-function inferTags(path) {
+function inferTags(path, filePath) {
   const t = [];
   const l = path.toLowerCase();
-  if (/admin|dashboard|manage|control|operator|super|root/i.test(l)) t.push("admin");
-  if (/debug|dev|test|staging|sandbox|internal|private|hidden|config|raw/i.test(l)) t.push("shadow");
+  const fp = (filePath || "").toLowerCase();
+  if (/admin|dashboard|manage|control|operator|super|root/i.test(l) || /admin|dashboard|manage/i.test(fp)) t.push("admin");
+  if (/debug|dev|test|staging|sandbox|internal|private|hidden|config|raw/i.test(l) || /\*/.test(l) || /dev|test|staging|sandbox|internal|private|hidden/i.test(fp)) t.push("shadow");
   if (/health|ready|live|ping|pong|status|heartbeat|alive|healthz|readyz|livez/i.test(l)) t.push("health");
   if (/deprecated|legacy|old|v0|v1_old|retired|archived/i.test(l)) t.push("deprecated");
-  if (/login|logout|auth|session|oauth|sso|signin|signup|register|token|password|reset|forgot|verify|2fa|mfa|otp|totp|authenticate|authorize/i.test(l)) t.push("authenticated");
+  if (/login|logout|auth|session|oauth|sso|signin|signup|register|token|password|reset|forgot|2fa|mfa|otp|totp|authenticate|authorize/i.test(l)) t.push("authenticated");
   if (/upload|file|image|document|attachment|media|blob|storage/i.test(l)) t.push("file-upload");
   if (/download|export|csv|pdf|report|xl|spreadsheet/i.test(l)) t.push("file-download");
   if (/search|query|lookup|find|suggest|autocomplete/i.test(l)) t.push("search");
@@ -427,6 +479,8 @@ function inferTags(path) {
   if (/payment|checkout|billing|invoice|charge|refund|subscription|pricing|purchase|wallet|credit|debit|transaction/i.test(l)) t.push("financial");
   if (/email|mail|smtp|send|newsletter|notification|alert/i.test(l)) t.push("notification");
   if (/user|users|profile|account|member|customer/i.test(l)) t.push("user-data");
+  if (/prove|prover|proof|proving|stark|snark|groth16|risc0|zk|zero.?knowledge/i.test(l) || /prove|proof|proving|stark|snark|groth16|risc0/i.test(fp)) t.push("prover");
+  if (/verify|verifier|receipt|journal/i.test(l) || /verify|verifier|receipt|journal/i.test(fp)) t.push("verifier");
   if (!t.length) t.push("standard");
   return t;
 }
@@ -462,6 +516,8 @@ function aggregateTags(endpoints) {
     if (ep.tags.includes("versioned")) tags.versioned++;
     if (ep.tags.includes("documentation")) tags.documentation++;
     if (ep.tags.includes("proxy")) tags.proxy++;
+    if (ep.tags.includes("prover")) tags.prover++;
+    if (ep.tags.includes("verifier")) tags.verifier++;
   }
   return tags;
 }
