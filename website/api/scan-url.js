@@ -37,16 +37,23 @@ async function scanGitHubRepo(owner, repo) {
 
   const contentsUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
   const treeRes = await fetch(contentsUrl, { headers });
+  let branch = "main";
+  let treeData;
   if (treeRes.status === 404) {
     const altUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/master?recursive=1`;
     const altRes = await fetch(altUrl, { headers });
     if (altRes.status !== 200) throw new Error("Repository not found or inaccessible");
-    const altData = await altRes.json();
-    return processTree(altData.tree, owner, repo, headers);
+    branch = "master";
+    treeData = await altRes.json();
+  } else {
+    if (!treeRes.ok) throw new Error(`GitHub API error: ${treeRes.status}`);
+    treeData = await treeRes.json();
   }
-  if (!treeRes.ok) throw new Error(`GitHub API error: ${treeRes.status}`);
-  const data = await treeRes.json();
-  return processTree(data.tree, owner, repo, headers);
+  return processTree(treeData.tree, owner, repo, branch, headers);
+}
+
+function rawUrl(owner, repo, branch, path) {
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
 }
 
 const TECH_PATTERNS = [
@@ -75,10 +82,9 @@ const FRAMEWORK_PATTERNS = [
 
 const ENDPOINT_PATTERNS = [
   // Rust — Axum, Actix, Rocket, Warp
-  { ext: ".rs", pattern: /\.route\(\s*["'](\/[^"']+)["'].*,(get|post|put|delete|patch|head|options|any)\(/gi, methodGroup: 2, pathGroup: 1, tech: "rust/axum" },
+  { ext: ".rs", pattern: /\.route\(\s*["'](\/[^"']+)["']\s*,\s*(get|post|put|delete|patch)\s*\(/gi, methodGroup: 2, pathGroup: 1, tech: "rust/axum" },
   { ext: ".rs", pattern: /#\[(get|post|put|delete|patch|head|options)\("([^"]+)"\)\]/gi, methodGroup: 1, pathGroup: 2, tech: "rust/actix" },
-  { ext: ".rs", pattern: /\.route\(\s*["'](\/[^"']+)["']/g, methodGroup: null, pathGroup: 1, tech: "rust/axum" },
-  { ext: ".rs", pattern: /\.(get|post|put|delete|patch)\(\s*["'](\/[^"']+)["']/gi, methodGroup: 1, pathGroup: 2, tech: "rust/axum" },
+  { ext: ".rs", pattern: /\.route\(\s*["'](\/[^"']+)["']\s*,\s*(get|post|put|delete|patch)\s*\(/gi, methodGroup: 2, pathGroup: 1, tech: "rust/axum" },
 
   // JavaScript — Express, Fastify, Hono, Koa
   { ext: ".js", pattern: /(?:app|router|server|api)\.(get|post|put|delete|patch|head|options|all)\(\s*["'`](\/[^"'`]+)/gi, methodGroup: 1, pathGroup: 2, tech: "javascript/express" },
@@ -125,7 +131,7 @@ const ENDPOINT_PATTERNS = [
   { ext: ".kt", pattern: /(get|post|put|delete|patch)\s*\{\s*path\(["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "kotlin/ktor" },
 ];
 
-async function processTree(tree, owner, repo, headers) {
+async function processTree(tree, owner, repo, branch, headers) {
   const files = tree.filter((n) => n.type === "blob");
   const techs = new Set();
   const frameworks = new Set();
@@ -141,7 +147,7 @@ async function processTree(tree, owner, repo, headers) {
 
     if (FRAMEWORK_PATTERNS.some((fp) => file.path.endsWith(fp.file))) {
       try {
-        const rawRes = await fetch(file.url, { headers });
+        const rawRes = await fetch(rawUrl(owner, repo, branch, file.path));
         if (rawRes.ok) {
           const rawText = await rawRes.text();
           for (const fp of FRAMEWORK_PATTERNS) {
@@ -160,9 +166,10 @@ async function processTree(tree, owner, repo, headers) {
     for (const ep of ENDPOINT_PATTERNS) {
       if (file.path.endsWith(ep.ext)) {
         try {
-          const rawRes = await fetch(file.url, { headers });
+          const rawRes = await fetch(rawUrl(owner, repo, branch, file.path));
           if (rawRes.ok) {
             const rawText = await rawRes.text();
+            ep.pattern.lastIndex = 0;
             let match;
             while ((match = ep.pattern.exec(rawText)) !== null) {
               // Next.js API route handler: path is derived from file path
@@ -198,26 +205,37 @@ async function processTree(tree, owner, repo, headers) {
     }
   }
 
-  const shadowEps = endpoints.filter((e) => e.tags.includes("shadow"));
-  const healthEps = endpoints.filter((e) => e.tags.includes("health"));
+  const deduped = dedupEndpoints(endpoints);
+  const shadowEps = deduped.filter((e) => e.tags.includes("shadow"));
+  const healthEps = deduped.filter((e) => e.tags.includes("health"));
 
   return {
     projectName: `${owner}/${repo}`,
     projectVersion: "web-scan",
     scannedAt: new Date().toISOString(),
-    totalEndpoints: endpoints.length,
-    services: buildServices(endpoints),
+    totalEndpoints: deduped.length,
+    services: buildServices(deduped),
     clis: [],
     tags: {
       shadow: shadowEps.length,
-      deprecated: endpoints.filter((e) => e.tags.includes("deprecated")).length,
-      authenticated: endpoints.filter((e) => e.tags.includes("authenticated")).length,
+      deprecated: deduped.filter((e) => e.tags.includes("deprecated")).length,
+      authenticated: deduped.filter((e) => e.tags.includes("authenticated")).length,
       prover: 0, verifier: 0, health: healthEps.length,
       websocket: 0, static: 0, callee: 0, aiContext: 0,
     },
     technologies: [...new Set([...techs, ...frameworks])],
     warnings: shadowEps.length > 0 ? ["Shadow APIs detected — review access controls"] : [],
   };
+}
+
+function dedupEndpoints(endpoints) {
+  const seen = new Set();
+  return endpoints.filter((ep) => {
+    const key = `${ep.method}:${ep.path}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function inferTags(path) {
