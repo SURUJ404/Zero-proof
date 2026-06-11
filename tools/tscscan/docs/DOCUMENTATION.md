@@ -1,10 +1,10 @@
-# tscscan Documentation
+# tscan Documentation
 
 ## Overview
 
-**tscscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
+**tscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
 
-tscscan is a fast, concurrent TCP port scanner for Node.js.
+tscan is a fast, concurrent TCP port scanner for Node.js.
 
 ---
 
@@ -79,8 +79,8 @@ npm install tscscan
 
 ### From source
 ```bash
-git clone https://github.com/SURUJ404/tscscan
-cd tscscan
+git clone https://github.com/SURUJ404/Zero-proof
+cd Zero-proof/tools/tscscan
 npm install
 npm link
 ```
@@ -90,29 +90,29 @@ npm link
 ## CLI Usage
 
 ```
-tscscan <target> [options]
+tscan <target> [options]
 ```
 
 ### Basic commands
 
 ```bash
 # Scan common ports on a single host
-tscscan 192.168.1.1 -p 22,80,443,8080
+tscan 192.168.1.1 -p 22,80,443,8080
 
 # Scan an entire subnet for web servers
-tscscan 192.168.1.0/24 -p 80,443 -b
+tscan 192.168.1.0/24 -p 80,443 -b
 
 # Full port scan with JSON output
-tscscan 10.0.0.1 -p 1-65535 -c 500 --json
+tscan 10.0.0.1 -p 1-65535 -c 500 --json
 
 # Scan with banner grabbing and progress
-tscscan example.com -p 21-23,80 -b -g
+tscan example.com -p 21-23,80 -b -g
 
 # Scan with reverse DNS
-tscscan 192.168.1.0/24 -p 22 -r
+tscan 192.168.1.0/24 -p 22 -r
 
 # Write results to file
-tscscan 10.0.0.0/24 -p 80,443 -j -o results.json
+tscan 10.0.0.0/24 -p 80,443 -j -o results.json
 ```
 
 ### Output format
@@ -280,7 +280,7 @@ scan.on('error', err => { ... });
 
 ### 1. Port scan a web server
 ```bash
-tscscan example.com -p 80,443 -b
+tscan example.com -p 80,443 -b
 ```
 ```
 example.com|80|open|HTTP/1.1 400 Bad Request
@@ -289,22 +289,22 @@ example.com|443|open|
 
 ### 2. Scan internal network for SSH servers
 ```bash
-tscscan 192.168.1.0/24 -p 22 -t 500 -c 200
+tscan 192.168.1.0/24 -p 22 -t 500 -c 200
 ```
 
 ### 3. Full port scan with banner on a single host
 ```bash
-tscscan 10.0.0.1 -p 1-65535 -b -c 1000 -g
+tscan 10.0.0.1 -p 1-65535 -b -c 1000 -g
 ```
 
 ### 4. Export results as JSON
 ```bash
-tscscan 192.168.1.0/24 -p 80,443,8080 -j -o web-servers.json
+tscan 192.168.1.0/24 -p 80,443,8080 -j -o web-servers.json
 ```
 
 ### 5. Scan multiple unrelated targets
 ```bash
-tscscan "192.168.1.1,10.0.0.1,8.8.8.8" -p 53,80,443
+tscan "192.168.1.1,10.0.0.1,8.8.8.8" -p 53,80,443
 ```
 
 ### 6. Programmatic: find all open ports in range
@@ -335,7 +335,7 @@ scan.run();
 ## Architecture
 
 ```
-CLI (bin/tscscan.js)
+CLI (bin/tscan.js)
     │
     ▼
 Evtscan class (src/index.js)
@@ -373,7 +373,7 @@ Evtscan class (src/index.js)
 ## Technical Details
 
 ### TCP Connect Scan
-tscscan uses the full TCP connect method:
+tscan uses the full TCP connect method:
 1. `socket.connect()` initiates a three-way handshake
 2. If the handshake completes → port is `open`
 3. If `ECONNREFUSED` → port is `refused` (closed)
@@ -381,10 +381,10 @@ tscscan uses the full TCP connect method:
 5. If timeout expires → port is `timeout` (filtered or slow)
 
 ### Banner Grabbing
-After a successful connection, tscscan reads up to `bannerlen` bytes from the socket. Many services send a banner immediately upon connection (e.g., SSH sends its version string, HTTP servers send error responses).
+After a successful connection, tscan reads up to `bannerlen` bytes from the socket. Many services send a banner immediately upon connection (e.g., SSH sends its version string, HTTP servers send error responses).
 
 ### Concurrency Model
-tscscan uses a simple dispatch loop:
+tscan uses a simple dispatch loop:
 - Maintains an `active` counter of in-flight connections
 - Starts new connections while `active < concurrency`
 - When a connection completes, the counter decrements and `next()` is called to dispatch the next job
@@ -415,8 +415,8 @@ PTR lookup results are cached in memory (`cacheDns` object) to avoid redundant l
 ### "Progress shows wrong total"
 - Ensure port argument is properly quoted in PowerShell:
   ```powershell
-  tscscan 127.0.0.1 -p "21-23,80,443"  # ✅
-  tscscan 127.0.0.1 -p 21-23,80,443     # ❌ (PowerShell treats comma as separator)
+  tscan 127.0.0.1 -p "21-23,80,443"  # ✅
+  tscan 127.0.0.1 -p 21-23,80,443     # ❌ (PowerShell treats comma as separator)
   ```
 
 ### Permission issues

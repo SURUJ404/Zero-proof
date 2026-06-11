@@ -29,10 +29,10 @@ const argv = minimist(process.argv.slice(2), {
 
 if (argv.help || argv._.length === 0) {
     console.log(`
-tscscan - Fast TCP Port Scanner
+tscan - Fast TCP Port Scanner
 
 Usage:
-  tscscan <target> [options]
+  tscan <target> [options]
 
 Target formats:
   192.168.1.1              Single IP
@@ -57,9 +57,9 @@ Options:
   -v, --version            Show version
 
 Examples:
-  tscscan 127.0.0.1
-  tscscan 192.168.1.0/24 -p 21-23,80,443 -b
-  tscscan 10.0.0.1 -p 1-65535 -c 500 -j -g
+  tscan 127.0.0.1
+  tscan 192.168.1.0/24 -p 21-23,80,443 -b
+  tscan 10.0.0.1 -p 1-65535 -c 500 -j -g
 `);
     process.exit(0);
 }

@@ -4,7 +4,7 @@
   "description": "Fast TCP port scanner with banner grabbing, CIDR support, and concurrent scanning",
   "main": "src/index.js",
   "bin": {
-    "tscscan": "bin/tscscan.js"
+    "tscan": "bin/tscan.js"
   },
   "scripts": {
     "test": "node tests/*.js"

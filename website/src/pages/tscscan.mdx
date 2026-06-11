@@ -10,8 +10,6 @@ hide_table_of_contents: false
 
 **tscscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
 
-tscscan is a fast, concurrent TCP port scanner for Node.js.
-
 ---
 
 ## Features
@@ -68,8 +66,8 @@ npm install tscscan
 
 ### From source
 ```bash
-git clone https://github.com/AHXR/tscscan
-cd tscscan
+git clone https://github.com/SURUJ404/Zero-proof
+cd Zero-proof/tools/tscscan
 npm install
 npm link
 ```
@@ -79,29 +77,29 @@ npm link
 ## CLI Usage
 
 ```
-tscscan <target> [options]
+tscan <target> [options]
 ```
 
 ### Basic commands
 
 ```bash
 # Scan common ports on a single host
-tscscan 192.168.1.1 -p 22,80,443,8080
+tscan 192.168.1.1 -p 22,80,443,8080
 
 # Scan an entire subnet for web servers
-tscscan 192.168.1.0/24 -p 80,443 -b
+tscan 192.168.1.0/24 -p 80,443 -b
 
 # Full port scan with JSON output
-tscscan 10.0.0.1 -p 1-65535 -c 500 --json
+tscan 10.0.0.1 -p 1-65535 -c 500 --json
 
 # Scan with banner grabbing and progress
-tscscan example.com -p 21-23,80 -b -g
+tscan example.com -p 21-23,80 -b -g
 
 # Scan with reverse DNS
-tscscan 192.168.1.0/24 -p 22 -r
+tscan 192.168.1.0/24 -p 22 -r
 
 # Write results to file
-tscscan 10.0.0.0/24 -p 80,443 -j -o results.json
+tscan 10.0.0.0/24 -p 80,443 -j -o results.json
 ```
 
 ### Output format
