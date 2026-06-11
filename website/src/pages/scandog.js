@@ -6,7 +6,7 @@ export default function ScanDogPage() {
   return (
     <Layout
       title="ScanDog - Attack Surface Detector"
-      description="Zero Proof attack surface report — discover endpoints, shadow APIs, and service boundaries"
+      description="Attack surface report — discover endpoints, shadow APIs, and service boundaries"
     >
       <ScanDog />
     </Layout>

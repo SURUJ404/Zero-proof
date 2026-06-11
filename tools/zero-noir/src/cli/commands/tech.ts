@@ -18,7 +18,7 @@ const FEATURES = [
 ];
 
 export function printTechPortal(version: string): void {
-  console.log(chalk.hex("#db8b8b")("\n  ⚡ @zk/scandog — Tech Portal"));
+  console.log(chalk.hex("#db8b8b")("\n  ⚡ zk-scandog — Tech Portal"));
   console.log(chalk.gray(`  v${version}\n`));
   for (const f of FEATURES) {
     const color = f.status === "✓" ? chalk.green : chalk.yellow;
@@ -32,7 +32,7 @@ export function registerTechCommand(program: Command): void {
     .command("tech")
     .description("Show all available features and modules")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  ⚡ @zk/scandog — Tech Portal"));
+      console.log(chalk.hex("#db8b8b")("\n  ⚡ zk-scandog — Tech Portal"));
       console.log(chalk.gray("  All available features and modules\n"));
       console.log(`  ${chalk.gray("Module".padEnd(18))} ${chalk.gray("Description".padEnd(60))} ${chalk.gray("Status")}`);
       console.log(`  ${chalk.gray("─".repeat(96))}`);
