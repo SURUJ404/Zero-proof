@@ -1,0 +1,122 @@
+---
+title: wireshift — Traffic Interception & Analysis
+description: Cross-platform HTTP/HTTPS traffic interception proxy with AI-powered analysis, fuzzing, and OOB testing
+---
+
+# wireshift
+
+Cross-platform HTTP/HTTPS traffic interception and analysis tool — built with Go and React. Proxy, inspect, fuzz, resend, and analyze with AI.
+
+## Installation
+
+```bash
+npm install -g wireshift
+```
+
+## Quick Start
+
+### Start the proxy
+
+```bash
+wireshift proxy --port 8080
+```
+
+### Intercept traffic
+
+Configure your browser to use `http://localhost:8080` as the HTTP/HTTPS proxy. All traffic flows through wireshift for inspection.
+
+### Launch the UI
+
+```bash
+wireshift ui
+```
+
+Opens the desktop UI for interactive traffic analysis.
+
+## Features
+
+### Traffic Interception
+
+Full HTTP/HTTPS proxy with TLS certificate management. Inspect every request and response in real time — headers, body, cookies, query params.
+
+```bash
+wireshift proxy --port 8080 --cert ./certs
+```
+
+### Request Resender
+
+Replay intercepted requests with modified headers, body, or method. Perfect for retesting API endpoints during bug bounty hunting.
+
+```bash
+wireshift resend --id req_abc123 --modify '{"method":"POST","body":"{\"admin\":true}"}'
+```
+
+### Fuzzer
+
+Built-in fuzzer for security testing and vulnerability discovery. Inject payloads into any parameter and analyze responses.
+
+```bash
+wireshift fuzz --target /api/login --param username --wordlist ./payloads.txt
+```
+
+### AI-Powered Analysis
+
+ChatGPT integration for automatic traffic analysis. Detect vulnerabilities, understand API behavior, and get remediation suggestions.
+
+```bash
+wireshift analyze --id req_abc123 --ai
+```
+
+### Out-of-Band (OOB) Testing
+
+Interactsh integration for detecting blind vulnerabilities — XXE, SSRF, blind SQLi, and more.
+
+```bash
+wireshift scan --oob --collaborator oastify.com
+```
+
+### Match and Replace
+
+Define rules to automatically modify traffic on the fly. Rewrite headers, inject payloads, or block specific requests.
+
+```bash
+wireshift rule --match "Authorization: Bearer .*" --replace "Authorization: Bearer tampered"
+```
+
+### Request History
+
+Every intercepted request is saved with full metadata. Search, filter, export, and replay from history.
+
+```bash
+wireshift history --search "/api/admin" --export ./report.json
+```
+
+## Use Cases
+
+- **Bug Bounty Hunting** — Intercept and analyze web traffic, find vulnerabilities
+- **API Security Testing** — Fuzz endpoints, replay modified requests, detect flaws
+- **CTF Challenges** — Analyze and manipulate traffic to solve web challenges
+- **Penetration Testing** — Full-featured proxy with OOB detection and AI analysis
+- **Developer Debugging** — Inspect HTTP/HTTPS traffic from any application
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `wireshift proxy` | Start HTTP/HTTPS interception proxy |
+| `wireshift ui` | Launch desktop UI |
+| `wireshift resend` | Replay modified requests |
+| `wireshift fuzz` | Fuzz endpoints with payloads |
+| `wireshift analyze` | AI-powered traffic analysis |
+| `wireshift scan` | OOB/interactsh testing |
+| `wireshift rule` | Manage match-and-replace rules |
+| `wireshift history` | Browse and export request history |
+| `wireshift cert` | Manage TLS certificates |
+
+## Tech Stack
+
+- **Go** — High-performance proxy core
+- **React + TypeScript** — Modern desktop UI via Wails
+- **Wails** — Cross-platform desktop framework
+- **Interactsh** — OOB vulnerability detection
+- **OpenAI API** — AI-powered analysis
