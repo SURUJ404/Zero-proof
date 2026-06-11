@@ -266,9 +266,14 @@ export default function ScanDog() {
   };
 
   const cta = (
-    <Link className={styles.ctaBtn} to="/scandog-setup">
-      Get Started
-    </Link>
+    <>
+      <Link className={styles.ctaBtn} to="/scandog-setup">
+        Get Started
+      </Link>
+      <Link className={styles.ctaBtn} to="/tscscan" style={{ marginLeft: "0.5rem" }}>
+        tscscan
+      </Link>
+    </>
   );
 
   if (loading) {
