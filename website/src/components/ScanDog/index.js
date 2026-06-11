@@ -2,6 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "@docusaurus/Link";
 import styles from "./styles.module.css";
 
+function ghUrl(file, line) {
+  const l = line ? `#L${line}` : "";
+  return `https://github.com/SURUJ404/Zero-proof/blob/main/${file}${l}`;
+}
+
 const SERVICE_ICONS = {
   server: "\uD83D\uDEE1\uFE0F",
   gateway: "\uD83D\uDEAA",
@@ -493,7 +498,7 @@ export default function ScanDog() {
               <div className={styles.serviceCard} key={svc.name}>
                 <div className={styles.serviceHeader} onClick={() => toggleService(svc.name)}>
                   <span className={styles.serviceIcon}>{icon}</span>
-                  <span className={styles.serviceName}>{svc.name}</span>
+                  <a className={styles.serviceName} href={svcEp.length > 0 ? ghUrl(svcEp[0].source.file, svcEp[0].source.line) : "#"} target="_blank" rel="noopener" onClick={(e) => e.stopPropagation()}>{svc.name}</a>
                   <span className={styles.serviceBadge}>{svc.type}</span>
                   {svc.port ? <span className={styles.servicePort}>:{svc.port}</span> : null}
                   <span className={styles.serviceEpCount}>{svcEp.length}</span>
@@ -512,8 +517,8 @@ export default function ScanDog() {
                         return ep.path.toLowerCase().includes(q) || ep.method.toLowerCase().includes(q) || ep.tags.some((t) => t.toLowerCase().includes(q)) || ep.source.file.toLowerCase().includes(q);
                       }).map((ep, i) => (
                         <tr key={i}>
-                          <td><span className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`}>{ep.method}</span></td>
-                          <td className={styles.pathCell}><code>{ep.path}</code></td>
+                          <td><a className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`} href={ghUrl(ep.source.file, ep.source.line)} target="_blank" rel="noopener" style={{textDecoration:"none"}}>{ep.method}</a></td>
+                          <td className={styles.pathCell}><a href={ghUrl(ep.source.file, ep.source.line)} target="_blank" rel="noopener" style={{color:"inherit",textDecoration:"none"}}><code>{ep.path}</code></a></td>
                           <td>
                             <div className={styles.tagList}>
                               {ep.tags.map((t, j) => (
@@ -606,8 +611,8 @@ export default function ScanDog() {
               {allEndpoints.map((ep, i) => (
                 <tr key={i} className={i % 2 === 1 ? styles.reportRowEven : ""}>
                   <td style={{ color: "var(--ifm-color-emphasis-500)", fontSize: "0.7rem" }}>{i + 1}</td>
-                  <td><span className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`}>{ep.method}</span></td>
-                  <td className={styles.pathCell}><code>{ep.path}</code></td>
+                  <td><a className={`${styles.methodBadge} ${METHOD_CLASSES[ep.method] || styles.methodAny}`} href={ghUrl(ep.source.file, ep.source.line)} target="_blank" rel="noopener" style={{textDecoration:"none"}}>{ep.method}</a></td>
+                  <td className={styles.pathCell}><a href={ghUrl(ep.source.file, ep.source.line)} target="_blank" rel="noopener" style={{color:"inherit",textDecoration:"none"}}><code>{ep.path}</code></a></td>
                   <td style={{ fontSize: "0.75rem" }}>{ep._service}</td>
                   <td><div className={styles.tagList}>{ep.tags.map((t, j) => (<span key={j} className={`${styles.tag} ${TAG_CLASSES[t] || ""}`}>{t}</span>))}</div></td>
                   <td><a className={styles.sourceLink} href={`https://github.com/SURUJ404/Zero-proof/blob/main/${ep.source.file}`} target="_blank" rel="noopener">{ep.source.file}:{ep.source.line}</a></td>
