@@ -1,0 +1,30 @@
+{
+  "name": "tscscan",
+  "version": "1.0.1",
+  "description": "Fast TCP port scanner with banner grabbing, CIDR support, and concurrent scanning",
+  "main": "src/index.js",
+  "bin": {
+    "tscscan": "bin/tscscan.js"
+  },
+  "scripts": {
+    "test": "node tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/SURUJ404/tscscan"
+  },
+  "keywords": [
+    "port scanner",
+    "network scanner",
+    "security",
+    "tcp",
+    "banner grabbing",
+    "cidr"
+  ],
+  "author": "SURUJ404",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "minimist": "1.2.8",
+    "async": "3.2.5"
+  }
+}
