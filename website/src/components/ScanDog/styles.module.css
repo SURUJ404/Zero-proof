@@ -501,30 +501,20 @@
 .reportRowEven { background: rgba(255,255,255,0.02); }
 
 /* Responsive */
-/* Route Features */
+/* Route Section */
 .routeSection {
   background: var(--ifm-background-surface-color);
   border: 1px solid var(--ifm-toc-border-color);
   border-radius: 12px;
-  padding: 1.75rem;
+  padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
 .routeHeader {
   text-align: center;
-  margin-bottom: 1.5rem;
-}
-.routeIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--ifm-color-primary) 15%, transparent);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
 }
 .routeTitle {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: var(--ifm-color-primary);
   margin: 0 0 0.35rem;
@@ -533,61 +523,72 @@
   font-size: 0.82rem;
   color: var(--ifm-color-emphasis-500);
   margin: 0;
-  max-width: 560px;
-  margin-inline: auto;
   line-height: 1.4;
 }
-.routeGrid {
+.routeSub code {
+  font-size: 0.78rem;
+  background: rgba(255,255,255,0.06);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+.routeBlock {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
 }
-.routeCard {
+.routeCmd {
   background: var(--ifm-background-color);
   border: 1px solid var(--ifm-toc-border-color);
-  border-radius: 10px;
-  padding: 1.1rem;
+  border-radius: 8px;
+  padding: 0.8rem;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.15s, transform 0.15s;
+  gap: 0.3rem;
 }
-.routeCard:hover {
-  border-color: var(--ifm-color-primary);
-  transform: translateY(-2px);
-}
-.routeCardIcon {
-  font-size: 1.4rem;
-  margin-bottom: 0.4rem;
-  line-height: 1;
-}
-.routeCardTitle {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--ifm-font-color-base);
-  margin-bottom: 0.3rem;
-}
-.routeCardDesc {
-  font-size: 0.74rem;
-  color: var(--ifm-color-emphasis-600);
-  line-height: 1.45;
-  flex: 1;
-}
-.routeCardStat {
-  margin-top: 0.5rem;
-  font-size: 0.65rem;
+.routeLabel {
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--ifm-color-primary);
-  padding: 0.15rem 0.5rem;
-  background: color-mix(in srgb, var(--ifm-color-primary) 10%, transparent);
+}
+.routeCmd code {
+  font-size: 0.72rem;
+  background: rgba(255,255,255,0.04);
+  padding: 0.15rem 0.35rem;
   border-radius: 4px;
+  word-break: break-all;
+  font-family: var(--ifm-font-family-monospace);
+}
+.routeDesc {
+  font-size: 0.72rem;
+  color: var(--ifm-color-emphasis-600);
+  line-height: 1.35;
+}
+.routeActions {
+  text-align: center;
+  padding: 0.3rem 0 0.1rem;
+}
+.routeDocBtn {
   display: inline-block;
-  align-self: flex-start;
+  padding: 0.35rem 1.25rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--ifm-color-primary) 12%, transparent);
+  color: var(--ifm-color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.routeDocBtn:hover {
+  color: var(--ifm-color-primary);
+  opacity: 0.85;
+  text-decoration: none;
 }
 
-@media (max-width: 900px) {
-  .routeGrid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 768px) {
+  .routeBlock { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {

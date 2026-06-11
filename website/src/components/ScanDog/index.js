@@ -53,44 +53,7 @@ function buildMermaid(data) {
   return lines.join("\n");
 }
 
-const ROUTE_FEATURES = [
-  {
-    icon: "\uD83D\uDD0C",
-    title: "Smart Analyzer Router",
-    desc: "Auto-routes each file to the best analyzer — Rust Axum, JS Express, Python Flask, Go Gin, Java Spring, Docker, and more",
-    stat: "15+ analyzers",
-  },
-  {
-    icon: "\uD83C\uDF10",
-    title: "Multi-Provider Delivery",
-    desc: "Routes discovered endpoints directly to ZAP, Burp Suite, or custom webhooks for immediate security testing",
-    stat: "3 delivery targets",
-  },
-  {
-    icon: "\u2699\uFE0F",
-    title: "Plugin Engine",
-    desc: "YAML-defined custom analyzers — define regex patterns and route to your own detection logic without writing code",
-    stat: "Zero-code plugins",
-  },
-  {
-    icon: "\uD83D\uDCCA",
-    title: "Filter & Query Router",
-    desc: "Route and filter scan results by method=POST, tag=shadow, path=/api/** using Sysdig-inspired filter expressions",
-    stat: "Filter expressions",
-  },
-  {
-    icon: "\uD83D\uDD17",
-    title: "Multi-Format Output Router",
-    desc: "Export results in JSON, YAML, OpenAPI 3.1, SARIF 2.1, HTML, Mermaid, Postman, cURL, TOML, PowerShell — one scan, any format",
-    stat: "10 output formats",
-  },
-  {
-    icon: "\uD83E\uDD16",
-    title: "AI Context Router",
-    desc: "Routes endpoint context + source to your preferred AI provider (OpenAI, Ollama) for per-endpoint security analysis",
-    stat: "Multi-provider AI",
-  },
-];
+
 
 export default function ScanDog() {
   const [data, setData] = useState(null);
@@ -327,22 +290,48 @@ export default function ScanDog() {
         </p>
       </div>
 
-      {/* Routing Features */}
+      {/* Scan Routing Engine */}
       <div className={styles.routeSection}>
         <div className={styles.routeHeader}>
-          <span className={styles.routeIcon}>{/* SVG routing node icon */}</span>
-          <h2 className={styles.routeTitle}>Scan Routing Engine</h2>
-          <p className={styles.routeSub}>Inspired by OpenRouter's provider routing — intelligently routes scan tasks across analyzers, outputs, and delivery targets</p>
+          <h2 className={styles.routeTitle}>\u26A1 Scan Routing Engine</h2>
+          <p className={styles.routeSub}>Route scan results by rule &mdash; inspired by OpenRouter's provider routing &mdash; <code>--route "tag=shadow->deliver:zap"</code></p>
         </div>
-        <div className={styles.routeGrid}>
-          {ROUTE_FEATURES.map((f, i) => (
-            <div className={styles.routeCard} key={i}>
-              <div className={styles.routeCardIcon}>{f.icon}</div>
-              <div className={styles.routeCardTitle}>{f.title}</div>
-              <div className={styles.routeCardDesc}>{f.desc}</div>
-              <div className={styles.routeCardStat}>{f.stat}</div>
-            </div>
-          ))}
+
+        <div className={styles.routeBlock}>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel}>Exclude</span>
+            <code>--route "tag=health->exclude"</code>
+            <span className={styles.routeDesc}>Remove health-check endpoints from results</span>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel}>Deliver</span>
+            <code>--route "method=POST->deliver:burp"</code>
+            <span className={styles.routeDesc}>Route POST endpoints to Burp Suite</span>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel}>Split</span>
+            <code>--route "path=/api/**->split:file=api-spec.json"</code>
+            <span className={styles.routeDesc}>Save matched endpoints to separate file</span>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel}>Tag</span>
+            <code>--route "tag=shadow->tag:critical"</code>
+            <span className={styles.routeDesc}>Add extra tags to matched endpoints</span>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel}>Reroute</span>
+            <code>--route "path=/old/**->reroute:path=/api/v2/**"</code>
+            <span className={styles.routeDesc}>Rewrite endpoint paths/methods</span>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel}>Chain</span>
+            <code>--route "tag=shadow->deliver:zap" --route "tag=shadow->split:file=shadow.json"</code>
+            <span className={styles.routeDesc}>Multiple rules run in order</span>
+          </div>
+        </div>
+
+        <div className={styles.routeActions}>
+          <Link className={styles.routeDocBtn} to="/scandog-setup#routing">Routing Docs \u2192</Link>
         </div>
       </div>
 
