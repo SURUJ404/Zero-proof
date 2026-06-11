@@ -10,7 +10,7 @@ hide_table_of_contents: false
 
 **tscscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
 
-tscscan is inspired by [evilscan](https://github.com/eviltik/evilscan) and shares the same event-driven architecture, but with additional features and optimizations.
+tscscan is a fast, concurrent TCP port scanner for Node.js.
 
 ---
 
@@ -382,34 +382,7 @@ tscscan uses a simple dispatch loop:
 ### Reverse DNS Caching
 PTR lookup results are cached in memory (`cacheDns` object) to avoid redundant lookups when multiple ports are scanned on the same IP.
 
----
 
-## Comparison with evilscan
-
-| Feature | tscscan | evilscan |
-|---------|---------|----------|
-| TCP Connect Scan | ✅ | ✅ |
-| CIDR support | ✅ | ✅ |
-| IP range | ✅ | ✅ |
-| Port range/list | ✅ | ✅ |
-| Banner grabbing | ✅ | ✅ |
-| Reverse DNS | ✅ | ✅ |
-| JSON output | ✅ | ✅ |
-| Progress events | ✅ | ✅ |
-| Concurrency control | ✅ | ✅ |
-| Timeout control | ✅ | ✅ |
-| Pause/Unpause | ✅ | ✅ |
-| Abort | ✅ | ✅ |
-| File output | ✅ | ✅ |
-| IAC negotiation | ❌ (in C++ version) | ✅ |
-| XML output | ❌ | ✅ |
-| Status filtering (TROU) | ❌ | ✅ |
-| Async queue library | Native (no deps) | qjobs |
-| Argument parsing | minimist | minimist |
-| Dependencies | 2 packages | 3 packages |
-| Binary size | Smaller | Larger |
-
----
 
 ## Troubleshooting
 
