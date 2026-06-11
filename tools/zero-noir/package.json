@@ -1,6 +1,6 @@
 {
   "name": "@suruj/scan-dog",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface",
   "type": "module",
   "bin": {
@@ -19,9 +19,16 @@
     "access": "public"
   },
   "keywords": [
-    "security", "sast", "endpoints", "attack-surface",
-    "shadow-api", "api-security", "zero-proof", "zkp",
-    "owasp", "devsecops"
+    "security",
+    "sast",
+    "endpoints",
+    "attack-surface",
+    "shadow-api",
+    "api-security",
+    "zero-proof",
+    "zkp",
+    "owasp",
+    "devsecops"
   ],
   "license": "MIT",
   "dependencies": {
