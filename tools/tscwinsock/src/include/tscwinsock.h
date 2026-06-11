@@ -35,7 +35,7 @@
 #include				<vector>
 
 #ifdef TSCLOGGER_PLUGIN
-	#include			"ahxrlogger.h"
+	//#include			"ahxrlogger.h"
 #endif
 
 #include				"socket\keywords.h"
