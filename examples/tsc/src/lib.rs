@@ -1,4 +1,4 @@
-use riscv_vm_methods::RISCV_VM_ELF;
+use tsc_methods::TSC_GUEST_ELF;
 use risc0_zkvm::{ExecutorEnv, Receipt, default_prover};
 
 pub fn run_vm(code: Vec<u8>, entry: u32) -> (Receipt, i32) {
@@ -8,7 +8,7 @@ pub fn run_vm(code: Vec<u8>, entry: u32) -> (Receipt, i32) {
         .build().unwrap();
 
     let prover = default_prover();
-    let receipt = prover.prove(env, RISCV_VM_ELF).unwrap().receipt;
+    let receipt = prover.prove(env, TSC_GUEST_ELF).unwrap().receipt;
     let result: i32 = receipt.journal.decode().unwrap();
     (receipt, result)
 }

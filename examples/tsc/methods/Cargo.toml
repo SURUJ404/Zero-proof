@@ -1,5 +1,5 @@
 [package]
-name = "riscv-vm-methods"
+name = "tsc-methods"
 version = "0.1.0"
 edition.workspace = true
 
