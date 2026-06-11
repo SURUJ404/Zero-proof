@@ -134,7 +134,7 @@ export class Scanner {
       const nameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
       const versionMatch = content.match(/version\s*=\s*["']([^"']+)["']/);
       return {
-        name: nameMatch ? nameMatch[1] : "zero-proof",
+        name: nameMatch ? nameMatch[1] : "unknown",
         version: versionMatch ? versionMatch[1] : "unknown",
       };
     } catch {
@@ -143,7 +143,7 @@ export class Scanner {
         const pkg = JSON.parse(readFileSync(packageJson, "utf-8"));
         return { name: pkg.name || "unknown", version: pkg.version || "unknown" };
       } catch {
-        return { name: "zero-proof", version: "unknown" };
+        return { name: "unknown", version: "unknown" };
       }
     }
   }

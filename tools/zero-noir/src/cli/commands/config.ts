@@ -7,7 +7,7 @@ import { homedir } from "os";
 const CONFIG_DIR = join(homedir(), ".config", "zero-noir");
 const CONFIG_PATH = join(CONFIG_DIR, "config.yaml");
 
-const DEFAULT_CONFIG = `# ScanDog Configuration
+const DEFAULT_CONFIG = `# API Scanner Configuration
 # Path: ${CONFIG_PATH}
 
 # AI Provider settings
@@ -64,11 +64,11 @@ export function registerConfigCommand(program: Command): void {
     .description("Display current configuration")
     .action(() => {
       if (!existsSync(CONFIG_PATH)) {
-        console.log(chalk.yellow("\n  No configuration file found. Run `zn config init` to create one.\n"));
+        console.log(chalk.yellow("\n  No configuration file found. Run `apiscan config init` to create one.\n"));
         return;
       }
       const content = readFileSync(CONFIG_PATH, "utf-8");
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Configuration\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Configuration\n"));
       console.log(content);
     });
 
@@ -77,7 +77,7 @@ export function registerConfigCommand(program: Command): void {
     .description("Open configuration in default editor")
     .action(() => {
       if (!existsSync(CONFIG_PATH)) {
-        console.log(chalk.yellow("\n  No configuration file found. Run `zn config init` first.\n"));
+        console.log(chalk.yellow("\n  No configuration file found. Run `apiscan config init` first.\n"));
         return;
       }
       const editor = process.env.EDITOR || "notepad";
@@ -99,7 +99,7 @@ export function registerConfigCommand(program: Command): void {
         return;
       }
       writeFileSync(CONFIG_PATH, DEFAULT_CONFIG, "utf-8");
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Configuration Created\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Configuration Created\n"));
       console.log(`  ${chalk.green("▸")} Path: ${CONFIG_PATH}\n`);
     });
 
@@ -107,7 +107,7 @@ export function registerConfigCommand(program: Command): void {
     .command("path")
     .description("Show configuration file path")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Config Path\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Config Path\n"));
       console.log(`  ${chalk.green("▸")} ${CONFIG_PATH}\n`);
     });
 }

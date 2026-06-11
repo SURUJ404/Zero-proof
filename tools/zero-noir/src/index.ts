@@ -19,8 +19,8 @@ const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
 const program = new Command();
 
 program
-  .name("zn")
-  .description("Zero Proof Attack Surface Detector — discover endpoints, expose shadow APIs, map the attack surface")
+  .name("apiscan")
+  .description("API Surface Scanner — discover endpoints, expose shadow APIs, map the attack surface")
   .version(pkg.version, "-v, --version", "Show version");
 
 registerScanCommand(program);
@@ -33,9 +33,9 @@ registerCompletionCommand(program);
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {
-  console.log(chalk.hex("#db8b8b")("\n  ⚡ ScanDog — Attack Surface Detector"));
+  console.log(chalk.hex("#db8b8b")("\n  ⚡ API Surface Scanner"));
   console.log(chalk.gray(`  v${pkg.version}\n`));
-  console.log(chalk.gray("  Usage: zn <command> [options]"));
+  console.log(chalk.gray("  Usage: apiscan <command> [options]"));
   console.log(chalk.gray("\n  Commands:"));
   console.log(`    ${chalk.green("scan")}       Scan codebase for endpoints`);
   console.log(`    ${chalk.green("list")}       List built-in catalogs`);
@@ -44,5 +44,5 @@ if (!process.argv.slice(2).length) {
   console.log(`    ${chalk.green("rules")}      Manage passive-scan rules`);
   console.log(`    ${chalk.green("completion")} Generate shell completions`);
   console.log(`    ${chalk.green("help")}       Display help\n`);
-  console.log(chalk.gray(`  Run ${chalk.white("zn <command> --help")} for detailed options\n`));
+  console.log(chalk.gray(`  Run ${chalk.white("apiscan <command> --help")} for detailed options\n`));
 }

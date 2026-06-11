@@ -220,8 +220,6 @@ export class JavaScriptAnalyzer implements Analyzer {
   }
 
   private toRelPath(file: string, options?: AnalyzerOptions): string {
-    const idx = file.indexOf("zero-proof");
-    if (idx >= 0) return file.slice(idx);
     if (options?.excludePaths) {
       for (const p of options.excludePaths) {
         const idx = file.indexOf(p);

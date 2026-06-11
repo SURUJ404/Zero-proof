@@ -25,7 +25,7 @@ export function registerCacheCommand(program: Command): void {
         try { return acc + readFileSync(join(CACHE_DIR, f)).length; } catch { return acc; }
       }, 0);
 
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Cache Info\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Cache Info\n"));
       console.log(`  ${chalk.green("▸")} Location: ${CACHE_DIR}`);
       console.log(`  ${chalk.green("▸")} Files:    ${files.length}`);
       console.log(`  ${chalk.green("▸")} Size:     ${(size / 1024).toFixed(1)} KB`);
@@ -44,7 +44,7 @@ export function registerCacheCommand(program: Command): void {
         try { unlinkSync(join(CACHE_DIR, f)); deleted++; }
         catch { failed++; }
       }
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Cache Cleared\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Cache Cleared\n"));
       console.log(`  ${chalk.green("▸")} Deleted: ${deleted} files`);
       if (failed > 0) console.log(`  ${chalk.red("▸")} Failed:  ${failed} files`);
       console.log();
@@ -63,7 +63,7 @@ export function registerCacheCommand(program: Command): void {
         for (const f of files) {
           try { unlinkSync(join(CACHE_DIR, f)); } catch { }
         }
-        console.log(chalk.hex("#db8b8b")("\n  ScanDog — Cache Purged\n"));
+        console.log(chalk.hex("#db8b8b")("\n  API Scanner — Cache Purged\n"));
         console.log(`  ${chalk.green("▸")} Removed ${files.length} files\n`);
       } catch (e: any) {
         console.log(chalk.red(`  ✗ Failed to purge cache: ${e.message}\n`));

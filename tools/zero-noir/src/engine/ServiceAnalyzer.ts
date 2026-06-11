@@ -12,9 +12,7 @@ export class ServiceAnalyzer implements Analyzer {
 
     for (const file of files) {
       if (IGNORE_FILES.some((ign) => file.includes(ign))) continue;
-      const relFile = file.includes("\\")
-        ? file.split("\\zero-proof\\")[1] || file
-        : file.split("/zero-proof/")[1] || file;
+      const relFile = file;
 
       try {
         const content = readFileSync(file, "utf-8");

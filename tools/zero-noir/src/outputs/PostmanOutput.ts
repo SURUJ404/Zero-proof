@@ -33,7 +33,7 @@ export class PostmanOutput implements Output {
     const collection = {
       info: {
         name: `${result.projectName} API`,
-        description: `Auto-discovered by ScanDog v1.0.0\nScanned: ${result.scannedAt}\nEndpoints: ${result.totalEndpoints}`,
+        description: `Auto-discovered by API Scanner v1.0.0\nScanned: ${result.scannedAt}\nEndpoints: ${result.totalEndpoints}`,
         schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
       },
       item: items,

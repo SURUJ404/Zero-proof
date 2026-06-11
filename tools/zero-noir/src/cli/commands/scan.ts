@@ -51,7 +51,7 @@ export function registerScanCommand(program: Command): void {
         }
       }
 
-      console.log(chalk.hex("#db8b8b")("\n  ⚡ ScanDog — Attack Surface Detector"));
+      console.log(chalk.hex("#db8b8b")("\n  ⚡ API Surface Scanner"));
       console.log(chalk.gray(`  Scanning: ${path}\n`));
       if (options.verbose) {
         console.log(chalk.gray(`  Options: ${JSON.stringify(options, null, 2)}\n`));
@@ -158,7 +158,7 @@ function printTerminal(result: any, path: string): void {
     console.log(m(`  Tech:  ${result.technologies.join(", ")}\n`));
   }
 
-  console.log(t("  ┌─ Attack Surface Summary ─────────────────────────────┐"));
+  console.log(t("  ┌─ API Surface Summary ───────────────────────────────┐"));
 
   const printRow = (label: string, value: string, color: string) => {
     console.log(`  │ ${m(label.padEnd(20))} ${color}${m("     │")}`);

@@ -71,9 +71,7 @@ export class RouteAnalyzer implements Analyzer {
         const content = readFileSync(file, "utf-8");
         const lines = content.split("\n");
 
-        const relFile = file.includes("\\")
-          ? file.split("\\zero-proof\\")[1] || file
-          : file.split("/zero-proof/")[1] || file;
+        const relFile = file;
 
         const known = SERVICE_ROUTES[relFile];
         if (known) {

@@ -126,8 +126,7 @@ export class PythonAnalyzer implements Analyzer {
   }
 
   private toRelPath(file: string): string {
-    const idx = file.indexOf("zero-proof");
-    return idx >= 0 ? file.slice(idx) : file;
+    return file;
   }
 
   private inferService(file: string, relFile: string): string {

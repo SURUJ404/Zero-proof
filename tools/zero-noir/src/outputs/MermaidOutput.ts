@@ -6,7 +6,7 @@ export class MermaidOutput implements Output {
   format(result: ScanResult): string {
     const lines: string[] = [];
     lines.push("graph TB");
-    lines.push(`  title[${result.projectName} Attack Surface]`);
+    lines.push(`  title[${result.projectName} API Surface]`);
     lines.push("  style title fill:#8d4c4c,color:#fff,font-size:16px");
     lines.push("");
 

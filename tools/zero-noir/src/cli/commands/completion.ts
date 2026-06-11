@@ -3,8 +3,8 @@ import chalk from "chalk";
 
 function generateBashCompletion(): string {
   return [
-    "# zn bash completion",
-    "_zn_completions() {",
+    "# apiscan bash completion",
+    "_apiscan_completions() {",
     '  local cur prev words cword',
     '  _init_completion || return',
     '',
@@ -34,16 +34,16 @@ function generateBashCompletion(): string {
     '      ;;',
     '  esac',
     '} &&',
-    'complete -F _zn_completions zn',
+    'complete -F _apiscan_completions apiscan',
     '',
   ].join("\n");
 }
 
 function generateZshCompletion(): string {
   return [
-    "#compdef zn",
+    "#compdef apiscan",
     "",
-    "_zn_commands() {",
+    "_apiscan_commands() {",
     '  local -a commands',
     "  commands=(",
     "    'scan:Scan a codebase for endpoints and attack surface'",
@@ -58,7 +58,7 @@ function generateZshCompletion(): string {
     "  _describe 'command' commands",
     "}",
     "",
-    "_zn() {",
+    "_apiscan() {",
     "  local curcontext=$curcontext state line",
     "  typeset -A opt_args",
     "",
@@ -68,7 +68,7 @@ function generateZshCompletion(): string {
     "",
     "  case $state in",
     "    command)",
-    "      _zn_commands",
+    "      _apiscan_commands",
     "      ;;",
     "    args)",
     '      case $words[1] in',
@@ -83,34 +83,34 @@ function generateZshCompletion(): string {
     "  esac",
     "}",
     "",
-    "_zn \"$@\"",
+    "_apiscan \"$@\"",
     "",
   ].join("\n");
 }
 
 function generateFishCompletion(): string {
   return [
-    "# zn completions for fish shell",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a scan -d 'Scan a codebase for endpoints and attack surface'",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a list -d 'List built-in catalogs'",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a cache -d 'Manage on-disk LLM response cache'",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a config -d 'Manage user-level configuration'",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a rules -d 'Manage passive-scan rules'",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a completion -d 'Generate shell completion script'",
-    "complete -f -c zn -n '__fish_zn_needs_command' -a version -d 'Show version and build details'",
+    "# apiscan completions for fish shell",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a scan -d 'Scan a codebase for endpoints and attack surface'",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a list -d 'List built-in catalogs'",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a cache -d 'Manage on-disk LLM response cache'",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a config -d 'Manage user-level configuration'",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a rules -d 'Manage passive-scan rules'",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a completion -d 'Generate shell completion script'",
+    "complete -f -c apiscan -n '__fish_apiscan_needs_command' -a version -d 'Show version and build details'",
     "",
-    "complete -f -c zn -n '__fish_zn_using_command scan' -l format -r -d 'Output format'",
-    "complete -f -c zn -n '__fish_zn_using_command scan' -l output -r -d 'Write output to file'",
-    "complete -f -c zn -n '__fish_zn_using_command scan' -l include-callee -d 'Include 1-hop callee functions'",
-    "complete -f -c zn -n '__fish_zn_using_command scan' -l ai-context -d 'Include AI review context'",
+    "complete -f -c apiscan -n '__fish_apiscan_using_command scan' -l format -r -d 'Output format'",
+    "complete -f -c apiscan -n '__fish_apiscan_using_command scan' -l output -r -d 'Write output to file'",
+    "complete -f -c apiscan -n '__fish_apiscan_using_command scan' -l include-callee -d 'Include 1-hop callee functions'",
+    "complete -f -c apiscan -n '__fish_apiscan_using_command scan' -l ai-context -d 'Include AI review context'",
     "",
   ].join("\n");
 }
 
 function generateElvishCompletion(): string {
   return [
-    "# zn completions for Elvish shell",
-    "set edit:completion:arg-completer[zn] = {|@args|",
+    "# apiscan completions for Elvish shell",
+    "set edit:completion:arg-completer[apiscan] = {|@args|",
     "  var n = (count $args)",
     "  if (eq $n 1) {",
     "    put scan list cache config rules completion version help | each {|c| edit:complex-candidate $c &display=$c }",

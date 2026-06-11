@@ -11,7 +11,7 @@ export class SARIFOutput implements Output {
     for (const service of result.services) {
       for (const ep of service.endpoints) {
         ruleIdx++;
-        const ruleId = `ZP-${String(ruleIdx).padStart(4, "0")}`;
+        const ruleId = `SCAN-${String(ruleIdx).padStart(4, "0")}`;
         const level = this.severityLevel(ep.tags);
         rules.push({
           id: ruleId,
@@ -50,9 +50,9 @@ export class SARIFOutput implements Output {
       runs: [{
         tool: {
           driver: {
-            name: "ScanDog",
+            name: "API Scanner",
             version: "1.0.0",
-            informationUri: "https://zero-proof-pearl.vercel.app",
+            informationUri: "",
             rules,
           },
         },

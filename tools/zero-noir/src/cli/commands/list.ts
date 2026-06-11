@@ -46,7 +46,7 @@ export function registerListCommand(program: Command): void {
     .command("formats")
     .description("List available output formats")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Available Output Formats\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Available Output Formats\n"));
       for (const fmt of OUTPUT_FORMATS) {
         const desc = formatDescriptions[fmt] || "";
         console.log(`  ${chalk.green("▸")} ${fmt.padEnd(10)} ${chalk.gray(desc)}`);
@@ -58,7 +58,7 @@ export function registerListCommand(program: Command): void {
     .command("techs")
     .description("List supported technologies and frameworks")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Supported Technologies\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Supported Technologies\n"));
       for (const tech of KNOWN_TECHS) {
         console.log(`  ${chalk.green("▸")} ${tech.name.padEnd(25)} ${chalk.gray(tech.desc)}`);
       }
@@ -69,7 +69,7 @@ export function registerListCommand(program: Command): void {
     .command("taggers")
     .description("List available taggers")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Available Taggers\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Available Taggers\n"));
       for (const t of KNOWN_TAGGERS) {
         console.log(`  ${chalk.green("▸")} ${t.name.padEnd(18)} ${chalk.gray(t.desc)}`);
       }
@@ -80,7 +80,7 @@ export function registerListCommand(program: Command): void {
     .command("fields")
     .description("List available filter fields for --filter")
     .action(() => {
-      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Filter Fields\n"));
+      console.log(chalk.hex("#db8b8b")("\n  API Scanner — Filter Fields\n"));
       console.log(listFilterFields());
       console.log();
     });

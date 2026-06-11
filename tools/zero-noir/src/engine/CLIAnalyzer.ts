@@ -6,7 +6,7 @@ const KNOWN_CLIS: CLIDef[] = [
   {
     name: "zp",
     binary: "zp",
-    description: "Zero Proof unified CLI for build, prove, verify, and server management",
+    description: "Unified CLI for build, prove, verify, and server management",
     commands: [
       { name: "build", description: "Build a guest program from source path", args: [{ name: "guest_path", type: "string", required: true }] },
       { name: "prove", description: "Prove execution of a guest program", args: [{ name: "elf_path", type: "string", required: true }] },
