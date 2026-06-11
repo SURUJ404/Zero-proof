@@ -55,9 +55,20 @@ function buildMermaid(data) {
 
 
 
+const EMPTY_DATA = {
+  projectName: "ScanDog",
+  projectVersion: "1.0.0",
+  scannedAt: new Date().toISOString(),
+  services: [],
+  clis: [],
+  totalEndpoints: 0,
+  tags: { shadow: 0, prover: 0, verifier: 0, health: 0, deprecated: 0, authenticated: 0, websocket: 0, static: 0, callee: 0, aiContext: 0, graphql: 0, jwt: 0, fileUpload: 0 },
+  technologies: [],
+  warnings: [],
+};
+
 export default function ScanDog() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(EMPTY_DATA);
   const [search, setSearch] = useState("");
   const [methodFilter, setMethodFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("endpoints");
@@ -68,17 +79,6 @@ export default function ScanDog() {
   const [scanUrl, setScanUrl] = useState("");
   const [urlScanning, setUrlScanning] = useState(false);
   const [urlError, setUrlError] = useState("");
-
-  useEffect(() => {
-    fetch("/scandog-data.json")
-      .then((r) => r.json())
-      .then((d) => {
-        setData(d);
-        setExpandedServices(new Set(d.services.map((s) => s.name)));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
 
   useEffect(() => {
     if (!data || activeTab !== "architecture") return;
@@ -276,52 +276,23 @@ export default function ScanDog() {
     </>
   );
 
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.ctaBar}>{cta}</div>
-        <div className={styles.hero}>
-          <div className={styles.heroBadge}>Loading...</div>
-          <h1 className={styles.heroTitle}>ScanDog is sniffing your codebase</h1>
-        </div>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.ctaBar}>{cta}</div>
-        <div className={styles.hero}>
-          <div className={styles.heroBadge}>Offline</div>
-          <h1 className={styles.heroTitle}>No scan data available</h1>
-          <p className={styles.heroSub}>Run <code>zn scan . --format json</code> and place the output in <code>website/static/scandog-data.json</code></p>
-        </div>
-      </div>
-    );
-  }
-
-  const endpointMap = {};
-  for (const svc of data.services) {
-    for (const ep of svc.endpoints) {
-      const key = `${ep.method} ${ep.path}`;
-      if (!endpointMap[key]) endpointMap[key] = [];
-      endpointMap[key].push(svc.name);
-    }
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.ctaBar}>{cta}</div>
 
       {/* Hero */}
       <div className={styles.hero}>
-        <div className={styles.heroBadge}>ScanDog v1.0.0</div>
-        <h1 className={styles.heroTitle}>{data.projectName}</h1>
+        <div className={styles.heroBadge}>
+          {data.totalEndpoints > 0 ? `ScanDog v1.0.0` : `ScanDog — Ready`}
+        </div>
+        <h1 className={styles.heroTitle}>
+          {data.totalEndpoints > 0 ? data.projectName : `ScanDog Attack Surface Scanner`}
+        </h1>
         <p className={styles.heroSub}>
-          Attack Surface Report &mdash; {data.totalEndpoints} endpoints &middot;{" "}
-          {data.services.length} services &middot; {data.clis.length} CLI tools &middot;{" "}
-          {new Date(data.scannedAt).toLocaleDateString()}
+          {data.totalEndpoints > 0
+            ? `Attack Surface Report &mdash; ${data.totalEndpoints} endpoints &middot; ${data.services.length} services &middot; ${data.clis.length} CLI tools &middot; ${new Date(data.scannedAt).toLocaleDateString()}`
+            : `Paste a GitHub URL below to scan any repository &mdash; no installation needed`
+          }
         </p>
       </div>
 
