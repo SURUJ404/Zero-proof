@@ -5,6 +5,7 @@ import { OUTPUT_FORMATS, getOutput, OutputFormat } from "../../outputs/index.js"
 import { Deliver } from "../../deliver/Deliver.js";
 import { writeFileSync } from "fs";
 import { join } from "path";
+import { parseFilters, applyFilters } from "../../engine/Filter.js";
 
 export function registerScanCommand(program: Command): void {
   program
@@ -23,6 +24,7 @@ export function registerScanCommand(program: Command): void {
     .option("--ai-provider <provider>", "AI provider (openai, ollama)")
     .option("--only-techs <techs...>", "Only detect specified technologies")
     .option("--exclude-techs <techs...>", "Exclude specified technologies")
+    .option("--filter <expr...>", "Filter results by field=value (repeatable: method=POST, tag=shadow)")
     .action(async (path, options) => {
       const scanner = new Scanner();
 
@@ -36,7 +38,7 @@ export function registerScanCommand(program: Command): void {
         process.env.AI_PROVIDER = options.aiProvider;
       }
 
-      const result = scanner.scan(path, {
+      let result = scanner.scan(path, {
         includeCallee: options.includeCallee,
         aiContext: options.aiContext,
         excludePaths: options.excludePath,
@@ -44,6 +46,20 @@ export function registerScanCommand(program: Command): void {
         onlyTechs: options.onlyTechs,
         excludeTechs: options.excludeTechs,
       });
+
+      if (options.filter?.length) {
+        try {
+          const exprs = parseFilters(options.filter);
+          const filtered = applyFilters(result, exprs);
+          const removed = result.totalEndpoints - filtered.totalEndpoints;
+          result = filtered;
+          if (options.verbose) {
+            console.log(chalk.gray(`  Filter applied: ${options.filter.join(", ")} (removed ${removed} endpoints)\n`));
+          }
+        } catch (e: any) {
+          console.log(chalk.red(`  ✗ Filter error: ${e.message}\n`));
+        }
+      }
 
       const format = options.format as OutputFormat | "terminal";
 

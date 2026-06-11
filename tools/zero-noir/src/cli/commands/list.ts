@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { OUTPUT_FORMATS } from "../../outputs/index.js";
+import { listFilterFields } from "../../engine/Filter.js";
 
 const KNOWN_TECHS = [
   { name: "rust/axum", desc: "Rust Axum web framework" },
@@ -72,6 +73,15 @@ export function registerListCommand(program: Command): void {
       for (const t of KNOWN_TAGGERS) {
         console.log(`  ${chalk.green("▸")} ${t.name.padEnd(18)} ${chalk.gray(t.desc)}`);
       }
+      console.log();
+    });
+
+  listCmd
+    .command("fields")
+    .description("List available filter fields for --filter")
+    .action(() => {
+      console.log(chalk.hex("#db8b8b")("\n  ScanDog — Filter Fields\n"));
+      console.log(listFilterFields());
       console.log();
     });
 }
