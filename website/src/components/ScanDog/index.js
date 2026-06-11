@@ -410,32 +410,32 @@ export default function ScanDog() {
 
       {/* Stats */}
       <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
+        <a className={styles.statCard} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+endpoint" target="_blank" rel="noopener" style={{textDecoration:"none"}}>
           <div className={styles.statValue}>{data.totalEndpoints}</div>
           <div className={styles.statLabel}>Total Endpoints</div>
-        </div>
-        <div className={styles.statCard}>
+        </a>
+        <a className={styles.statCard} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+service" target="_blank" rel="noopener" style={{textDecoration:"none"}}>
           <div className={`${styles.statValue} ${styles.statInfo}`}>{data.services.length}</div>
           <div className={styles.statLabel}>Services</div>
-        </div>
-        <div className={styles.statCard}>
+        </a>
+        <a className={styles.statCard} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+cli" target="_blank" rel="noopener" style={{textDecoration:"none"}}>
           <div className={`${styles.statValue} ${styles.statInfo}`}>{data.clis.length}</div>
           <div className={styles.statLabel}>CLI Tools</div>
-        </div>
-        <div className={styles.statCard}>
+        </a>
+        <a className={styles.statCard} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+shadow" target="_blank" rel="noopener" style={{textDecoration:"none"}}>
           <div className={`${styles.statValue} ${data.tags.shadow > 0 ? styles.statDanger : ""}`}>
             {data.tags.shadow}
           </div>
           <div className={styles.statLabel}>Shadow APIs</div>
-        </div>
-        <div className={styles.statCard}>
+        </a>
+        <a className={styles.statCard} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+prover" target="_blank" rel="noopener" style={{textDecoration:"none"}}>
           <div className={`${styles.statValue} ${styles.statSuccess}`}>{data.tags.prover}</div>
           <div className={styles.statLabel}>Prover</div>
-        </div>
-        <div className={styles.statCard}>
+        </a>
+        <a className={styles.statCard} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+verifier" target="_blank" rel="noopener" style={{textDecoration:"none"}}>
           <div className={`${styles.statValue} ${styles.statSuccess}`}>{data.tags.verifier}</div>
           <div className={styles.statLabel}>Verifier</div>
-        </div>
+        </a>
       </div>
 
       {/* Alerts */}
@@ -550,14 +550,16 @@ export default function ScanDog() {
 
           {/* CLI Tools */}
           <div className={styles.cliSection}>
-            <div className={styles.cliHeader}>CLI Tools ({data.clis.length})</div>
+            <a className={styles.cliHeader} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+cli" target="_blank" rel="noopener" style={{textDecoration:"none",display:"block"}}>CLI Tools ({data.clis.length})</a>
             <div className={styles.cliBody}>
               {data.clis.map((cli, i) => (
                 <div className={styles.cliItem} key={i}>
-                  <div className={styles.cliName}>{cli.binary}</div>
+                  <div className={styles.cliName}>
+                    <a href={`https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+${cli.binary}`} target="_blank" rel="noopener" style={{color:"inherit",textDecoration:"none"}}>{cli.binary}</a>
+                  </div>
                   <div className={styles.cliDesc}>{cli.description}</div>
                   <div>{cli.commands.map((cmd, j) => (
-                    <code className={styles.cliCmd} key={j}>{cli.binary} {cmd.name}</code>
+                    <a key={j} href={`https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+${cli.binary}+${cmd.name}`} target="_blank" rel="noopener" style={{textDecoration:"none"}}><code className={styles.cliCmd}>{cli.binary} {cmd.name}</code></a>
                   ))}</div>
                 </div>
               ))}
