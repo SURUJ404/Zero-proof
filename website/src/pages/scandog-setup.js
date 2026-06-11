@@ -205,6 +205,40 @@ scandog scan . --format sarif -o results.sarif`}</Pre>
           </div>
         </div>
 
+        {/* Custom analyzers */}
+        <div style={section}>
+          <h2 style={heading}>Custom Analyzers</h2>
+          <p style={paragraph}>
+            Don't see your framework? Define your own with a YAML file and <Code>--custom-analyzers</Code>.
+            Write regex patterns to extract endpoints from any language:
+          </p>
+          <Pre>{`# .analyzers.yml
+analyzers:
+  # Extract Spring Boot @RequestMapping
+  - name: spring-boot
+    pattern: '@(Get|Post|Put|Delete)Mapping\\(["]([^"]+)["]\\)'
+    methodGroup: 1
+    pathGroup: 2
+    technology: java:spring
+    include: ["**/*.java"]
+
+  # Extract Flask @app.route decorators
+  - name: flask
+    pattern: '@app\\.route\\(["]([^"]+)["]\\)'
+    methodGroup: 1
+    pathGroup: 1
+    technology: python:flask
+    include: ["**/*.py"]`}</Pre>
+          <Pre>{`# Run with custom analyzers
+scandog scan . --custom-analyzers .analyzers.yml`}</Pre>
+          <p style={paragraph}>
+            Each analyzer needs: <Code>name</Code>, <Code>pattern</Code> (regex with capture groups),
+            <Code>methodGroup</Code> (capture group for HTTP method),
+            <Code>pathGroup</Code> (capture group for URL path).
+            Optional: <Code>include</Code>/<Code>exclude</Code> file globs, <Code>technology</Code> label.
+          </p>
+        </div>
+
         {/* Next steps */}
         <div style={section}>
           <h2 style={heading}>Next Steps</h2>
@@ -227,7 +261,7 @@ scandog scan . --format sarif -o results.sarif`}</Pre>
               <div style={{ ...card, cursor: "pointer", textAlign: "center" }}>
                 <div style={{ fontSize: "1.5rem", marginBottom: "0.3rem" }}>📦</div>
                 <div style={cardTitle}>npm Package</div>
-                <p style={{ fontSize: "0.8rem", color: "var(--ifm-color-emphasis-600)", margin: 0 }}>@suruj/scan-dog@1.2.0</p>
+                <p style={{ fontSize: "0.8rem", color: "var(--ifm-color-emphasis-600)", margin: 0 }}>@suruj/scan-dog@1.3.0</p>
               </div>
             </Link>
           </div>

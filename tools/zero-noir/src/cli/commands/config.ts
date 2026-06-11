@@ -23,6 +23,26 @@ scan:
   include_callee: false     # include 1-hop callee functions
   ai_context: false         # include AI review context
 
+# Custom analyzers — define regex-based endpoint detectors
+# Run with: scandog scan . --custom-analyzers .analyzers.yml
+analyzers:
+  # Example: detect Spring Boot @RequestMapping endpoints
+  # - name: spring
+  #   pattern: '@(Get|Post|Put|Delete)Mapping\\(["']([^"']+)["']\\)'
+  #   methodGroup: 1
+  #   pathGroup: 2
+  #   technology: java:spring
+  #   include: ["**/*.java"]
+
+  # Example: detect Flask @app.route decorators
+  # - name: flask
+  #   pattern: '@app\\.route\\(["']([^"']+)["']\\)'
+  #   methodGroup: 1
+  #   pathGroup: 1
+  #   method: GET
+  #   technology: python:flask
+  #   include: ["**/*.py"]
+
 # Delivery targets
 deliver:
   zap: ""                   # ZAP instance URL

@@ -1,0 +1,7 @@
+analyzers:
+  - name: express-routes
+    pattern: 'router\.(get|post|put|delete)\(\s*["\x27]([^"\x27,]+)["\x27]'
+    methodGroup: 1
+    pathGroup: 2
+    technology: javascript:express-custom
+    include: ["**/routes/*.js"]

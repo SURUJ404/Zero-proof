@@ -11,6 +11,7 @@ import { Tagger } from "./Tagger.js";
 import { JavaScriptAnalyzer } from "./analyzers/JavaScriptAnalyzer.js";
 import { PythonAnalyzer } from "./analyzers/PythonAnalyzer.js";
 import { GoAnalyzer } from "./analyzers/GoAnalyzer.js";
+import { PluginAnalyzer } from "./PluginAnalyzer.js";
 import { createLLMProvider, LLMProvider } from "./llm/LLMProvider.js";
 
 const EXCLUDE_DIRS = [
@@ -30,6 +31,7 @@ export class Scanner {
   private jsAnalyzer = new JavaScriptAnalyzer();
   private pyAnalyzer = new PythonAnalyzer();
   private goAnalyzer = new GoAnalyzer();
+  private pluginAnalyzer = new PluginAnalyzer();
   private tagger = new Tagger();
   private llmProvider: LLMProvider | null = null;
 
@@ -63,8 +65,9 @@ export class Scanner {
     const jsEndpoints = this.jsAnalyzer.analyze(jsFiles, options);
     const pyEndpoints = this.pyAnalyzer.analyze(pyFiles, options);
     const goEndpoints = this.goAnalyzer.analyze(goFiles, options);
+    const pluginEndpoints = this.pluginAnalyzer.analyze(files, options);
 
-    let allEndpoints = [...allRouteEp, ...allServiceEp, ...allDockerEp, ...allCliEp, ...jsEndpoints, ...pyEndpoints, ...goEndpoints];
+    let allEndpoints = [...allRouteEp, ...allServiceEp, ...allDockerEp, ...allCliEp, ...jsEndpoints, ...pyEndpoints, ...goEndpoints, ...pluginEndpoints];
     allEndpoints = this.tagger.tag(allEndpoints);
 
     if (options.aiContext && this.llmProvider) {

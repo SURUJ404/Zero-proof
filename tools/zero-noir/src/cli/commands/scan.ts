@@ -6,6 +6,9 @@ import { Deliver } from "../../deliver/Deliver.js";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { parseFilters, applyFilters } from "../../engine/Filter.js";
+import { readFileSync, existsSync } from "fs";
+import { UserAnalyzerDef } from "../../engine/types.js";
+import { load as loadYaml } from "js-yaml";
 
 export function registerScanCommand(program: Command): void {
   program
@@ -25,8 +28,28 @@ export function registerScanCommand(program: Command): void {
     .option("--only-techs <techs...>", "Only detect specified technologies")
     .option("--exclude-techs <techs...>", "Exclude specified technologies")
     .option("--filter <expr...>", "Filter results by field=value (repeatable: method=POST, tag=shadow)")
+    .option("--custom-analyzers <path>", "Path to YAML file with custom analyzer definitions")
     .action(async (path, options) => {
       const scanner = new Scanner();
+
+      let customAnalyzers: UserAnalyzerDef[] = [];
+      if (options.customAnalyzers) {
+        const ap = options.customAnalyzers;
+        if (!existsSync(ap)) {
+          console.log(chalk.red(`  ✗ Custom analyzers file not found: ${ap}\n`));
+        } else {
+          try {
+            const raw = readFileSync(ap, "utf-8");
+            const parsed = loadYaml(raw) as any;
+            customAnalyzers = parsed.analyzers || parsed.custom_analyzers || [];
+            if (options.verbose) {
+              console.log(chalk.gray(`  Loaded ${customAnalyzers.length} custom analyzer(s) from ${ap}\n`));
+            }
+          } catch (e: any) {
+            console.log(chalk.red(`  ✗ Failed to load custom analyzers: ${e.message}\n`));
+          }
+        }
+      }
 
       console.log(chalk.hex("#db8b8b")("\n  ⚡ ScanDog — Attack Surface Detector"));
       console.log(chalk.gray(`  Scanning: ${path}\n`));
@@ -45,6 +68,7 @@ export function registerScanCommand(program: Command): void {
         verbose: options.verbose,
         onlyTechs: options.onlyTechs,
         excludeTechs: options.excludeTechs,
+        customAnalyzers,
       });
 
       if (options.filter?.length) {

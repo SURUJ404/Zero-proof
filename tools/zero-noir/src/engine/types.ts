@@ -101,6 +101,18 @@ export interface DetectorResult {
   version?: string;
 }
 
+export interface UserAnalyzerDef {
+  name: string;
+  pattern: string;
+  methodGroup: number;
+  pathGroup: number;
+  lineGroup?: number;
+  technology?: string;
+  service?: string;
+  include?: string[];
+  exclude?: string[];
+}
+
 export interface AnalyzerOptions {
   includeCallee?: boolean;
   aiContext?: boolean;
@@ -108,4 +120,5 @@ export interface AnalyzerOptions {
   verbose?: boolean;
   onlyTechs?: string[];
   excludeTechs?: string[];
+  customAnalyzers?: UserAnalyzerDef[];
 }
