@@ -1,5 +1,5 @@
 {
-  "name": "@zk/scandog",
+  "name": "zk-scandog",
   "version": "1.3.0",
   "description": "API Surface Scanner — discover endpoints, expose shadow APIs, map the attack surface",
   "type": "module",

@@ -39,7 +39,7 @@ export default function ScanDogSetup() {
           <p style={p}>
             Requires <strong>Node.js 18+</strong>. Install globally via npm:
           </p>
-          <P>{`npm install -g @suruj/scan-dog`}</P>
+          <P>{`npm install -g zk-scandog`}</P>
           <p style={p}>
             After install, three commands are available: <C>apiscan</C>, <C>scandog</C>, and <C>zn</C> (all point to the same binary).
           </p>
