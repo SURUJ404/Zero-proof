@@ -65,6 +65,9 @@ export default function ScanDog() {
   const [expandedServices, setExpandedServices] = useState(new Set());
   const [copied, setCopied] = useState(false);
   const [mermaidSvg, setMermaidSvg] = useState("");
+  const [scanUrl, setScanUrl] = useState("");
+  const [urlScanning, setUrlScanning] = useState(false);
+  const [urlError, setUrlError] = useState("");
 
   useEffect(() => {
     fetch("/scandog-data.json")
@@ -235,6 +238,33 @@ export default function ScanDog() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleUrlScan = async () => {
+    const trimmed = scanUrl.trim();
+    if (!trimmed) { setUrlError("Please enter a GitHub URL"); return; }
+    if (!trimmed.includes("github.com")) { setUrlError("Only GitHub URLs are supported"); return; }
+    setUrlScanning(true);
+    setUrlError("");
+    try {
+      const res = await fetch("/api/scan-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: trimmed }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Server error: ${res.status}`);
+      }
+      const result = await res.json();
+      setData(result);
+      setExpandedServices(new Set(result.services.map((s) => s.name)));
+      setActiveTab("endpoints");
+    } catch (e) {
+      setUrlError(e.message);
+    } finally {
+      setUrlScanning(false);
+    }
+  };
+
   const cta = (
     <Link className={styles.ctaBtn} to="/scandog-setup">
       Get Started
@@ -288,6 +318,28 @@ export default function ScanDog() {
           {data.services.length} services &middot; {data.clis.length} CLI tools &middot;{" "}
           {new Date(data.scannedAt).toLocaleDateString()}
         </p>
+      </div>
+
+      {/* URL Scan Bar */}
+      <div className={styles.urlScanSection}>
+        <div className={styles.urlScanHeader}>
+          <h2 className={styles.urlScanTitle}>\uD83C\uDF10 Scan Any GitHub Repo</h2>
+          <p className={styles.urlScanSub}>Paste a GitHub URL &mdash; no installation needed</p>
+        </div>
+        <div className={styles.urlScanForm}>
+          <input
+            className={styles.urlScanInput}
+            type="text"
+            placeholder="https://github.com/user/repo"
+            value={scanUrl}
+            onChange={(e) => { setScanUrl(e.target.value); setUrlError(""); }}
+            onKeyDown={(e) => { if (e.key === "Enter") handleUrlScan(); }}
+          />
+          <button className={styles.urlScanBtn} onClick={handleUrlScan} disabled={urlScanning}>
+            {urlScanning ? "Scanning..." : "Scan"}
+          </button>
+        </div>
+        {urlError && <div className={styles.urlScanError}>{urlError}</div>}
       </div>
 
       {/* Scan Routing Engine */}

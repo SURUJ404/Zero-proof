@@ -11,6 +11,7 @@ import { registerCacheCommand } from "./cli/commands/cache.js";
 import { registerConfigCommand } from "./cli/commands/config.js";
 import { registerRulesCommand } from "./cli/commands/rules.js";
 import { registerCompletionCommand } from "./cli/commands/completion.js";
+import { registerTechCommand, printTechPortal } from "./cli/commands/tech.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgPath = join(__dirname, "..", "package.json");
@@ -21,7 +22,8 @@ const program = new Command();
 program
   .name("apiscan")
   .description("API Surface Scanner — discover endpoints, expose shadow APIs, map the attack surface")
-  .version(pkg.version, "-v, --version", "Show version");
+  .version(pkg.version, "-v, --version", "Show version")
+  .option("--tech", "Show all available features and modules");
 
 registerScanCommand(program);
 registerListCommand(program);
@@ -29,6 +31,12 @@ registerCacheCommand(program);
 registerConfigCommand(program);
 registerRulesCommand(program);
 registerCompletionCommand(program);
+registerTechCommand(program);
+
+program.on("option:tech", () => {
+  printTechPortal(pkg.version);
+  process.exit(0);
+});
 
 program.parse(process.argv);
 
@@ -42,6 +50,7 @@ if (!process.argv.slice(2).length) {
   console.log(`    ${chalk.green("cache")}      Manage LLM response cache`);
   console.log(`    ${chalk.green("config")}     Manage configuration`);
   console.log(`    ${chalk.green("rules")}      Manage passive-scan rules`);
+  console.log(`    ${chalk.green("tech")}       Show all available features and modules`);
   console.log(`    ${chalk.green("completion")} Generate shell completions`);
   console.log(`    ${chalk.green("help")}       Display help\n`);
   console.log(chalk.gray(`  Run ${chalk.white("apiscan <command> --help")} for detailed options\n`));
