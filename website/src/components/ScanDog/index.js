@@ -85,6 +85,7 @@ export default function ScanDog() {
   const [urlScanning, setUrlScanning] = useState(false);
   const [urlError, setUrlError] = useState("");
   const [scanCompleted, setScanCompleted] = useState(false);
+  const [cliSearch, setCliSearch] = useState("");
 
   useEffect(() => {
     if (!data || activeTab !== "architecture") return;
@@ -553,19 +554,28 @@ export default function ScanDog() {
 
           {/* CLI Tools */}
           <div className={styles.cliSection}>
-            <a className={styles.cliHeader} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+cli" target="_blank" rel="noopener" style={{textDecoration:"none",display:"block"}}>CLI Tools ({data.clis.length})</a>
+            <div className={styles.cliHeader}>
+              <span>CLI Tools ({data.clis.length})</span>
+              <a className={styles.cliReportLink} href="https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+cli" target="_blank" rel="noopener">Report Issue</a>
+            </div>
             <div className={styles.cliBody}>
-              {data.clis.map((cli, i) => (
-                <div className={styles.cliItem} key={i}>
-                  <div className={styles.cliName}>
-                    <a href={`https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+${cli.binary}`} target="_blank" rel="noopener" style={{color:"inherit",textDecoration:"none"}}>{cli.binary}</a>
+              <input className={styles.cliSearch} type="text" placeholder="Search CLI tools..." value={cliSearch} onChange={(e) => setCliSearch(e.target.value)} />
+              <div className={styles.cliList}>
+                {data.clis
+                  .filter((cli) => {
+                    if (!cliSearch) return true;
+                    const q = cliSearch.toLowerCase();
+                    return cli.binary.toLowerCase().includes(q) || cli.description.toLowerCase().includes(q);
+                  })
+                  .map((cli, i) => (
+                  <div className={styles.cliItem} key={i}>
+                    <span className={styles.cliName}>
+                      <a href={`https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+${cli.binary}`} target="_blank" rel="noopener" style={{color:"inherit",textDecoration:"none"}}>{cli.binary}</a>
+                    </span>
+                    <span className={styles.cliDesc}>{cli.description}</span>
                   </div>
-                  <div className={styles.cliDesc}>{cli.description}</div>
-                  <div>{cli.commands.map((cmd, j) => (
-                    <a key={j} href={`https://github.com/SURUJ404/Zero-proof/issues?q=is:issue+is:open+${cli.binary}+${cmd.name}`} target="_blank" rel="noopener" style={{textDecoration:"none"}}><code className={styles.cliCmd}>{cli.binary} {cmd.name}</code></a>
-                  ))}</div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </>

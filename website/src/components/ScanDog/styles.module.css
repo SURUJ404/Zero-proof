@@ -338,20 +338,56 @@
   font-size: 0.9rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 }
+.cliReportLink {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+.cliReportLink:hover { text-decoration: underline; }
 .cliBody { padding: 1rem 1.1rem; }
-.cliItem { margin-bottom: 0.75rem; }
-.cliItem:last-child { margin-bottom: 0; }
+.cliSearch {
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.82rem;
+  box-sizing: border-box;
+}
+.cliSearch:focus { outline: none; border-color: var(--ifm-color-primary); }
+.cliList {
+  max-height: 320px;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.4rem 0.8rem;
+}
+.cliItem {
+  display: flex;
+  flex-direction: column;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.cliItem:hover { background: var(--ifm-background-color); }
 .cliName {
   color: var(--ifm-color-primary);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.82rem;
+  font-family: var(--ifm-font-family-monospace);
 }
 .cliDesc {
-  margin: 0.15rem 0 0.35rem;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   color: var(--ifm-color-emphasis-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .cliCmd {
   display: inline-block;
