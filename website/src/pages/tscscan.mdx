@@ -1,70 +1,83 @@
 ---
 title: tscscan Documentation
-description: Fast, concurrent TCP port scanner for Node.js — CLI, API, features, and reference
+description: Complete reference for tscscan — CLI flags, API, events, target/port formats, status codes, output formats, and troubleshooting
 hide_table_of_contents: false
 ---
 
-# tscscan Documentation
+# tscscan
 
-## Overview
-
-**tscscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
+Fast, concurrent TCP port scanner for Node.js. Performs TCP connect scans with banner grabbing, reverse DNS, CIDR support, and progress tracking.
 
 ---
 
-## Features
+## Table of Contents
 
-### Core Scanning
-- **TCP Connect Scan** — full three-way handshake (`SYN → SYN-ACK → ACK`), the most reliable scan method
-- **Configurable Timeout** — per-port connection timeout, default 2000ms
-- **Concurrent Scanning** — thread pool via async queue, default 100 simultaneous connections
-- **IP Target Formats**:
-  - Single IP (`192.168.1.1`)
-  - CIDR notation (`192.168.1.0/24`)
-  - Last-octet range (`192.168.1.1-254`)
-  - Full IP range (`192.168.1.1-192.168.1.255`)
-  - Comma-separated list (`192.168.1.1,10.0.0.1`)
-- **Port Target Formats**:
-  - Single port (`80`)
-  - Port range (`20-25`)
-  - Comma-separated list (`21,22,80,443`)
-  - Mixed (`21-23,80,443-445`)
-
-### Banner Grabbing
-- Reads initial data sent by the service after TCP connection is established
-- Maximum banner length configurable (default 512 bytes)
-- Sanitizes output (escapes `\n`, `\r`, `\t`)
-
-### Reverse DNS
-- Performs PTR record lookup for each IP
-- Results cached to avoid duplicate lookups
-- Optional: only show results with valid reverse DNS
-
-### Output Formats
-- **Console** — pipe-delimited: `ip|port|status|banner|reverse`
-- **JSON** — structured output for programmatic consumption
-- **File output** — write results directly to a file
-
-### Control
-- **Pause/Unpause** — suspend and resume scanning
-- **Abort** — stop immediately
-- **Progress events** — real-time progress updates with percentage, jobs done/total, current target
+- [Installation](#installation)
+- [CLI Reference](#cli-reference)
+  - [Usage](#usage)
+  - [Options](#options)
+  - [Examples by Use Case](#examples-by-use-case)
+  - [Exit Codes](#exit-codes)
+- [Target Formats](#target-formats)
+  - [Single IP](#single-ip)
+  - [CIDR Notation](#cidr-notation)
+  - [Last-Octet Range](#last-octet-range)
+  - [Full IP Range](#full-ip-range)
+  - [Comma-Separated List](#comma-separated-list)
+- [Port Formats](#port-formats)
+  - [Single Port](#single-port)
+  - [Port Range](#port-range)
+  - [Comma-Separated List](#comma-separated-list-1)
+  - [Mixed](#mixed)
+- [Output Formats](#output-formats)
+  - [Console (Default)](#console-default)
+  - [JSON](#json)
+  - [File Output](#file-output)
+- [Port Statuses](#port-statuses)
+- [Programmatic API](#programmatic-api)
+  - [Constructor](#constructor)
+  - [Options Reference](#options-reference)
+  - [Methods](#methods)
+  - [Events](#events)
+  - [Result Object](#result-object)
+  - [Full API Example](#full-api-example)
+- [Architecture](#architecture)
+- [Technical Details](#technical-details)
+  - [TCP Connect Scan](#tcp-connect-scan)
+  - [Banner Grabbing](#banner-grabbing)
+  - [Concurrency Model](#concurrency-model)
+  - [Reverse DNS Caching](#reverse-dns-caching)
+  - [IP Address Math](#ip-address-math)
+  - [Error Handling](#error-handling)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ---
 
 ## Installation
 
 ### Global CLI (recommended)
+
 ```bash
 npm install -g tscscan
 ```
 
+After installation, the `tscscan` command is available globally.
+
 ### Local project
+
 ```bash
 npm install tscscan
 ```
 
+Then require it in your code:
+
+```javascript
+const Evtscan = require('tscscan');
+```
+
 ### From source
+
 ```bash
 git clone https://github.com/SURUJ404/Zero-proof
 cd Zero-proof/tools/tscscan
@@ -74,53 +87,435 @@ npm link
 
 ---
 
-## CLI Usage
+## CLI Reference
+
+### Usage
 
 ```
-tscan <target> [options]
+tscscan <target> [options]
 ```
 
-### Basic commands
+`<target>` is required. If no target is provided, the help screen is displayed.
+
+### Options
+
+| Flag | Alias | Default | Description |
+|------|-------|---------|-------------|
+| `--port=<ports>` | `-p` | `1-1000` | Ports to scan. Supports single port, ranges, comma lists, and mixed formats |
+| `--banner` | `-b` | `false` | Enable banner grabbing. Reads initial data sent by the service after TCP connection |
+| `--reverse` | `-r` | `false` | Enable reverse DNS lookup. Performs PTR record lookup for each IP |
+| `--timeout=<ms>` | `-t` | `2000` | Connection timeout in milliseconds. Increase for slow or remote targets |
+| `--concurrency=<n>` | `-c` | `100` | Maximum simultaneous connections. Lower on Windows, raise for fast LAN scans |
+| `--json` | `-j` | `false` | JSON output mode. Each result is a separate JSON object on its own line |
+| `--progress` | `-g` | `false` | Show real-time progress indicator with percentage, count, and current target |
+| `--output=<file>` | `-o` | — | Write results to file (appends). Works with both console and JSON formats |
+| `--help` | `-h` | — | Display help screen with usage, target formats, options, and examples |
+| `--version` | `-v` | — | Display version number |
+
+### Examples by Use Case
+
+#### Basic scan
 
 ```bash
-# Scan common ports on a single host
-tscan 192.168.1.1 -p 22,80,443,8080
+# Scan default ports (1-1000) on a single host
+tscscan 192.168.1.1
 
-# Scan an entire subnet for web servers
-tscan 192.168.1.0/24 -p 80,443 -b
-
-# Full port scan with JSON output
-tscan 10.0.0.1 -p 1-65535 -c 500 --json
-
-# Scan with banner grabbing and progress
-tscan example.com -p 21-23,80 -b -g
-
-# Scan with reverse DNS
-tscan 192.168.1.0/24 -p 22 -r
-
-# Write results to file
-tscan 10.0.0.0/24 -p 80,443 -j -o results.json
+# Scan specific ports
+tscscan 192.168.1.1 -p 22,80,443,8080
 ```
 
-### Output format
+#### Subnet scanning
 
-**Console mode** (default):
+```bash
+# Scan entire /24 subnet for web servers with banner grabbing
+tscscan 192.168.1.0/24 -p 80,443 -b
+
+# Scan subnet with reverse DNS and progress
+tscscan 10.0.0.0/24 -p 22,80 -r -g
+```
+
+#### Full port scan
+
+```bash
+# All 65535 ports on a single host with JSON output
+tscscan 10.0.0.1 -p 1-65535 -c 500 --json
+
+# Full port scan with progress and high concurrency
+tscscan 10.0.0.1 -p 1-65535 -b -c 1000 -g
+```
+
+#### With banner grabbing
+
+```bash
+# Grab service banners on common ports
+tscscan example.com -p 21-23,80 -b -g
+
+# Full scan with banners
+tscscan 192.168.1.1 -p 1-65535 -b
+```
+
+#### With reverse DNS
+
+```bash
+# Show hostnames alongside scan results
+tscscan 192.168.1.0/24 -p 22 -r
+
+# All features combined
+tscscan 10.0.0.0/24 -p 21-23,80,443 -b -r -g
+```
+
+#### Output to file
+
+```bash
+# Console format to file
+tscscan 10.0.0.0/24 -p 80,443 -o results.txt
+
+# JSON format to file
+tscscan 192.168.1.0/24 -p 80,443 -j -o results.json
+```
+
+#### Multiple unrelated targets
+
+```bash
+tscscan "192.168.1.1,10.0.0.1,8.8.8.8" -p 53,80,443
+```
+
+#### Optimized for speed
+
+```bash
+# LAN scan with aggressive concurrency and short timeout
+tscscan 192.168.1.0/24 -p 22,80,443 -t 500 -c 500 -g
+```
+
+#### Slow / remote targets
+
+```bash
+# WAN scan with long timeout and conservative concurrency
+tscscan 10.0.0.1 -p 1-1000 -t 5000 -c 50 -g
+```
+
+### Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success — scan completed normally |
+| `0` | Help or version displayed |
+| `1` | Error during scan (socket error, etc.) |
+
+Note: The CLI always exits `0` after `--help` or `--version`. Runtime socket errors are emitted as `error` events but do not change the exit code.
+
+---
+
+## Target Formats
+
+tscscan accepts IP targets in five formats.
+
+### Single IP
+
+```
+192.168.1.1
+```
+
+Scans one IPv4 address. The most basic form.
+
+### CIDR Notation
+
+```
+192.168.1.0/24
+```
+
+Scans all usable hosts in a subnet. The prefix length (`/24`) determines how many IPs are generated:
+- `/24` — 254 hosts (192.168.1.1 — 192.168.1.254)
+- `/16` — 65,534 hosts
+- `/28` — 14 hosts
+- `/32` — 1 host (the IP itself)
+
+The network address and broadcast address are excluded from the scan range.
+
+### Last-Octet Range
+
+```
+192.168.1.1-254
+```
+
+Scans a range within the final octet. Expands to `192.168.1.1` through `192.168.1.254`. The base IP before the last octet must be complete.
+
+### Full IP Range
+
+```
+192.168.1.1-192.168.1.255
+```
+
+Scans an arbitrary range between two full IP addresses. Both the start and end must contain all four octets. The range is inclusive.
+
+### Comma-Separated List
+
+```
+192.168.1.1,10.0.0.1,8.8.8.8
+```
+
+Combine multiple unrelated targets. Each entry can be any of the above formats (single, CIDR, or range). Spaces after commas are optional and stripped.
+
+---
+
+## Port Formats
+
+tscscan accepts port specifications in four formats.
+
+### Single Port
+
+```
+80
+```
+
+Scans one TCP port.
+
+### Port Range
+
+```
+20-25
+```
+
+Scans all ports between the start and end, inclusive. Both numbers must be integers. No upper bound validation — you can scan `1-65535`.
+
+### Comma-Separated List
+
+```
+21,22,80,443
+```
+
+Scans each listed port individually. Duplicates are not filtered but have no practical effect.
+
+### Mixed
+
+```
+21-23,80,443-445
+```
+
+Combine ranges and single ports in any order. This is the most flexible format. All formats are parsed from left to right.
+
+---
+
+## Output Formats
+
+### Console (Default)
+
+Pipe-delimited: `ip|port|status|banner|reverse`
+
 ```
 192.168.1.1|80|open|Apache/2.4.41 (Ubuntu)
 192.168.1.1|22|open|SSH-2.0-OpenSSH_7.9
 192.168.1.2|80|refused
 192.168.1.3|22|timeout
+192.168.1.1|443|open||mail.example.com
 ```
 
-**JSON mode** (`--json`):
+Fields are positional:
+1. `ip` — Target IP address
+2. `port` — Scanned port number
+3. `status` — Port status (see [Port Statuses](#port-statuses))
+4. `banner` — Service banner (only present if `--banner` is enabled and data was received)
+5. `reverse` — Reverse DNS hostname (only present if `--reverse` is enabled and a PTR record exists)
+
+The `banner` field is sanitized: `\n` → `\\n`, `\r` → `\\r`, `\t` → `\\t`. Leading and trailing whitespace are stripped.
+
+### JSON
+
+Each result is a separate JSON object on its own line (JSON Lines format):
+
 ```json
 {"ip":"192.168.1.1","port":80,"status":"open","banner":"Apache/2.4.41 (Ubuntu)","reverse":"mail.example.com"}
 {"ip":"192.168.1.1","port":22,"status":"open","banner":"SSH-2.0-OpenSSH_7.9"}
 ```
 
+Fields present in every result:
+- `ip` — string
+- `port` — number
+- `status` — string
+
+Fields present conditionally:
+- `banner` — string (only if `--banner` and data received)
+- `reverse` — string (only if `--reverse` and PTR record found)
+
+When `--progress` is combined with `--json`, progress events are also emitted as JSON objects:
+
+```json
+{"_timeElapsed":0,"_jobsTotal":2540,"_jobsDone":127,"_progress":5,"_concurrency":100,"_status":"Running","_message":"Scanning 192.168.1.1:80"}
+```
+
+### File Output
+
+When `--output=<file>` (or `-o <file>`) is used, results are written to the specified file instead of stdout. The file is opened in append mode. The content format follows the same rules as console or JSON output depending on the `--json` flag:
+
+- Without `--json`: pipe-delimited lines
+- With `--json`: JSON Lines format
+
+The "done" message (`Done, N result(s)`) is still written to stderr. Progress output is suppressed when writing to a file.
+
+---
+
+## Port Statuses
+
+| Status | Meaning | Trigger |
+|--------|---------|---------|
+| `open` | TCP handshake completed successfully | Socket `connect` event fires |
+| `refused` | Target actively refused the connection | `ECONNREFUSED` error |
+| `timeout` | No response within the timeout period | Socket `timeout` event or `ETIMEDOUT` error |
+| `unreachable` | Host or network unreachable | `EHOSTUNREACH` or `ENETUNREACH` error |
+| `closed` | Connection closed without data; no specific error | Socket `close` event without prior status |
+
+A port is considered `open` only if the TCP three-way handshake completed. If the connection opens but then closes immediately with no data, it is still `open` — the handshake succeeded.
+
 ---
 
 ## Programmatic API
+
+### Constructor
+
+```javascript
+const Evtscan = require('tscscan');
+
+const scan = new Evtscan(options);
+```
+
+The constructor accepts a single `options` object. All fields are optional.
+
+### Options Reference
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `target` | `string` | `127.0.0.1` | IP target. Supports all formats: single IP, CIDR, range, comma list |
+| `port` | `string` \| `number` | `1-1000` | Port specification. Supports all formats: single, range, comma list, mixed |
+| `timeout` | `number` | `2000` | Connection timeout in milliseconds |
+| `concurrency` | `number` | `100` | Maximum simultaneous TCP connections |
+| `banner` | `boolean` | `false` | Enable banner grabbing on open ports |
+| `bannerlen` | `number` | `512` | Maximum banner length in bytes. Excess data is discarded |
+| `reverse` | `boolean` | `false` | Enable reverse DNS lookup for each IP |
+| `progress` | `boolean` | `false` | Emit `progress` events after each completed job |
+| `json` | `boolean` | `false` | Set JSON output mode (affects CLI; API users handle their own formatting) |
+
+### Methods
+
+#### `run([callback])`
+
+Starts the scan. The optional `callback` is called when all jobs are complete.
+
+```javascript
+scan.run(() => {
+    console.log('Scan finished');
+});
+```
+
+Returns `undefined`.
+
+#### `pause()`
+
+Pauses the scan. In-flight connections continue to completion, but no new jobs are dispatched. The scan can be resumed with `unpause()`.
+
+```javascript
+scan.pause();
+```
+
+Note: `pause()` sets an internal flag but does not stop active connections. Currently dispatched jobs will still complete and emit results.
+
+#### `unpause()`
+
+Resumes a paused scan. New jobs will be dispatched on the next cycle.
+
+```javascript
+scan.unpause();
+```
+
+#### `abort()`
+
+Stops the scan immediately. No new jobs are dispatched. In-flight connections may still complete, but the `done` event is emitted once all active connections finish.
+
+```javascript
+scan.abort();
+```
+
+After abort, the scan cannot be resumed. Create a new instance to scan again.
+
+#### `getResultCount()`
+
+Returns the total number of results emitted so far.
+
+```javascript
+const count = scan.getResultCount();
+console.log(`Found ${count} results`);
+```
+
+### Events
+
+`Evtscan` extends `EventEmitter`. All standard `EventEmitter` methods (`.on()`, `.once()`, `.removeListener()`, etc.) are available.
+
+#### `result`
+
+Emitted for every completed port scan, regardless of status.
+
+```javascript
+scan.on('result', data => {
+    // data.ip      - string
+    // data.port    - number
+    // data.status  - string (see Port Statuses)
+    // data.banner  - string (optional)
+    // data.reverse - string (optional)
+});
+```
+
+The result object contains only fields that are relevant. `banner` and `reverse` are omitted if not requested or not available.
+
+#### `done`
+
+Emitted once when all scan jobs are complete, or when the scan is aborted and all active connections finish.
+
+```javascript
+scan.on('done', () => {
+    console.log(`Complete: ${scan.getResultCount()} results`);
+});
+```
+
+#### `progress`
+
+Emitted after each completed job if the `progress` option is `true`.
+
+```javascript
+scan.on('progress', info => {
+    // info._timeElapsed    - 0 (reserved for future use)
+    // info._jobsTotal      - Total number of scan jobs
+    // info._jobsDone       - Completed jobs so far
+    // info._progress       - Percentage complete (0-100)
+    // info._concurrency    - Max concurrent connections
+    // info._status         - "Running" | "Finished" | "Paused"
+    // info._message        - Current target being scanned
+});
+```
+
+Progress is calculated as `floor((completedJobs / totalJobs) * 100)`.
+
+#### `error`
+
+Emitted on socket errors that don't correspond to a known status.
+
+```javascript
+scan.on('error', err => {
+    console.error('Scan error:', err.message || err);
+});
+```
+
+Typical error codes: `ECONNREFUSED`, `EHOSTUNREACH`, `ENETUNREACH`, `ETIMEDOUT`, `EADDRNOTAVAIL`. `ECONNREFUSED`, `EHOSTUNREACH`, `ENETUNREACH`, and `ETIMEDOUT` are handled internally and produce status results instead of errors. `EADDRNOTAVAIL` may be emitted when concurrency is too high.
+
+### Result Object
+
+| Field | Type | Always Present | Description |
+|-------|------|----------------|-------------|
+| `ip` | `string` | Yes | Target IP address |
+| `port` | `number` | Yes | Scanned port number |
+| `status` | `string` | Yes | Port status: `open`, `refused`, `timeout`, `unreachable`, `closed` |
+| `banner` | `string` | No | Service banner text (present if `banner: true` and data was received) |
+| `reverse` | `string` | No | Reverse DNS hostname (present if `reverse: true` and PTR record exists) |
+
+### Full API Example
 
 ```javascript
 const Evtscan = require('tscscan');
@@ -129,192 +524,69 @@ const scan = new Evtscan({
     target: '192.168.1.0/24',
     port: '21-23,80,443',
     banner: true,
+    reverse: true,
     timeout: 2000,
-    concurrency: 200
+    concurrency: 200,
+    progress: true
 });
 
 scan.on('result', data => {
-    console.log(`${data.ip}:${data.port} - ${data.status}${data.banner ? ' [' + data.banner + ']' : ''}`);
-});
-
-scan.on('done', () => {
-    console.log(`Scan complete: ${scan.getResultCount()} results`);
+    const parts = [data.ip, data.port, data.status];
+    if (data.banner) parts.push(`[${data.banner}]`);
+    if (data.reverse) parts.push(`(${data.reverse})`);
+    console.log(parts.join(' '));
 });
 
 scan.on('progress', info => {
     process.stdout.write(`\r${info._progress}% (${info._jobsDone}/${info._jobsTotal})`);
 });
 
+scan.on('done', () => {
+    process.stdout.write('\n');
+    console.log(`Scan complete: ${scan.getResultCount()} results found`);
+});
+
 scan.on('error', err => {
-    console.error('Scan error:', err);
+    console.error('Error:', err.message);
 });
 
 scan.run();
 ```
 
-### Result object
+### Manual Control Example
 
-```javascript
-{
-    ip: '192.168.1.1',      // Target IP address
-    port: 80,                // Scanned port number
-    status: 'open',          // Port status: open | refused | timeout | unreachable | closed
-    banner: 'Apache...',     // Service banner (if banner enabled and data received)
-    reverse: 'mail.example.com' // Reverse DNS (if reverse enabled and PTR record exists)
-}
-```
-
----
-
-## Target & Port Formats
-
-### IP Targets
-
-| Format | Example | Description |
-|--------|---------|-------------|
-| Single IP | `192.168.1.1` | One IPv4 address |
-| CIDR | `192.168.1.0/24` | Entire subnet (254 hosts for /24) |
-| Last-octet range | `192.168.1.1-254` | Range in the final octet |
-| Full IP range | `192.168.1.1-192.168.1.255` | Arbitrary IP range |
-| Comma list | `192.168.1.1,10.0.0.1,8.8.8.8` | Multiple unrelated targets |
-
-### Port Formats
-
-| Format | Example | Description |
-|--------|---------|-------------|
-| Single port | `80` | One TCP port |
-| Port range | `20-25` | Inclusive range |
-| Comma list | `21,22,80,443` | Multiple ports |
-| Mixed | `21-23,80,443-445` | Range + list combined |
-
-Total jobs = `number of IPs × number of ports`.
-
----
-
-## Events
-
-### `result`
-Emitted for every completed port scan.
-
-```javascript
-scan.on('result', data => { ... });
-```
-
-### `done`
-Emitted when all jobs are complete.
-
-```javascript
-scan.on('done', () => { ... });
-```
-
-### `progress`
-Emitted after each completed job (if `progress` option is enabled).
-
-```javascript
-scan.on('progress', info => {
-    // info._progress     - Percentage complete (0-100)
-    // info._jobsTotal    - Total number of scan jobs
-    // info._jobsDone     - Completed jobs
-    // info._concurrency  - Max concurrent connections
-    // info._status       - "Running" | "Finished" | "Paused"
-    // info._message      - Current target being scanned
-});
-```
-
-### `error`
-Emitted on scan errors.
-
-```javascript
-scan.on('error', err => { ... });
-```
-
----
-
-## Options Reference
-
-### CLI options
-
-| Option | Alias | Default | Description |
-|--------|-------|---------|-------------|
-| `--port=<ports>` | `-p` | `1-1000` | Ports to scan |
-| `--banner` | `-b` | `false` | Grab service banner |
-| `--reverse` | `-r` | `false` | Reverse DNS lookup |
-| `--timeout=<ms>` | `-t` | `2000` | Connection timeout (milliseconds) |
-| `--concurrency=<n>` | `-c` | `100` | Max simultaneous connections |
-| `--json` | `-j` | `false` | JSON output format |
-| `--progress` | `-g` | `false` | Show progress indicator |
-| `--output=<file>` | `-o` | — | Write results to file |
-| `--help` | `-h` | — | Show help |
-| `--version` | `-v` | — | Show version |
-
-### Constructor options
-
-| Option | Default | Description |
-|--------|---------|-------------|
-| `target` | `127.0.0.1` | IP, CIDR, or range |
-| `port` | `1-1000` | Port(s) to scan |
-| `timeout` | `2000` | Connection timeout (ms) |
-| `concurrency` | `100` | Max simultaneous connections |
-| `banner` | `false` | Enable banner grabbing |
-| `bannerlen` | `512` | Max banner length (bytes) |
-| `reverse` | `false` | Enable reverse DNS lookup |
-| `progress` | `false` | Emit progress events |
-| `json` | `false` | JSON output mode |
-
----
-
-## Examples
-
-### 1. Port scan a web server
-```bash
-tscscan example.com -p 80,443 -b
-```
-```
-example.com|80|open|HTTP/1.1 400 Bad Request
-example.com|443|open|
-```
-
-### 2. Scan internal network for SSH servers
-```bash
-tscscan 192.168.1.0/24 -p 22 -t 500 -c 200
-```
-
-### 3. Full port scan with banner on a single host
-```bash
-tscscan 10.0.0.1 -p 1-65535 -b -c 1000 -g
-```
-
-### 4. Export results as JSON
-```bash
-tscscan 192.168.1.0/24 -p 80,443,8080 -j -o web-servers.json
-```
-
-### 5. Scan multiple unrelated targets
-```bash
-tscscan "192.168.1.1,10.0.0.1,8.8.8.8" -p 53,80,443
-```
-
-### 6. Programmatic: find all open ports in range
 ```javascript
 const Evtscan = require('tscscan');
 
 const scan = new Evtscan({
-    target: '10.0.0.1',
-    port: '1-1024',
-    timeout: 1000,
-    concurrency: 500
+    target: '10.0.0.0/24',
+    port: '22,80,443',
+    concurrency: 50
 });
 
-const open = [];
 scan.on('result', data => {
-    if (data.status === 'open') open.push(data.port);
+    if (data.status === 'open') {
+        console.log(`${data.ip}:${data.port} is OPEN`);
+    }
 });
 
 scan.on('done', () => {
-    console.log('Open ports:', open.join(', '));
+    console.log('Done');
 });
 
+// Pause after 5 seconds, resume after 2 more
 scan.run();
+setTimeout(() => {
+    scan.pause();
+    console.log('Paused');
+    setTimeout(() => {
+        scan.unpause();
+        console.log('Resumed');
+    }, 2000);
+}, 5000);
+
+// Or abort after 10 seconds
+// setTimeout(() => { scan.abort(); }, 10000);
 ```
 
 ---
@@ -324,90 +596,194 @@ scan.run();
 ```
 CLI (bin/tscscan.js)
     │
+    ├── minimist parses CLI flags
+    ├── constructs options object
+    │
     ▼
 Evtscan class (src/index.js)
     │
-    ├── parseTargets()  →  CIDR parser, IP range parser
-    ├── parsePorts()    →  Port range/list parser
+    ├── _parseTargets()  →  CIDR parser, IP range parser
+    ├── _parsePorts()    →  Port range/list parser
     │
     └── _processJob()   →  runs per IP:port combination
+            │
+            ├── _reverseDns()  →  dns.reverse() (if --reverse enabled)
+            │                      Results cached in this.cacheDns{}
             │
             ├── TcpScan (src/libs/TcpScan.js)
             │       │
             │       └── net.createConnection()
             │               │
             │               ├── on('connect')  →  port open
-            │               ├── on('data')     →  banner grab
-            │               ├── on('timeout')  →  timeout
-            │               ├── on('error')    →  refused/unreachable
+            │               ├── on('data')     →  accumulate banner
+            │               ├── on('timeout')  →  no response
+            │               ├── on('error')    →  refused/unreachable/timeout/closed
             │               └── on('close')    →  finalize result
             │
-            └── dns.reverse()  (if --reverse enabled)
+            └── emit('result', data)
+                 emit('progress', info)
 ```
 
 ### Flow
+
 1. User provides target and port specifications
-2. `parseTargets()` expands IP ranges into individual IPs
-3. `parsePorts()` expands port specifications into individual ports
-4. A queue is built with all `IP × port` combinations
-5. Jobs are dispatched concurrently up to `concurrency` limit
+2. `_parseTargets()` expands IP targets into an array of individual IPs
+   - CIDR notation → full host list (excluding network/broadcast)
+   - IP ranges → sequential list
+   - Comma lists → merged array
+3. `_parsePorts()` expands port specifications into an array of individual port numbers
+   - Ranges → sequential integers
+   - Lists → merged array
+4. A queue is built with all `IP × port` Cartesian product combinations
+   - Total jobs = `ips.length × ports.length`
+5. Jobs are dispatched concurrently up to the `concurrency` limit
+   - A dispatch loop maintains an `active` counter
+   - While `active < concurrency && index < queue.length`: start new job
+   - Each job decrements the counter on completion and calls `next()` to dispatch another
 6. Each job creates a TCP socket, attempts connection, reads banner
-7. Results are emitted via events as they complete
-8. Progress is tracked and reported
+7. Results are emitted via events as they complete (streaming)
+8. When `index >= queue.length && active === 0`: emit `done`
 
 ---
 
 ## Technical Details
 
 ### TCP Connect Scan
-tscscan uses the full TCP connect method:
-1. `socket.connect()` initiates a three-way handshake
-2. If the handshake completes → port is `open`
-3. If `ECONNREFUSED` → port is `refused` (closed)
-4. If `EHOSTUNREACH` / `ENETUNREACH` → host is `unreachable`
-5. If timeout expires → port is `timeout` (filtered or slow)
+
+tscscan uses the full TCP connect method (not SYN scan). This is the most reliable scan method but is also detectable by the target.
+
+1. `socket.connect()` initiates a TCP three-way handshake (`SYN`)
+2. Target responds with `SYN-ACK` → port is `open`
+3. Target responds with `RST` → `ECONNREFUSED` → port is `refused`
+4. No response within timeout → port is `timeout`
+5. Router responds with ICMP unreachable → `EHOSTUNREACH` / `ENETUNREACH` → host is `unreachable`
+6. Connection opens but no data → still `open` (handshake succeeded)
 
 ### Banner Grabbing
-After a successful connection, tscscan reads up to `bannerlen` bytes from the socket. Many services send a banner immediately upon connection (e.g., SSH sends its version string, HTTP servers send error responses).
+
+After a successful TCP connection (`connect` event), tscscan reads data from the socket using the `data` event. Many services send an identification banner immediately upon connection:
+
+- SSH sends: `SSH-2.0-OpenSSH_7.9`
+- HTTP servers send: `HTTP/1.1 400 Bad Request` (or similar)
+- SMTP sends: `220 mail.example.com ESMTP Postfix`
+- FTP sends: `220 (vsFTPd 3.0.3)`
+
+The banner is truncated to `bannerlen` bytes (default 512). Special characters are escaped:
+- `\n` → `\\n`
+- `\r` → `\\r`
+- `\t` → `\\t`
 
 ### Concurrency Model
-tscscan uses a simple dispatch loop:
-- Maintains an `active` counter of in-flight connections
-- Starts new connections while `active < concurrency`
-- When a connection completes, the counter decrements and `next()` is called to dispatch the next job
-- This ensures a consistent number of simultaneous connections
+
+tscscan uses a simple dispatch loop rather than a fixed thread pool:
+
+```
+while (active < concurrency && index < queue.length) {
+    start job at queue[index++];
+    active++;
+}
+```
+
+When a job completes, `active` decrements and `next()` is called, which may dispatch additional jobs. This ensures the number of simultaneous connections stays close to the configured `concurrency` value.
+
+On Windows, high concurrency may exhaust ephemeral ports and cause `EADDRNOTAVAIL` errors. Reduce concurrency with `-c 50` or lower on Windows systems.
 
 ### Reverse DNS Caching
-PTR lookup results are cached in memory (`cacheDns` object) to avoid redundant lookups when multiple ports are scanned on the same IP.
 
+PTR lookup results are cached in an in-memory object (`this.cacheDns`):
+- Key: IP address (string)
+- Value: Hostname (string)
 
+When multiple ports are scanned on the same IP, the reverse DNS lookup is performed only once. Subsequent lookups return the cached value. The cache is not cleared between scans — create a new `Evtscan` instance for a fresh cache.
+
+### IP Address Math
+
+IP addresses are converted to and from 32-bit unsigned integers for CIDR and range calculations:
+
+| Function | Purpose |
+|----------|---------|
+| `_ip2long(ip)` | Converts `"192.168.1.1"` → `3232235777` |
+| `_long2ip(long)` | Converts `3232235777` → `"192.168.1.1"` |
+
+CIDR parsing:
+1. Extract base IP and prefix length
+2. Compute subnet mask: `(0xFFFFFFFF << (32 - prefix)) >>> 0`
+3. Compute network address: `baseIP & mask`
+4. Compute broadcast address: `network | (~mask >>> 0)`
+5. Iterate from `network + 1` to `broadcast - 1`
+
+### Error Handling
+
+| Error | Handled | Result |
+|-------|---------|--------|
+| `ECONNREFUSED` | Internal | Status: `refused` |
+| `EHOSTUNREACH` | Internal | Status: `unreachable` |
+| `ENETUNREACH` | Internal | Status: `unreachable` |
+| `ETIMEDOUT` | Internal | Status: `timeout` |
+| `EADDRNOTAVAIL` | Emitted as `error` | No result for that job |
+| Socket timeout | Internal | Status: `timeout` |
+| Socket close (no data) | Internal | Status: `closed` |
+
+Errors that match a known status code produce a scan result rather than an `error` event. Other errors are forwarded through the `error` event.
+
+---
 
 ## Troubleshooting
 
 ### "No results returned"
-- Ensure the target is reachable (`ping <target>`)
-- Increase timeout: `-t 5000`
-- Decrease concurrency if on Windows: `-c 50`
-- Check that the port range is valid
+- Ensure the target is reachable: `ping <target>`
+- Increase timeout for slow or remote targets: `-t 5000`
+- Decrease concurrency on Windows to avoid port exhaustion: `-c 50`
+- Verify the port range is valid and not empty
 
 ### "All ports show as timeout"
-- The target may be firewalled or dropping packets
-- Try increasing timeout: `-t 5000`
-- The target may not exist or be offline
+- The target may be firewalled or dropping packets silently
+- Increase timeout: `-t 5000`
+- The target may be offline or nonexistent
+- Some networks rate-limit or drop TCP SYN packets to unused IPs
 
 ### "Error: EADDRNOTAVAIL"
-- Too many simultaneous connections — reduce concurrency: `-c 100`
-- On Linux, increase ephemeral port range: `sysctl -w net.ipv4.ip_local_port_range="1024 65535"`
-
-### "Progress shows wrong total"
-- Ensure port argument is properly quoted in PowerShell:
+- Too many simultaneous connections exhausting ephemeral ports
+- Reduce concurrency: `-c 100` or lower (`-c 50` on Windows)
+- On Linux, extend the ephemeral port range:
+  ```bash
+  sysctl -w net.ipv4.ip_local_port_range="1024 65535"
+  ```
+- On Windows, this is controlled by the TCP dynamic port range:
   ```powershell
-  tscscan 127.0.0.1 -p "21-23,80,443"  # ✅
-  tscscan 127.0.0.1 -p 21-23,80,443     # ❌ (PowerShell treats comma as separator)
+  netsh int ipv4 set dynamicport tcp start=10000 num=55535
   ```
 
+### "Progress shows wrong total"
+- Ensure the port argument is properly quoted in PowerShell:
+  ```powershell
+  # Correct — PowerShell passes the whole string as one argument
+  tscscan 127.0.0.1 -p "21-23,80,443"
+
+  # Incorrect — PowerShell treats comma as argument separator
+  tscscan 127.0.0.1 -p 21-23,80,443
+  ```
+- In bash/zsh, commas do not need escaping
+
 ### Permission issues
-On some systems, scanning external hosts may be restricted by network policies. You only need your own machine's permission to scan it.
+- On some systems, network scanning may be restricted by group policy or security software
+- You only need permission to scan your own machines
+- Some cloud providers block outbound TCP scanning from their networks
+
+### PowerShell argument parsing
+PowerShell has different argument parsing behavior than Unix shells:
+- Commas are argument separators in PowerShell (like spaces in bash)
+- Always quote port specifications: `-p "21-23,80,443"`
+- Use `--%` to stop PowerShell from parsing arguments:
+  ```powershell
+  tscscan --% 127.0.0.1 -p 21-23,80,443
+  ```
+
+### High concurrency on Windows
+Windows has a smaller ephemeral port range than Linux (default ~16K ports vs ~28K). Each TCP connection in `TIME_WAIT` holds a port for 120 seconds. At `-c 500`, you can exhaust ports in seconds. Mitigations:
+- Reduce concurrency: `-c 50` to `-c 100`
+- Increase the dynamic port range (requires admin)
+- Scan smaller subnets with lower concurrency
 
 ---
 

@@ -1,0 +1,35 @@
+{
+  "encryptionKey": "CHANGE_ME_TO_A_32_CHAR_KEY____",
+  "channelPriority": [
+    "gdrive",
+    "github",
+    "notion",
+    "slack",
+    "discord"
+  ],
+  "channels": {
+    "gdrive": {
+      "accessToken": "YOUR_GOOGLE_DRIVE_ACCESS_TOKEN",
+      "folderName": ".tsc_lotl_c2"
+    },
+    "github": {
+      "token": "YOUR_GITHUB_PERSONAL_ACCESS_TOKEN",
+      "gistPrefix": "tsc-lotl-cmd-"
+    },
+    "notion": {
+      "apiKey": "YOUR_NOTION_INTEGRATION_TOKEN",
+      "databaseId": "YOUR_NOTION_DATABASE_ID"
+    },
+    "slack": {
+      "webhookUrl": "https://hooks.slack.com/services/YOUR/WEBHOOK/URL",
+      "token": "YOUR_SLACK_BOT_TOKEN",
+      "channelId": "YOUR_SLACK_CHANNEL_ID"
+    },
+    "discord": {
+      "webhookId": "YOUR_DISCORD_WEBHOOK_ID",
+      "webhookToken": "YOUR_DISCORD_WEBHOOK_TOKEN",
+      "botToken": "YOUR_DISCORD_BOT_TOKEN",
+      "channelId": "YOUR_DISCORD_CHANNEL_ID"
+    }
+  }
+}

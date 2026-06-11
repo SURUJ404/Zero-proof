@@ -1,0 +1,117 @@
+---
+title: tsc-ai — AI Evasion Engine
+description: AI-driven environment fingerprinting, sandbox detection, AV/EDR identification, and adaptive beacon reinforcement learning
+---
+
+# tsc-ai
+
+AI-driven evasion engine — fingerprints your environment, detects sandboxes/AV/EDR, recommends optimal evasion techniques, and adapts beacon timing via reinforcement learning.
+
+## Installation
+
+```bash
+npm install -g tsc-ai
+```
+
+## Quick Start
+
+### Full environment scan
+
+```bash
+tsc-ai scan
+```
+
+### Scan + evasion recommendation
+
+```bash
+tsc-ai evade
+```
+
+### Sandbox/VM detection
+
+```bash
+tsc-ai sandbox-test
+```
+
+### Adaptive beacon (simulated)
+
+```bash
+tsc-ai beacon --interval auto
+```
+
+### Train the RL model
+
+```bash
+tsc-ai learn --train
+```
+
+### Full JSON report
+
+```bash
+tsc-ai report --json
+```
+
+## Detection Modules
+
+### Sandbox Detection (9 checks)
+
+| Check | Method |
+|-------|--------|
+| VM processes | `VBoxTray`, `vmtoolsd`, `prl_cc`, `xenservice` |
+| VM drivers | `VBoxGuest`, `vmci`, `vmscsi`, `xennet` |
+| Hardware specs | CPU count (< 2), RAM (< 2GB), disk (< 60GB) |
+| Uptime | System uptime < 1 hour |
+| Username | `admin`, `sandbox`, `malware`, `virus` |
+| MAC address | VMware/VirtualBox/Hyper-V OUI prefixes |
+| Debugger | IsDebuggerPresent, NtGlobalFlag |
+| Analysis tools | Wireshark, Procmon, IDA, x64dbg, Process Hacker |
+| Screen resolution | < 1024×768 |
+
+### AV Detection (12 products)
+
+Windows Defender, Kaspersky, ESET, Norton, McAfee, BitDefender, Avast, Avira, Trend Micro, Sophos, Webroot, Malwarebytes
+
+### EDR Detection (5 products)
+
+CrowdStrike Falcon, SentinelOne, Carbon Black, Microsoft Defender for Endpoint, Cylance
+
+## Evasion Decision Tree
+
+```
+┌─ Is sandbox? ──→ YES → Go dormant (no C2, pretend benign)
+│
+└─ Is EDR present? ──→ YES → Direct syscalls (Hell's Gate/Halo's Gate)
+│                            + ETW patching + AMSI bypass
+│
+└─ Is AV present? ──→ YES → Technique depends on AV:
+│    ├─ Defender → AMSI bypass + ETW patch
+│    ├─ Kaspersky → Unhook ntdll + direct syscalls
+│    └─ Other → Process hollowing + PPID spoof
+│
+└─ Is admin? ──→ YES → Kernel callbacks + driver loading
+│
+└─ No AV/admin → Plain shellcode injection
+```
+
+## Beacon Q-Learning
+
+The adaptive beacon engine uses Q-learning:
+- **States**: environment type (normal/sandbox/AV-detected) + network type (NAT/Direct/Proxy) + hour
+- **Actions**: beacon intervals (1s, 5s, 30s, 5min, 30min, 1hr) + jitter (0-100%)
+- **Reward**: successful beacon → higher interval + lower jitter
+- **Penalty**: failed beacon → lower interval + higher jitter + channel switch
+
+## CLI Reference
+
+| Command | Description |
+|---------|-------------|
+| `scan` | Full environment fingerprint |
+| `evade` | Scan + evasion recommendation |
+| `sandbox-test` | Sandbox/VM detection only |
+| `beacon --interval auto` | Adaptive beacon timer |
+| `learn --train` | RL training simulation |
+| `report --json` | Full JSON report |
+
+## License
+
+GPL-3.0

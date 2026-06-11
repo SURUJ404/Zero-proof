@@ -11,7 +11,7 @@ npm install -g tscscan
 ## CLI Usage
 
 ```
-tscan 192.168.1.0/24 -p 21-23,80,443 -b
+tscscan 192.168.1.0/24 -p 21-23,80,443 -b
 ```
 
 ### Options

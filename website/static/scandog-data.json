@@ -429,131 +429,6 @@
       ],
       "sourceDir": "",
       "technology": "javascript:express"
-    },
-    {
-      "name": "zp",
-      "type": "server",
-      "port": 0,
-      "endpoints": [
-        {
-          "path": "cli:zp",
-          "method": "CLI",
-          "source": {
-            "file": "cli/src/main.rs",
-            "line": 0
-          },
-          "tags": [
-            "cli",
-            "command"
-          ],
-          "parameters": [
-            {
-              "name": "guest_path",
-              "type": "query",
-              "required": true
-            },
-            {
-              "name": "elf_path",
-              "type": "query",
-              "required": true
-            },
-            {
-              "name": "receipt_b64",
-              "type": "query",
-              "required": true
-            },
-            {
-              "name": "image_id",
-              "type": "query",
-              "required": true
-            },
-            {
-              "name": "action",
-              "type": "query",
-              "required": true
-            },
-            {
-              "name": "action",
-              "type": "query",
-              "required": true
-            }
-          ],
-          "service": "zp"
-        }
-      ],
-      "sourceDir": ""
-    },
-    {
-      "name": "rzup",
-      "type": "server",
-      "port": 0,
-      "endpoints": [
-        {
-          "path": "cli:rzup",
-          "method": "CLI",
-          "source": {
-            "file": "cli/src/main.rs",
-            "line": 0
-          },
-          "tags": [
-            "cli",
-            "command"
-          ],
-          "parameters": [],
-          "service": "rzup"
-        }
-      ],
-      "sourceDir": ""
-    },
-    {
-      "name": "cargo-risczero",
-      "type": "server",
-      "port": 0,
-      "endpoints": [
-        {
-          "path": "cli:cargo-risczero",
-          "method": "CLI",
-          "source": {
-            "file": "cli/src/main.rs",
-            "line": 0
-          },
-          "tags": [
-            "cli",
-            "command"
-          ],
-          "parameters": [
-            {
-              "name": "name",
-              "type": "query",
-              "required": true
-            }
-          ],
-          "service": "cargo-risczero"
-        }
-      ],
-      "sourceDir": ""
-    },
-    {
-      "name": "xtask",
-      "type": "server",
-      "port": 0,
-      "endpoints": [
-        {
-          "path": "cli:xtask",
-          "method": "CLI",
-          "source": {
-            "file": "cli/src/main.rs",
-            "line": 0
-          },
-          "tags": [
-            "cli",
-            "command"
-          ],
-          "parameters": [],
-          "service": "xtask"
-        }
-      ],
-      "sourceDir": ""
     }
   ],
   "clis": [
@@ -717,7 +592,7 @@
       ]
     }
   ],
-  "totalEndpoints": 34,
+  "totalEndpoints": 30,
   "tags": {
     "shadow": 1,
     "deprecated": 0,

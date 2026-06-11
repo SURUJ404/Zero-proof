@@ -1,0 +1,13 @@
+{
+  "name": "tsc-polymorph",
+  "version": "1.0.0",
+  "description": "Polymorphic payload generator — unique signatures per build",
+  "bin": {
+    "tsc-polymorph": "bin/tsc-polymorph.js"
+  },
+  "dependencies": {
+    "minimist": "1.2.8"
+  },
+  "author": "SURUJ404",
+  "license": "GPL-3.0"
+}

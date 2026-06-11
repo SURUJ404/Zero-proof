@@ -1,0 +1,13 @@
+{
+  "name": "tsc-p2p",
+  "version": "1.0.0",
+  "description": "Decentralized P2P botnet mesh — Kademlia DHT + gossip protocol",
+  "bin": {
+    "tsc-p2p": "bin/tsc-p2p.js"
+  },
+  "dependencies": {
+    "minimist": "1.2.8"
+  },
+  "author": "SURUJ404",
+  "license": "GPL-3.0"
+}

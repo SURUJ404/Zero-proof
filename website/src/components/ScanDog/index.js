@@ -392,6 +392,46 @@ export default function ScanDog() {
         </div>
       </div>
 
+      {/* TSC Tools */}
+      <div className={styles.routeSection} style={{ marginTop: "1.5rem" }}>
+        <div className={styles.routeHeader}>
+          <h2 className={styles.routeTitle}>TSC Tool Arsenal</h2>
+          <p className={styles.routeSub}>Full-fledged offensive tools — each is a standalone CLI <code>npm install -g</code> away</p>
+        </div>
+        <div className={styles.routeBlock}>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel} style={{background:"#8b5cf6"}}>tsc-mesh</span>
+            <code>Multi-Protocol C2 Mesh</code>
+            <span className={styles.routeDesc}>HTTP + DNS + WebSocket C2 with automatic failover</span>
+            <Link className={styles.routeDocBtn} to="/tsc-mesh" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel} style={{background:"#0891b2"}}>tsc-lotl</span>
+            <code>Living-off-the-Land C2</code>
+            <span className={styles.routeDesc}>C2 via Google Drive, GitHub Gists, Notion, Slack, Discord</span>
+            <Link className={styles.routeDocBtn} to="/tsc-lotl" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel} style={{background:"#d97706"}}>tsc-polymorph</span>
+            <code>Polymorphic Payload Generator</code>
+            <span className={styles.routeDesc}>Unique-signature payloads per generation — AES + XOR + dead code</span>
+            <Link className={styles.routeDocBtn} to="/tsc-polymorph" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel} style={{background:"#16a34a"}}>tsc-p2p</span>
+            <code>P2P Botnet Mesh</code>
+            <span className={styles.routeDesc}>Kademlia DHT + gossip protocol — no central C2 needed</span>
+            <Link className={styles.routeDocBtn} to="/tsc-p2p" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
+          </div>
+          <div className={styles.routeCmd}>
+            <span className={styles.routeLabel} style={{background:"#dc2626"}}>tsc-ai</span>
+            <code>AI Evasion Engine</code>
+            <span className={styles.routeDesc}>Sandbox detection + AV fingerprinting + adaptive beacon q-learning</span>
+            <Link className={styles.routeDocBtn} to="/tsc-ai" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
+          </div>
+        </div>
+      </div>
+
       {/* Stats */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>

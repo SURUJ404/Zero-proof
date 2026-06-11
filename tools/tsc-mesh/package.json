@@ -1,0 +1,14 @@
+{
+  "name": "tsc-mesh",
+  "version": "1.0.0",
+  "description": "Multi-Protocol C2 Mesh Tool",
+  "bin": {
+    "tsc-mesh": "bin/tsc-mesh.js"
+  },
+  "dependencies": {
+    "minimist": "1.2.8",
+    "ws": "^8.16.0"
+  },
+  "author": "SURUJ404",
+  "license": "GPL-3.0"
+}

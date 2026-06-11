@@ -1,10 +1,10 @@
-# tscan Documentation
+# tscscan Documentation
 
 ## Overview
 
-**tscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
+**tscscan** is a fast, concurrent TCP port scanner for Node.js. It performs TCP connect scans against target hosts to discover open ports, grab service banners, and optionally perform reverse DNS lookups. Designed for network security auditing, reconnaissance, and penetration testing.
 
-tscan is a fast, concurrent TCP port scanner for Node.js.
+tscscan is a fast, concurrent TCP port scanner for Node.js.
 
 ---
 
@@ -90,29 +90,29 @@ npm link
 ## CLI Usage
 
 ```
-tscan <target> [options]
+tscscan <target> [options]
 ```
 
 ### Basic commands
 
 ```bash
 # Scan common ports on a single host
-tscan 192.168.1.1 -p 22,80,443,8080
+tscscan 192.168.1.1 -p 22,80,443,8080
 
 # Scan an entire subnet for web servers
-tscan 192.168.1.0/24 -p 80,443 -b
+tscscan 192.168.1.0/24 -p 80,443 -b
 
 # Full port scan with JSON output
-tscan 10.0.0.1 -p 1-65535 -c 500 --json
+tscscan 10.0.0.1 -p 1-65535 -c 500 --json
 
 # Scan with banner grabbing and progress
-tscan example.com -p 21-23,80 -b -g
+tscscan example.com -p 21-23,80 -b -g
 
 # Scan with reverse DNS
-tscan 192.168.1.0/24 -p 22 -r
+tscscan 192.168.1.0/24 -p 22 -r
 
 # Write results to file
-tscan 10.0.0.0/24 -p 80,443 -j -o results.json
+tscscan 10.0.0.0/24 -p 80,443 -j -o results.json
 ```
 
 ### Output format
@@ -280,7 +280,7 @@ scan.on('error', err => { ... });
 
 ### 1. Port scan a web server
 ```bash
-tscan example.com -p 80,443 -b
+tscscan example.com -p 80,443 -b
 ```
 ```
 example.com|80|open|HTTP/1.1 400 Bad Request
@@ -289,22 +289,22 @@ example.com|443|open|
 
 ### 2. Scan internal network for SSH servers
 ```bash
-tscan 192.168.1.0/24 -p 22 -t 500 -c 200
+tscscan 192.168.1.0/24 -p 22 -t 500 -c 200
 ```
 
 ### 3. Full port scan with banner on a single host
 ```bash
-tscan 10.0.0.1 -p 1-65535 -b -c 1000 -g
+tscscan 10.0.0.1 -p 1-65535 -b -c 1000 -g
 ```
 
 ### 4. Export results as JSON
 ```bash
-tscan 192.168.1.0/24 -p 80,443,8080 -j -o web-servers.json
+tscscan 192.168.1.0/24 -p 80,443,8080 -j -o web-servers.json
 ```
 
 ### 5. Scan multiple unrelated targets
 ```bash
-tscan "192.168.1.1,10.0.0.1,8.8.8.8" -p 53,80,443
+tscscan "192.168.1.1,10.0.0.1,8.8.8.8" -p 53,80,443
 ```
 
 ### 6. Programmatic: find all open ports in range
@@ -335,7 +335,7 @@ scan.run();
 ## Architecture
 
 ```
-CLI (bin/tscan.js)
+CLI (bin/tscscan.js)
     │
     ▼
 Evtscan class (src/index.js)
@@ -373,7 +373,7 @@ Evtscan class (src/index.js)
 ## Technical Details
 
 ### TCP Connect Scan
-tscan uses the full TCP connect method:
+tscscan uses the full TCP connect method:
 1. `socket.connect()` initiates a three-way handshake
 2. If the handshake completes → port is `open`
 3. If `ECONNREFUSED` → port is `refused` (closed)
@@ -381,10 +381,10 @@ tscan uses the full TCP connect method:
 5. If timeout expires → port is `timeout` (filtered or slow)
 
 ### Banner Grabbing
-After a successful connection, tscan reads up to `bannerlen` bytes from the socket. Many services send a banner immediately upon connection (e.g., SSH sends its version string, HTTP servers send error responses).
+After a successful connection, tscscan reads up to `bannerlen` bytes from the socket. Many services send a banner immediately upon connection (e.g., SSH sends its version string, HTTP servers send error responses).
 
 ### Concurrency Model
-tscan uses a simple dispatch loop:
+tscscan uses a simple dispatch loop:
 - Maintains an `active` counter of in-flight connections
 - Starts new connections while `active < concurrency`
 - When a connection completes, the counter decrements and `next()` is called to dispatch the next job
@@ -415,8 +415,8 @@ PTR lookup results are cached in memory (`cacheDns` object) to avoid redundant l
 ### "Progress shows wrong total"
 - Ensure port argument is properly quoted in PowerShell:
   ```powershell
-  tscan 127.0.0.1 -p "21-23,80,443"  # ✅
-  tscan 127.0.0.1 -p 21-23,80,443     # ❌ (PowerShell treats comma as separator)
+  tscscan 127.0.0.1 -p "21-23,80,443"  # ✅
+  tscscan 127.0.0.1 -p 21-23,80,443     # ❌ (PowerShell treats comma as separator)
   ```
 
 ### Permission issues

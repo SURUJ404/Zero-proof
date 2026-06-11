@@ -1,0 +1,106 @@
+---
+title: tsc-mesh — Multi-Protocol C2 Mesh
+description: Multi-protocol C2 server and agent with HTTP, WebSocket, DNS fallback — automatic failover
+---
+
+# tsc-mesh
+
+Multi-protocol C2 Mesh — HTTP + WebSocket + DNS C2 with automatic channel failover.
+
+## Installation
+
+```bash
+npm install -g tsc-mesh
+```
+
+## Quick Start
+
+### Start the C2 server
+
+```bash
+tsc-mesh server --port 8443 --dns-port 5353
+```
+
+### Start an agent
+
+```bash
+tsc-mesh agent --server http://localhost:8443 --id mybot1
+```
+
+### Send a command
+
+```bash
+tsc-mesh send --server http://localhost:8443 --agent mybot1 --cmd "whoami"
+```
+
+### Check status
+
+```bash
+tsc-mesh status --server http://localhost:8443
+```
+
+## Architecture
+
+```
+┌──────────────┐     HTTP      ┌──────────────┐
+│   C2 Server  │◄────────────►│              │
+│  :8443 HTTP  │              │    Agent     │
+│  :8443 WS    │◄────────────►│  HTTP + WS   │
+│  :5353 DNS   │◄────────────►│  + DNS       │
+└──────────────┘              └──────────────┘
+     │                              │
+     │ Channels: HTTP, WS, DNS      │ Auto-failover:
+     │ Agent registers all 3        │ HTTP → WS → DNS
+     │ Commands on any channel      │ Exponential backoff
+```
+
+## Features
+
+- **Triple-channel C2**: HTTP REST, WebSocket, DNS TXT record
+- **Automatic failover**: agent tries HTTP → WebSocket → DNS, picks first working
+- **Command queue**: server queues pending commands, agents poll on beacon
+- **Heartbeat**: agents report channel health every beacon interval
+- **Jitter**: beacon interval randomized ±40% to evade pattern detection
+- **Exponential backoff**: failed channels back off before retry
+- **Server dashboard**: status endpoint shows all agents + their active channels
+- **No dependencies**: uses only Node.js built-in modules + ws
+
+## CLI Reference
+
+### `tsc-mesh server`
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--port` | `8443` | HTTP + WebSocket server port |
+| `--dns-port` | `5353` | DNS server port |
+
+### `tsc-mesh agent`
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--server` | *required* | C2 server URL |
+| `--id` | random UUID | Agent identity |
+| `--interval` | `5000` | Beacon interval (ms) |
+
+### `tsc-mesh send`
+
+| Flag | Description |
+|------|-------------|
+| `--server` | C2 server URL |
+| `--agent` | Target agent ID |
+| `--cmd` | Command to execute |
+
+## How It Works
+
+1. **Server** starts HTTP + WebSocket server on `--port`, DNS server on `--dns-port`
+2. **Agent** connects using all 3 protocols simultaneously
+3. Agent sends heartbeat with its ID and channel status every beacon interval
+4. Agent polls for pending commands on the healthiest channel
+5. Server queues commands via: `POST /command` (HTTP), WS message, or DNS TXT response
+6. Agent executes commands via `child_process.exec` and reports results
+7. If HTTP fails, agent falls back to WebSocket; if WS fails, falls back to DNS
+8. Failed channels reconnect with exponential backoff (1s, 2s, 4s, 8s... max 60s)
+
+## License
+
+GPL-3.0

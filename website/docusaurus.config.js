@@ -171,6 +171,17 @@ export default async function createConfigAsync() {
             },
             {
               position: "left",
+              label: "TSC Tools",
+              items: [
+                { label: "tsc-mesh — Multi-Protocol C2", to: "/tsc-mesh" },
+                { label: "tsc-lotl — LotL C2", to: "/tsc-lotl" },
+                { label: "tsc-polymorph — Payload Generator", to: "/tsc-polymorph" },
+                { label: "tsc-p2p — P2P Botnet Mesh", to: "/tsc-p2p" },
+                { label: "tsc-ai — Evasion Engine", to: "/tsc-ai" },
+              ],
+            },
+            {
+              position: "left",
               label: "Education Hub",
               to: "/education",
             },
