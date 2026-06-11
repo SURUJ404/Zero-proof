@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 
 import { Command } from "commander";
-import { readFileSync, existsSync } from "fs";
+import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
+import chalk from "chalk";
 import { registerScanCommand } from "./cli/commands/scan.js";
 import { registerListCommand } from "./cli/commands/list.js";
+import { registerCacheCommand } from "./cli/commands/cache.js";
+import { registerConfigCommand } from "./cli/commands/config.js";
+import { registerRulesCommand } from "./cli/commands/rules.js";
+import { registerCompletionCommand } from "./cli/commands/completion.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkgPath = join(__dirname, "..", "package.json");
@@ -20,9 +25,24 @@ program
 
 registerScanCommand(program);
 registerListCommand(program);
+registerCacheCommand(program);
+registerConfigCommand(program);
+registerRulesCommand(program);
+registerCompletionCommand(program);
 
 program.parse(process.argv);
 
 if (!process.argv.slice(2).length) {
-  program.outputHelp();
+  console.log(chalk.hex("#db8b8b")("\n  ⚡ ScanDog — Attack Surface Detector"));
+  console.log(chalk.gray(`  v${pkg.version}\n`));
+  console.log(chalk.gray("  Usage: zn <command> [options]"));
+  console.log(chalk.gray("\n  Commands:"));
+  console.log(`    ${chalk.green("scan")}       Scan codebase for endpoints`);
+  console.log(`    ${chalk.green("list")}       List built-in catalogs`);
+  console.log(`    ${chalk.green("cache")}      Manage LLM response cache`);
+  console.log(`    ${chalk.green("config")}     Manage configuration`);
+  console.log(`    ${chalk.green("rules")}      Manage passive-scan rules`);
+  console.log(`    ${chalk.green("completion")} Generate shell completions`);
+  console.log(`    ${chalk.green("help")}       Display help\n`);
+  console.log(chalk.gray(`  Run ${chalk.white("zn <command> --help")} for detailed options\n`));
 }

@@ -146,6 +146,11 @@ export default async function createConfigAsync() {
             },
             {
               position: "left",
+              label: "Setup",
+              to: "/scandog-setup",
+            },
+            {
+              position: "left",
               label: "Playground",
               to: "/playground",
             },

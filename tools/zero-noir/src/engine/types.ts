@@ -15,6 +15,8 @@ export interface Endpoint {
   service: string;
   callees?: string[];
   aiContext?: AIContext;
+  technology?: string;
+  auth?: string;
 }
 
 export interface EndpointParam {
@@ -30,14 +32,17 @@ export interface AIContext {
   validators: string[];
   signals: string[];
   callee: string[];
+  summary?: string;
+  riskLevel?: "low" | "medium" | "high" | "critical";
 }
 
 export interface ServiceDef {
   name: string;
-  type: "server" | "gateway" | "build-service" | "prover-service" | "cli" | "library" | "sdk";
+  type: "server" | "gateway" | "build-service" | "prover-service" | "cli" | "library" | "sdk" | "web-app" | "api-service" | "microservice";
   port?: number;
   endpoints: Endpoint[];
   sourceDir: string;
+  technology?: string;
 }
 
 export interface CLIDef {
@@ -69,6 +74,8 @@ export interface ScanResult {
   clis: CLIDef[];
   totalEndpoints: number;
   tags: TagSummary;
+  technologies?: string[];
+  warnings?: string[];
 }
 
 export interface TagSummary {
@@ -82,6 +89,9 @@ export interface TagSummary {
   prover: number;
   verifier: number;
   health: number;
+  graphql?: number;
+  jwt?: number;
+  fileUpload?: number;
 }
 
 export interface DetectorResult {
@@ -96,4 +106,6 @@ export interface AnalyzerOptions {
   aiContext?: boolean;
   excludePaths?: string[];
   verbose?: boolean;
+  onlyTechs?: string[];
+  excludeTechs?: string[];
 }

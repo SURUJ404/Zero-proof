@@ -1,0 +1,62 @@
+name: ScanDog Attack Surface Scan
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: "0 6 * * 1"  # Every Monday at 6 AM
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install ScanDog
+        run: |
+          cd tools/zero-noir
+          npm ci
+          npm run build
+
+      - name: Run Attack Surface Scan
+        id: scan
+        continue-on-error: true
+        run: |
+          cd tools/zero-noir
+          node dist/index.js scan . --format sarif -o ${{ runner.temp }}/scan-results.sarif \
+            ${AI_CONTEXT:+--ai-context}
+        env:
+          AI_CONTEXT: ${{ secrets.OPENAI_API_KEY && 'true' || '' }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Upload SARIF to GitHub Advanced Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ runner.temp }}/scan-results.sarif
+          category: scandog-attack-surface
+        if: ${{ hashFiles(format('{0}/scan-results.sarif', runner.temp)) != '' }}
+
+      - name: Generate HTML Report
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd tools/zero-noir
+          node dist/index.js scan . --format html -o ${{ runner.temp }}/report.html
+
+      - name: Upload HTML Report
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: attack-surface-report
+          path: ${{ runner.temp }}/report.html
+          retention-days: 30

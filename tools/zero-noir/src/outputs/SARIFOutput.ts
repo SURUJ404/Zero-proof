@@ -1,7 +1,8 @@
 import { writeFileSync } from "fs";
 import { ScanResult } from "../engine/types.js";
+import { Output } from "./Output.js";
 
-export class SARIFOutput {
+export class SARIFOutput implements Output {
   format(result: ScanResult): string {
     const results: any[] = [];
     let ruleIdx = 0;
@@ -11,18 +12,19 @@ export class SARIFOutput {
       for (const ep of service.endpoints) {
         ruleIdx++;
         const ruleId = `ZP-${String(ruleIdx).padStart(4, "0")}`;
+        const level = this.severityLevel(ep.tags);
         rules.push({
           id: ruleId,
           name: `${ep.method} ${ep.path}`,
           shortDescription: { text: `Endpoint: ${ep.method} ${ep.path}` },
-          fullDescription: { text: `Discovered in ${ep.service} at ${ep.source.file}:${ep.source.line}` },
-          properties: { tags: ep.tags, service: ep.service },
+          fullDescription: { text: `Discovered in ${ep.service} at ${ep.source.file}:${ep.source.line}\nTags: ${ep.tags.join(", ")}` },
+          properties: { tags: ep.tags, service: ep.service, technology: ep.technology || "" },
         });
 
         results.push({
           ruleId,
-          level: "note",
-          message: { text: `${ep.method} ${ep.path} (${ep.service})` },
+          level,
+          message: { text: `${ep.method} ${ep.path} [${ep.tags.join(", ")}]` },
           locations: [{
             physicalLocation: {
               artifactLocation: { uri: ep.source.file },
@@ -32,7 +34,12 @@ export class SARIFOutput {
               },
             },
           }],
-          properties: { tags: ep.tags },
+          properties: {
+            tags: ep.tags,
+            service: ep.service,
+            method: ep.method,
+            path: ep.path,
+          },
         });
       }
     }
@@ -55,11 +62,19 @@ export class SARIFOutput {
           projectVersion: result.projectVersion,
           totalEndpoints: result.totalEndpoints,
           scannedAt: result.scannedAt,
+          technologies: result.technologies || [],
         },
       }],
     };
 
     return JSON.stringify(sarif, null, 2);
+  }
+
+  private severityLevel(tags: string[]): "error" | "warning" | "note" | "none" {
+    if (tags.includes("shadow")) return "warning";
+    if (tags.includes("deprecated")) return "note";
+    if (tags.includes("prover") || tags.includes("verifier")) return "note";
+    return "note";
   }
 
   write(result: ScanResult, path: string): void {

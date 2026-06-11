@@ -24,6 +24,17 @@ export class Deliver {
     if (!response.ok) throw new Error(`Burp import failed: ${response.status}`);
   }
 
+  async toCaido(result: ScanResult, caidoUrl: string): Promise<void> {
+    const json = new JSONOutput();
+    const data = json.format(result);
+    const response = await fetch(`${caidoUrl}/api/routes/import`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: data,
+    });
+    if (!response.ok) throw new Error(`Caido import failed: ${response.status}`);
+  }
+
   async toWebhook(result: ScanResult, url: string): Promise<void> {
     const json = new JSONOutput();
     const data = json.format(result);
@@ -42,7 +53,8 @@ export class Deliver {
         (s) => `   ${s.name} (${s.type}${s.port ? ` :${s.port}` : ""}): ${s.endpoints.length} endpoints`
       ),
       `🖥️  ${result.clis.length} CLI tools: ${result.clis.map((c) => c.binary).join(", ")}`,
-      `🏷️  Tags: ${result.tags.shadow} shadow, ${result.tags.deprecated || 0} deprecated`,
-    ].join("\n");
+      `🏷️  Tags: ${result.tags.shadow} shadow, ${result.tags.deprecated || 0} deprecated, ${result.tags.prover || 0} prover`,
+      result.technologies ? `🔧  Tech: ${result.technologies.join(", ")}` : "",
+    ].filter(Boolean).join("\n");
   }
 }

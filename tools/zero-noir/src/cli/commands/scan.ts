@@ -9,7 +9,7 @@ import { join } from "path";
 export function registerScanCommand(program: Command): void {
   program
     .command("scan")
-    .description("Scan a Zero Proof codebase for endpoints and attack surface")
+    .description("Scan a codebase for endpoints and attack surface")
     .argument("[path]", "Path to scan", ".")
     .option("-f, --format <format>", `Output format (${OUTPUT_FORMATS.join(", ")})`, "terminal")
     .option("-o, --output <file>", "Write output to file")
@@ -20,17 +20,29 @@ export function registerScanCommand(program: Command): void {
     .option("--deliver-zap <url>", "Deliver to ZAP instance")
     .option("--deliver-burp <url>", "Deliver to Burp Suite")
     .option("--deliver-webhook <url>", "Deliver to webhook URL")
+    .option("--ai-provider <provider>", "AI provider (openai, ollama)")
+    .option("--only-techs <techs...>", "Only detect specified technologies")
+    .option("--exclude-techs <techs...>", "Exclude specified technologies")
     .action(async (path, options) => {
       const scanner = new Scanner();
 
       console.log(chalk.hex("#db8b8b")("\n  ⚡ ScanDog — Attack Surface Detector"));
       console.log(chalk.gray(`  Scanning: ${path}\n`));
+      if (options.verbose) {
+        console.log(chalk.gray(`  Options: ${JSON.stringify(options, null, 2)}\n`));
+      }
+
+      if (options.aiProvider) {
+        process.env.AI_PROVIDER = options.aiProvider;
+      }
 
       const result = scanner.scan(path, {
         includeCallee: options.includeCallee,
         aiContext: options.aiContext,
         excludePaths: options.excludePath,
         verbose: options.verbose,
+        onlyTechs: options.onlyTechs,
+        excludeTechs: options.excludeTechs,
       });
 
       const format = options.format as OutputFormat | "terminal";
@@ -76,8 +88,18 @@ export function registerScanCommand(program: Command): void {
         }
       }
 
+      if (result.technologies && result.technologies.length > 0 && options.verbose) {
+        console.log(chalk.gray(`  Technologies detected: ${result.technologies.join(", ")}`));
+      }
+
+      if (result.warnings && result.warnings.length > 0) {
+        for (const w of result.warnings) {
+          console.log(chalk.yellow(`  ⚠ ${w}`));
+        }
+      }
+
       if (result.totalEndpoints === 0) {
-        console.log(chalk.yellow("  ⚠ No endpoints found. Is this a Zero Proof codebase?\n"));
+        console.log(chalk.yellow("  ⚠ No endpoints found.\n"));
       }
     });
 }
@@ -92,6 +114,9 @@ function printTerminal(result: any, path: string): void {
   console.log(t(`  ${result.projectName} v${result.projectVersion}`));
   console.log(m(`  Scanned: ${result.scannedAt}`));
   console.log(m(`  Root: ${path}\n`));
+  if (result.technologies?.length > 0) {
+    console.log(m(`  Tech:  ${result.technologies.join(", ")}\n`));
+  }
 
   console.log(t("  ┌─ Attack Surface Summary ─────────────────────────────┐"));
 
@@ -106,11 +131,15 @@ function printTerminal(result: any, path: string): void {
   printRow("Prover Endpoints", String(result.tags.prover || 0), g(String(result.tags.prover || 0).padStart(8)));
   printRow("Verifier Endpoints", String(result.tags.verifier || 0), g(String(result.tags.verifier || 0).padStart(8)));
   printRow("Health Endpoints", String(result.tags.health || 0), g(String(result.tags.health || 0).padStart(8)));
+  if (result.tags.graphql) {
+    printRow("GraphQL", String(result.tags.graphql), h(String(result.tags.graphql).padStart(8)));
+  }
   console.log(t("  └───────────────────────────────────────────────────────┘\n"));
 
   for (const service of result.services) {
-    const tag = service.type === "gateway" ? h : service.type === "build-service" ? t : g;
-    console.log(`  ${tag("●")} ${service.name} ${m(`(${service.type}${service.port ? ` :${service.port}` : ""})`)}`);
+    const tag = service.type === "gateway" ? h : service.type === "build-service" ? t : service.type === "web-app" ? chalk.cyan : g;
+    const tech = service.technology ? ` ${m(`[${service.technology}]`)}` : "";
+    console.log(`  ${tag("●")} ${service.name} ${m(`(${service.type}${service.port ? ` :${service.port}` : ""})`)}${tech}`);
 
     for (const ep of service.endpoints) {
       const methodColor =
@@ -135,5 +164,5 @@ function printTerminal(result: any, path: string): void {
     console.log();
   }
 
-  console.log(m("  Tip: use --format json|yaml|openapi|sarif|html|mermaid for structured output\n"));
+  console.log(m(`  Tip: use --format ${OUTPUT_FORMATS.join("|")} for structured output\n`));
 }
