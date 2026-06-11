@@ -1,0 +1,9 @@
+[package]
+name = "riscv-vm-guest"
+version = "0.1.0"
+edition.workspace = true
+
+[workspace]
+
+[dependencies]
+risc0-zkvm = { path = "../../../../risc0/zkvm", default-features = false }

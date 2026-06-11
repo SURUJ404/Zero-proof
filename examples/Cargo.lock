@@ -4456,6 +4456,22 @@ name = "risc0-zkvm-receipts"
 version = "5.0.0"
 
 [[package]]
+name = "riscv-vm"
+version = "0.1.0"
+dependencies = [
+ "risc0-zkvm",
+ "riscv-vm-methods",
+ "tracing-subscriber 0.3.23",
+]
+
+[[package]]
+name = "riscv-vm-methods"
+version = "0.1.0"
+dependencies = [
+ "risc0-build",
+]
+
+[[package]]
 name = "rkyv"
 version = "0.7.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"

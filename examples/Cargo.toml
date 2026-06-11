@@ -17,6 +17,7 @@ members = [
     "jwt-validator/core",
     "profiling",
     "prorata",
+    "riscv-vm",
     "prorata/core",
     "voting-machine",
     "voting-machine/core",
