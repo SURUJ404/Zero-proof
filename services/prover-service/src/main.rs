@@ -7,7 +7,7 @@ use axum::{
     Json, Router,
     routing::{get, post},
 };
-use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts, VerifierOpts};
+use risc0_zkvm::{default_prover, ExecutorEnv, ProverOpts};
 use serde::{Deserialize, Serialize};
 use tower_http::cors::CorsLayer;
 use tracing::{error, info};
@@ -91,8 +91,9 @@ async fn prove_handler(
             let elapsed = start.elapsed().as_millis() as u64;
             let receipt_bytes = bincode::serialize(&receipt).unwrap();
             let receipt_b64 = BASE64_STANDARD.encode(&receipt_bytes);
-            let claim = receipt.receipt.claim().unwrap().as_value().unwrap();
-            let image_id = hex::encode(claim.pre.as_value().unwrap().merkle_root.as_bytes());
+            let claim = receipt.receipt.claim().unwrap();
+            let claim_value = claim.as_value().unwrap();
+            let image_id = hex::encode(claim_value.pre.as_value().unwrap().merkle_root.as_bytes());
 
             (StatusCode::OK, Json(ProveResponse {
                 success: true,
