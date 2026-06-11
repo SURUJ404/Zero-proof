@@ -84,6 +84,7 @@ export default function ScanDog() {
   const [scanUrl, setScanUrl] = useState("");
   const [urlScanning, setUrlScanning] = useState(false);
   const [urlError, setUrlError] = useState("");
+  const [scanCompleted, setScanCompleted] = useState(false);
 
   useEffect(() => {
     if (!data || activeTab !== "architecture") return;
@@ -249,6 +250,7 @@ export default function ScanDog() {
     if (!trimmed.includes("github.com")) { setUrlError("Only GitHub URLs are supported"); return; }
     setUrlScanning(true);
     setUrlError("");
+    setScanCompleted(false);
     try {
       const res = await fetch("/api/scandog", {
         method: "POST",
@@ -263,6 +265,7 @@ export default function ScanDog() {
       setData(result);
       setExpandedServices(new Set(result.services.map((s) => s.name)));
       setActiveTab("endpoints");
+      setScanCompleted(true);
     } catch (e) {
       setUrlError(e.message);
     } finally {
@@ -288,14 +291,14 @@ export default function ScanDog() {
       {/* Hero */}
       <div className={styles.hero}>
         <div className={styles.heroBadge}>
-          {data.totalEndpoints > 0 ? `ScanDog v1.0.0` : `ScanDog — Ready`}
+          {scanCompleted ? `ScanDog v1.0.0` : `ScanDog — Ready`}
         </div>
         <h1 className={styles.heroTitle}>
-          {data.totalEndpoints > 0 ? data.projectName : `ScanDog Attack Surface Scanner`}
+          {scanCompleted ? data.projectName : `ScanDog Attack Surface Scanner`}
         </h1>
         <p className={styles.heroSub}>
-          {data.totalEndpoints > 0
-            ? `Attack Surface Report &mdash; ${data.totalEndpoints} endpoints &middot; ${data.services.length} services &middot; ${data.clis.length} CLI tools &middot; ${new Date(data.scannedAt).toLocaleDateString()}`
+          {scanCompleted
+            ? `Scan complete &mdash; ${data.totalEndpoints} endpoint${data.totalEndpoints !== 1 ? "s" : ""} &middot; ${data.services.length} service${data.services.length !== 1 ? "s" : ""} &middot; ${new Date(data.scannedAt).toLocaleDateString()}`
             : `Paste a GitHub URL below to scan any repository &mdash; no installation needed`
           }
         </p>

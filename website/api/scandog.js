@@ -53,7 +53,6 @@ class Scanner {
 
     const techs = this.detectTechs(files);
     const contents = await this.fetchContents(files);
-    if (this.signal.aborted) throw new DOMException("Aborted", "AbortError");
 
     const frameworks = this.detectFrameworks(contents);
     const endpoints = this.detectEndpoints(contents);
@@ -62,6 +61,7 @@ class Scanner {
     const services = buildServices(groupBy(deduped));
     const tags = aggregateTags(deduped);
     const warnings = buildWarnings(deduped, services);
+    if (this.signal.aborted) warnings.push("Scan timed out — results may be incomplete");
     const allTechs = [...new Set([...techs, ...frameworks])];
 
     return {
@@ -74,6 +74,7 @@ class Scanner {
       tags,
       technologies: allTechs.length > 0 ? allTechs : ["unknown"],
       warnings,
+      timedOut: this.signal.aborted,
     };
   }
 
@@ -109,10 +110,16 @@ class Scanner {
     for (const f of files) {
       const ext = "." + f.path.split(".").pop().toLowerCase();
       const fileName = f.path.split("/").pop();
-      if (sourceExts.has(ext) || configFiles.has(fileName)) candidates.push(f);
+      if (!sourceExts.has(ext) && !configFiles.has(fileName)) continue;
+      let score = 0;
+      const p = f.path.toLowerCase();
+      if (/\b(?:api|route|router|server|service|gateway|handler|controller|app|main|index|endpoint)\b/.test(p)) score += 100;
+      if (configFiles.has(fileName)) score += 50;
+      candidates.push({ ...f, score });
     }
+    candidates.sort((a, b) => b.score - a.score);
 
-    const toFetch = candidates.slice(0, 120);
+    const toFetch = candidates.slice(0, 200);
     const contents = [];
 
     for (let i = 0; i < toFetch.length; i += 20) {
