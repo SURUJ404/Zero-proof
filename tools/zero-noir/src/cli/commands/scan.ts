@@ -6,6 +6,7 @@ import { Deliver } from "../../deliver/Deliver.js";
 import { writeFileSync } from "fs";
 import { join } from "path";
 import { parseFilters, applyFilters } from "../../engine/Filter.js";
+import { Router, parseRouteRule, RouteRule } from "../../engine/Router.js";
 import { readFileSync, existsSync } from "fs";
 import { UserAnalyzerDef } from "../../engine/types.js";
 import { load as loadYaml } from "js-yaml";
@@ -29,6 +30,7 @@ export function registerScanCommand(program: Command): void {
     .option("--exclude-techs <techs...>", "Exclude specified technologies")
     .option("--filter <expr...>", "Filter results by field=value (repeatable: method=POST, tag=shadow)")
     .option("--custom-analyzers <path>", "Path to YAML file with custom analyzer definitions")
+    .option("--route <rules...>", "Route endpoints by rules: tag=shadow->deliver:zap, method=POST->split:file=api.json, tag=health->exclude")
     .action(async (path, options) => {
       const scanner = new Scanner();
 
@@ -82,6 +84,75 @@ export function registerScanCommand(program: Command): void {
           }
         } catch (e: any) {
           console.log(chalk.red(`  ✗ Filter error: ${e.message}\n`));
+        }
+      }
+
+      if (options.route?.length) {
+        try {
+          const rules: RouteRule[] = options.route.map((r: string) => parseRouteRule(r));
+          const router = new Router(rules);
+          const { routed, remaining } = router.apply(result);
+          result = remaining;
+
+          if (options.verbose) {
+            console.log(chalk.gray(`\n  ⚡ Router applied:`));
+            if (routed.excluded.length > 0) console.log(chalk.gray(`     excluded: ${routed.excluded.length} endpoints`));
+            if (routed.deliveries.length > 0) console.log(chalk.gray(`     deliveries: ${routed.deliveries.length} target(s)`));
+            if (Object.keys(routed.split).length > 0) console.log(chalk.gray(`     split files: ${Object.keys(routed.split).join(", ")}`));
+            if (routed.tagged.length > 0) console.log(chalk.gray(`     tagged: ${routed.tagged.length} endpoint(s)`));
+            if (routed.rerouted.length > 0) console.log(chalk.gray(`     rerouted: ${routed.rerouted.length} endpoint(s)`));
+            console.log();
+          }
+
+          for (const [file, eps] of Object.entries(routed.split)) {
+            const format = options.format === "terminal" ? "json" : options.format;
+            const outputModule = getOutput(format as OutputFormat);
+            const content = outputModule.format({ ...result, services: [{ name: "routed", type: "server", endpoints: eps, sourceDir: "" }], totalEndpoints: eps.length, clis: [] } as any);
+            writeFileSync(file, content, "utf-8");
+            console.log(chalk.green(`  ✓ Routed ${eps.length} endpoints to ${file}\n`));
+          }
+
+          if (routed.deliveries.length > 0) {
+            const deliverable = { ...result, services: [{ name: "routed", type: "server", endpoints: routed.matched, sourceDir: "" }], totalEndpoints: routed.matched.length, clis: [] } as any;
+            for (const d of routed.deliveries) {
+              if (d.target === "zap") {
+                try {
+                  if (!options.deliverZap) {
+                    console.log(chalk.yellow(`  ⚠ Route matched zap but --deliver-zap <url> not set. Skipping.\n`));
+                  } else {
+                    await new Deliver().toZAP(deliverable, options.deliverZap);
+                    console.log(chalk.green(`  ✓ Routed ${d.endpoints.length} endpoints to ZAP\n`));
+                  }
+                } catch (e: any) {
+                  console.log(chalk.red(`  ✗ Route ZAP delivery failed: ${e.message}\n`));
+                }
+              } else if (d.target === "burp") {
+                try {
+                  if (!options.deliverBurp) {
+                    console.log(chalk.yellow(`  ⚠ Route matched burp but --deliver-burp <url> not set. Skipping.\n`));
+                  } else {
+                    await new Deliver().toBurp(deliverable, options.deliverBurp);
+                    console.log(chalk.green(`  ✓ Routed ${d.endpoints.length} endpoints to Burp Suite\n`));
+                  }
+                } catch (e: any) {
+                  console.log(chalk.red(`  ✗ Route Burp delivery failed: ${e.message}\n`));
+                }
+              } else if (d.target === "webhook") {
+                try {
+                  if (!options.deliverWebhook) {
+                    console.log(chalk.yellow(`  ⚠ Route matched webhook but --deliver-webhook <url> not set. Skipping.\n`));
+                  } else {
+                    await new Deliver().toWebhook(deliverable, options.deliverWebhook);
+                    console.log(chalk.green(`  ✓ Routed ${d.endpoints.length} endpoints to webhook\n`));
+                  }
+                } catch (e: any) {
+                  console.log(chalk.red(`  ✗ Route webhook delivery failed: ${e.message}\n`));
+                }
+              }
+            }
+          }
+        } catch (e: any) {
+          console.log(chalk.red(`  ✗ Route error: ${e.message}\n`));
         }
       }
 
