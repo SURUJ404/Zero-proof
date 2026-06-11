@@ -504,6 +504,13 @@ apiscan completion elvish > ~/.elvish/completions/apiscan.elv`}</P>
                 <p style={{ fontSize: "0.8rem", color: "var(--ifm-color-emphasis-600)", margin: 0 }}>Source code & issues</p>
               </div>
             </Link>
+            <Link to="/tscscan" style={{ flex: 1, textDecoration: "none" }}>
+              <div style={{ ...card, cursor: "pointer", textAlign: "center" }}>
+                <div style={{ fontSize: "1.5rem", marginBottom: "0.3rem" }}>🔍</div>
+                <div style={ct}>tscscan</div>
+                <p style={{ fontSize: "0.8rem", color: "var(--ifm-color-emphasis-600)", margin: 0 }}>Port scanner docs</p>
+              </div>
+            </Link>
           </div>
         </div>
 
