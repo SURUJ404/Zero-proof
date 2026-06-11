@@ -59,6 +59,9 @@ const TECH_PATTERNS = [
   { ext: [".cs"], tech: "csharp" },
   { ext: [".rb"], tech: "ruby" },
   { ext: [".php"], tech: "php" },
+  { ext: [".kt"], tech: "kotlin" },
+  { ext: [".scala"], tech: "scala" },
+  { ext: [".swift"], tech: "swift" },
   { ext: ["Dockerfile", "docker-compose.yml", "docker-compose.yaml"], tech: "docker" },
 ];
 
@@ -71,12 +74,55 @@ const FRAMEWORK_PATTERNS = [
 ];
 
 const ENDPOINT_PATTERNS = [
-  { ext: ".rs", pattern: /\.route\([^)]*"(\/[^"]+)"/g, methodGroup: null, pathGroup: 1, tech: "rust/axum" },
-  { ext: ".js", pattern: /(?:app|router)\.(get|post|put|delete|patch)\(["'`](\/[^"'`]+)/gi, methodGroup: 1, pathGroup: 2, tech: "javascript/express" },
-  { ext: ".ts", pattern: /(?:app|router)\.(get|post|put|delete|patch)\(["'`](\/[^"'`]+)/gi, methodGroup: 1, pathGroup: 2, tech: "typescript/express" },
-  { ext: ".py", pattern: /@(?:app|router)\.(?:get|post|put|delete|patch)\s*\(["'`](\/[^"'`]+)/gi, methodGroup: null, pathGroup: 1, tech: "python/flask" },
-  { ext: ".go", pattern: /\.(?:GET|POST|PUT|DELETE)\(["'`](\/[^"'`]+)/gi, methodGroup: null, pathGroup: 1, tech: "go/gin" },
-  { ext: ".java", pattern: /@(?:GetMapping|PostMapping|PutMapping|DeleteMapping|RequestMapping)\(["'`](\/[^"'`]+)/gi, methodGroup: null, pathGroup: 1, tech: "java/spring" },
+  // Rust — Axum, Actix, Rocket, Warp
+  { ext: ".rs", pattern: /\.route\(\s*["'](\/[^"']+)["'].*,(get|post|put|delete|patch|head|options|any)\(/gi, methodGroup: 2, pathGroup: 1, tech: "rust/axum" },
+  { ext: ".rs", pattern: /#\[(get|post|put|delete|patch|head|options)\("([^"]+)"\)\]/gi, methodGroup: 1, pathGroup: 2, tech: "rust/actix" },
+  { ext: ".rs", pattern: /\.route\(\s*["'](\/[^"']+)["']/g, methodGroup: null, pathGroup: 1, tech: "rust/axum" },
+  { ext: ".rs", pattern: /\.(get|post|put|delete|patch)\(\s*["'](\/[^"']+)["']/gi, methodGroup: 1, pathGroup: 2, tech: "rust/axum" },
+
+  // JavaScript — Express, Fastify, Hono, Koa
+  { ext: ".js", pattern: /(?:app|router|server|api)\.(get|post|put|delete|patch|head|options|all)\(\s*["'`](\/[^"'`]+)/gi, methodGroup: 1, pathGroup: 2, tech: "javascript/express" },
+  { ext: ".js", pattern: /\.(get|post|put|delete|patch)\(\s*["'`](\/[^"'`]+)/gi, methodGroup: 1, pathGroup: 2, tech: "javascript/fastify" },
+
+  // TypeScript — Express, Hono, NestJS
+  { ext: ".ts", pattern: /(?:app|router|server|api)\.(get|post|put|delete|patch|head|options|all)\(\s*["'`](\/[^"'`]+)/gi, methodGroup: 1, pathGroup: 2, tech: "typescript/express" },
+  { ext: ".ts", pattern: /@(Get|Post|Put|Delete|Patch|All)\((?:["'`]([^"'`]+)["'`])?\)/gi, methodGroup: 1, pathGroup: 2, tech: "typescript/nestjs" },
+  { ext: ".ts", pattern: /export\s+(?:async\s+)?function\s+(GET|POST|PUT|DELETE|PATCH)\s*\(/gi, methodGroup: 1, pathGroup: null, tech: "typescript/nextjs" },
+
+  // Python — Flask, FastAPI, Django, Quart, Sanic, aiohttp
+  { ext: ".py", pattern: /@\w+\.route\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "python/flask" },
+  { ext: ".py", pattern: /@\w+\.(get|post|put|delete|patch)\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "python/fastapi" },
+  { ext: ".py", pattern: /path\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "python/django" },
+  { ext: ".py", pattern: /\.add_route\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "python/starlette" },
+
+  // Go — Gin, Echo, Chi, Fiber, net/http
+  { ext: ".go", pattern: /\.(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|Any)\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "go/gin" },
+  { ext: ".go", pattern: /http\.HandleFunc\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "go/nethttp" },
+  { ext: ".go", pattern: /http\.Handle\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "go/nethttp" },
+  { ext: ".go", pattern: /\.(Get|Post|Put|Delete|Patch|Route)\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "go/chi" },
+
+  // Java — Spring Boot, JAX-RS
+  { ext: ".java", pattern: /@(GetMapping|PostMapping|PutMapping|DeleteMapping|PatchMapping)\(\s*["'`]([^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "java/spring" },
+  { ext: ".java", pattern: /@RequestMapping\([^)]*path\s*=\s*["'`]([^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "java/spring" },
+  { ext: ".java", pattern: /@(GET|POST|PUT|DELETE|PATCH)\s*\n\s*@Path\(\s*["'`]([^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "java/jaxrs" },
+  { ext: ".java", pattern: /@Path\(\s*["'`]([^"'`]+)["'`]\s*\)\s*\n\s*@(GET|POST|PUT|DELETE|PATCH)/gi, methodGroup: 2, pathGroup: 1, tech: "java/jaxrs" },
+
+  // C# — ASP.NET Core
+  { ext: ".cs", pattern: /\[Http(Get|Post|Put|Delete|Patch)\(["'`](\/[^"'`]+)["'`]?\)\]/gi, methodGroup: 1, pathGroup: 2, tech: "csharp/aspnet" },
+  { ext: ".cs", pattern: /\[Route\(["'`](\/[^"'`]+)["'`]\)\]/gi, methodGroup: null, pathGroup: 1, tech: "csharp/aspnet" },
+  { ext: ".cs", pattern: /app\.(?:MapGet|MapPost|MapPut|MapDelete)\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "csharp/aspnet" },
+
+  // Ruby — Rails, Sinatra
+  { ext: ".rb", pattern: /(get|post|put|delete|patch)\s+["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "ruby/rails" },
+  { ext: ".rb", pattern: /match\s+["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "ruby/rails" },
+
+  // PHP — Laravel, Symfony
+  { ext: ".php", pattern: /Route::(get|post|put|delete|patch)\(\s*["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "php/laravel" },
+  { ext: ".php", pattern: /#[Route\(["'`](\/[^"'`]+)["'`]/gi, methodGroup: null, pathGroup: 1, tech: "php/symfony" },
+
+  // Kotlin — Ktor, Spring
+  { ext: ".kt", pattern: /@(Get|Post|Put|Delete|Patch)Mapping\(["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "kotlin/spring" },
+  { ext: ".kt", pattern: /(get|post|put|delete|patch)\s*\{\s*path\(["'`](\/[^"'`]+)["'`]/gi, methodGroup: 1, pathGroup: 2, tech: "kotlin/ktor" },
 ];
 
 async function processTree(tree, owner, repo, headers) {
@@ -119,13 +165,29 @@ async function processTree(tree, owner, repo, headers) {
             const rawText = await rawRes.text();
             let match;
             while ((match = ep.pattern.exec(rawText)) !== null) {
-              const path = ep.pathGroup ? match[ep.pathGroup] : match[0];
+              // Next.js API route handler: path is derived from file path
+              if (ep.pathGroup === null) {
+                const method = ep.methodGroup ? match[ep.methodGroup].toUpperCase() : "ANY";
+                const fileName = file.path.split("/").pop().replace(/\.[jt]sx?$/, "");
+                const apiPath = fileName === "index" ? "/api" : `/api/${fileName}`;
+                endpoints.push({
+                  path: normalizePath(apiPath),
+                  method,
+                  source: { file: file.path, line: 0 },
+                  tags: inferTags(apiPath),
+                  service: detectService(file.path),
+                  technology: ep.tech,
+                });
+                continue;
+              }
+              const path = match[ep.pathGroup] || "/";
               const method = ep.methodGroup ? match[ep.methodGroup].toUpperCase() : "ANY";
+              const normalized = normalizePath(path);
               endpoints.push({
-                path,
+                path: normalized,
                 method,
                 source: { file: file.path, line: 0 },
-                tags: inferTags(path),
+                tags: inferTags(normalized),
                 service: detectService(file.path),
                 technology: ep.tech,
               });
@@ -166,6 +228,13 @@ function inferTags(path) {
   if (/login|logout|auth|session|oauth/i.test(path)) tags.push("authenticated");
   if (!tags.length) tags.push("standard");
   return tags;
+}
+
+function normalizePath(path) {
+  return path
+    .replace(/:(\w+)/g, "{$1}")
+    .replace(/<(\w+)>/g, "{$1}")
+    .replace(/{(\w+):\w+}/g, "{$1}");
 }
 
 function detectService(filePath) {

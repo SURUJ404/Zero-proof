@@ -9,14 +9,48 @@ interface RoutePrefix {
   routerVar: string;
 }
 
-const FRAMEWORK_PATTERNS: Record<string, { detect: RegExp[]; route: RegExp }> = {
+const FRAMEWORK_PATTERNS: Record<string, { detect: RegExp[]; route: RegExp; methodGroup: number | null; pathGroup: number | null; routerVarGroup: number | null }> = {
   express: {
     detect: [/require\(['"]express['"]\)/, /from ['"]express['"]/],
-    route: /\b(\w+)\.(get|post|put|delete|patch|head|options|all)\(?\s*['"]([^'"]+)['"]/,
+    route: /\b(\w+)\.(get|post|put|delete|patch|head|options|all)\(\s*['"`]([^'"`]+)['"`]/,
+    methodGroup: 2,
+    pathGroup: 3,
+    routerVarGroup: 1,
   },
   fastify: {
     detect: [/require\(['"]fastify['"]\)/, /from ['"]fastify['"]/],
-    route: /\b(\w+)\.(get|post|put|delete|patch|head|options)\(?\s*['"]([^'"]+)['"]/,
+    route: /\b(\w+)\.(get|post|put|delete|patch|head|options)\(\s*['"`]([^'"`]+)['"`]/,
+    methodGroup: 2,
+    pathGroup: 3,
+    routerVarGroup: 1,
+  },
+  hono: {
+    detect: [/from ['"]hono['"]/, /require\(['"]hono['"]\)/, /new Hono\(\)/],
+    route: /\b(\w+)\.(get|post|put|delete|patch|on)\(\s*['"`]([^'"`]+)['"`]/,
+    methodGroup: 2,
+    pathGroup: 3,
+    routerVarGroup: 1,
+  },
+  koa: {
+    detect: [/require\(['"]koa['"]\)/, /from ['"]koa['"]/],
+    route: /\b(\w+)\.(use)\(\s*['"`]?(\/[^'"`)]+)['"`]?/,
+    methodGroup: null,
+    pathGroup: 3,
+    routerVarGroup: 1,
+  },
+  nextjs: {
+    detect: [/next\//, /from ['"]next/, /require\(['"]next/],
+    route: /export\s+(?:async\s+)?function\s+(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS)\s*\(/,
+    methodGroup: 1,
+    pathGroup: null,
+    routerVarGroup: null,
+  },
+  nestjs: {
+    detect: [/@nestjs\//, /from ['"]@nestjs/, /@(Get|Post|Put|Delete|Patch|Controller)\(/],
+    route: /@(Get|Post|Put|Delete|Patch|All)\((?:['"]([^'"]+)['"]\s*)?\)/,
+    methodGroup: 1,
+    pathGroup: 2,
+    routerVarGroup: null,
   },
 };
 
@@ -38,19 +72,17 @@ export class JavaScriptAnalyzer implements Analyzer {
   analyze(files: string[], options: AnalyzerOptions): Endpoint[] {
     const raw: Endpoint[] = [];
     const allContent = new Map<string, string>();
-    const isMainServer = new Map<string, boolean>();
 
     for (const file of files) {
       try {
         if (EXCLUDE_DIRS.some((d) => file.includes(d))) continue;
         const content = readFileSync(file, "utf-8");
         allContent.set(file, content);
-        isMainServer.set(file, /app\.(get|post|put|delete|patch|use)\s*\(/.test(content));
       } catch { continue; }
     }
 
-    const frameworks = this.detectExpress(allContent);
-    if (!frameworks) return [];
+    const frameworks = this.detectFrameworks(allContent);
+    if (!frameworks.length) return [];
 
     const prefixes = this.extractRoutePrefixes(allContent);
 
@@ -66,48 +98,97 @@ export class JavaScriptAnalyzer implements Analyzer {
         const line = lines[i].trim();
         if (line.startsWith("//") || line.startsWith("/*") || line.startsWith("*")) continue;
 
-        const match = line.match(FRAMEWORK_PATTERNS.express.route);
-        if (!match) continue;
+        for (const [fwName, config] of Object.entries(FRAMEWORK_PATTERNS)) {
+          if (!frameworks.includes(fwName) && fwName !== "nextjs" && fwName !== "nestjs") continue;
 
-        const routerVar = match[1];
-        const method = match[2].toUpperCase();
-        let rawPath = match[3] || "/";
-        rawPath = rawPath.split(",")[0].trim();
-
-        if (IGNORE_PREFIXES.includes(routerVar) && routerVar !== "app") continue;
-
-        let fullPath = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
-        let service = this.inferService(relFile);
-
-        if (routerVar === "app" && isMainServer.get(file)) {
-          service = "api-service";
-        }
-
-        if (filePrefix && routerVar !== "app") {
-          fullPath = filePrefix + fullPath;
-          service = "api-service";
-        } else if (!filePrefix) {
-          const varPrefix = this.resolvePrefix(prefixes, routerVar, file);
-          if (varPrefix) {
-            fullPath = varPrefix + fullPath;
-            service = "api-service";
+          if (fwName === "nextjs") {
+            const nextMatch = line.match(config.route);
+            if (!nextMatch) continue;
+            const method = nextMatch[1].toUpperCase();
+            const fileName = basename(file).replace(/\.[jt]sx?$/, "");
+            const fullPath = fileName === "index" ? "/api" : `/api/${fileName}`;
+            raw.push({
+              path: this.normalizePath(fullPath),
+              method,
+              source: { file: relFile, line: i + 1 },
+              tags: ["nextjs"],
+              service: "api-service",
+              technology: "typescript:nextjs",
+            });
+            continue;
           }
-        }
 
-        if (method !== "ALL") {
-          raw.push({
-            path: fullPath,
-            method: method === "ALL" ? "ANY" : method,
-            source: { file: relFile, line: i + 1 },
-            tags: ["express"],
-            service,
-            technology: "javascript:express",
-          });
+          if (fwName === "nestjs") {
+            const nestMatch = line.match(config.route);
+            if (!nestMatch) continue;
+            const method = nestMatch[1]?.toUpperCase();
+            const rawPath = nestMatch[2] || "/";
+            if (!method || !["GET", "POST", "PUT", "DELETE", "PATCH", "ALL"].includes(method)) continue;
+            raw.push({
+              path: this.normalizePath(rawPath.startsWith("/") ? rawPath : `/${rawPath}`),
+              method: method === "ALL" ? "ANY" : method,
+              source: { file: relFile, line: i + 1 },
+              tags: ["nestjs"],
+              service: this.inferService(relFile),
+              technology: `typescript:nestjs`,
+            });
+            continue;
+          }
+
+          const match = line.match(config.route);
+          if (!match) continue;
+
+          const routerVar = config.routerVarGroup != null ? (match[config.routerVarGroup] || "") : "";
+          let method = "ANY";
+          if (config.methodGroup != null) {
+            const rawMethod = match[config.methodGroup].toUpperCase();
+            if (["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS", "ALL"].includes(rawMethod)) {
+              method = rawMethod;
+            }
+          }
+
+          let rawPath = config.pathGroup != null ? (match[config.pathGroup] || "/") : "/";
+          if (rawPath.startsWith("'") || rawPath.startsWith('"') || rawPath.startsWith("`")) rawPath = rawPath.slice(1);
+          rawPath = rawPath.split(",")[0].trim();
+
+          if (IGNORE_PREFIXES.includes(routerVar) && !["app", "server", "router", "api"].includes(routerVar)) continue;
+          if (rawPath.includes(":")) continue;
+
+          let fullPath = rawPath.startsWith("/") ? rawPath : `/${rawPath}`;
+          let service = this.inferService(relFile);
+
+          if (filePrefix && routerVar !== "app" && routerVar !== "server") {
+            fullPath = filePrefix + fullPath;
+            service = "api-service";
+          } else if (!filePrefix) {
+            const varPrefix = this.resolvePrefix(prefixes, routerVar, file);
+            if (varPrefix) {
+              fullPath = varPrefix + fullPath;
+              service = "api-service";
+            }
+          }
+
+          if (method !== "ALL") {
+            raw.push({
+              path: this.normalizePath(fullPath),
+              method: method === "ALL" ? "ANY" : method,
+              source: { file: relFile, line: i + 1 },
+              tags: [fwName],
+              service,
+              technology: `javascript:${fwName}`,
+            });
+          }
         }
       }
     }
 
     return this.dedup(raw);
+  }
+
+  private normalizePath(path: string): string {
+    return path
+      .replace(/:(\w+)/g, "{$1}")
+      .replace(/<(\w+)>/g, "{$1}");
   }
 
   private findFilePrefix(prefixes: RoutePrefix[], file: string): string | null {
@@ -120,14 +201,24 @@ export class JavaScriptAnalyzer implements Analyzer {
     return null;
   }
 
-  private detectExpress(allContent: Map<string, string>): boolean {
+  private detectFrameworks(allContent: Map<string, string>): string[] {
+    const detected = new Set<string>();
     for (const [, content] of allContent) {
-      if (FRAMEWORK_PATTERNS.express.detect.some((r) => r.test(content))) return true;
+      for (const [name, config] of Object.entries(FRAMEWORK_PATTERNS)) {
+        if (!detected.has(name) && config.detect.some((r) => r.test(content))) {
+          detected.add(name);
+        }
+      }
     }
-    for (const [file] of allContent) {
-      if (file.includes("server") || file.includes("routes") || file.includes("api")) return true;
+    if (detected.size === 0) {
+      for (const [file] of allContent) {
+        if (file.includes("server") || file.includes("routes") || file.includes("api")) {
+          detected.add("express");
+          break;
+        }
+      }
     }
-    return false;
+    return [...detected];
   }
 
   private extractRoutePrefixes(allContent: Map<string, string>): RoutePrefix[] {

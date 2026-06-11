@@ -6,16 +6,20 @@ const FRAMEWORK_CONFIGS = [
   {
     name: "flask",
     detect: [/from flask import/i, /import flask/i],
-    routePattern: /@\w+\.route\(['"]([^'"]+)['"]\)/,
+    routePattern: /@(\w+)\.route\(['"]([^'"]+)['"]\)/,
     methodPattern: /methods\s*=\s*\[['"](\w+)['"]\]/,
+    routerVarGroup: 1,
+    pathGroup: 2,
     defaultMethod: "GET",
     exclude: [/node_modules/, /__pycache__/, /\.venv/, /env\//],
   },
   {
     name: "fastapi",
     detect: [/from fastapi import/i, /import fastapi/i],
-    routePattern: /@\w+\.(get|post|put|delete|patch)\(['"]([^'"]+)['"]\)/,
+    routePattern: /@(\w+)\.(get|post|put|delete|patch)\(['"]([^'"]+)['"]\)/,
     methodPattern: null,
+    routerVarGroup: 1,
+    pathGroup: 3,
     defaultMethod: null,
     exclude: [/node_modules/, /__pycache__/, /\.venv/],
   },
@@ -24,6 +28,8 @@ const FRAMEWORK_CONFIGS = [
     detect: [/from django\./i, /django\.urls/i, /include\(/],
     routePattern: /path\(['"]([^'"]+)['"]/,
     methodPattern: null,
+    routerVarGroup: null,
+    pathGroup: 1,
     defaultMethod: "ANY",
     exclude: [/node_modules/, /__pycache__/, /\.venv/, /migrations\//],
   },
@@ -32,6 +38,8 @@ const FRAMEWORK_CONFIGS = [
     detect: [/from aiohttp import/i, /import aiohttp/i],
     routePattern: /\.(get|post|put|delete|patch)\(['"]([^'"]+)['"]\)/,
     methodPattern: null,
+    routerVarGroup: null,
+    pathGroup: 2,
     defaultMethod: null,
     exclude: [/node_modules/, /__pycache__/, /\.venv/],
   },
@@ -40,6 +48,8 @@ const FRAMEWORK_CONFIGS = [
     detect: [/from bottle import/i, /import bottle/i],
     routePattern: /@\w+\.route\(['"]([^'"]+)['"]\)/,
     methodPattern: /method\s*=\s*['"](\w+)['"]/,
+    routerVarGroup: null,
+    pathGroup: 1,
     defaultMethod: "GET",
     exclude: [/node_modules/, /__pycache__/, /\.venv/],
   },
@@ -48,7 +58,29 @@ const FRAMEWORK_CONFIGS = [
     detect: [/from starlette import/i, /import starlette/i],
     routePattern: /\.add_route\(['"]([^'"]+)['"]/,
     methodPattern: null,
+    routerVarGroup: null,
+    pathGroup: 1,
     defaultMethod: "ANY",
+    exclude: [/node_modules/, /__pycache__/, /\.venv/],
+  },
+  {
+    name: "sanic",
+    detect: [/from sanic import/i, /import sanic/i],
+    routePattern: /@(\w+)\.(get|post|put|delete|patch|route)\(['"]([^'"]+)['"]\)/,
+    methodPattern: /methods?=\[['"](\w+)['"]\]/,
+    routerVarGroup: 1,
+    pathGroup: 3,
+    defaultMethod: "GET",
+    exclude: [/node_modules/, /__pycache__/, /\.venv/],
+  },
+  {
+    name: "quart",
+    detect: [/from quart import/i, /import quart/i],
+    routePattern: /@(\w+)\.route\(['"]([^'"]+)['"]\)/,
+    methodPattern: /methods\s*=\s*\[['"](\w+)['"]\]/,
+    routerVarGroup: 1,
+    pathGroup: 2,
+    defaultMethod: "GET",
     exclude: [/node_modules/, /__pycache__/, /\.venv/],
   },
 ];
@@ -79,23 +111,44 @@ export class PythonAnalyzer implements Analyzer {
             if (!routeMatch) continue;
 
             let method = config.defaultMethod || "ANY";
-            if (config.methodPattern) {
-              const methodMatch = line.match(config.methodPattern);
-              if (methodMatch) method = methodMatch[1].toUpperCase();
-            } else if (config.name === "fastapi" || config.name === "aiohttp") {
-              method = routeMatch[1].toUpperCase();
-            }
+            let path: string;
 
-            let path = config.name === "fastapi" || config.name === "aiohttp"
-              ? routeMatch[2] || "/"
-              : routeMatch[1] || "/";
+            if (config.name === "fastapi") {
+              const [, , methodStr, pathStr] = routeMatch;
+              if (methodStr && ["get", "post", "put", "delete", "patch"].includes(methodStr.toLowerCase())) {
+                method = methodStr.toUpperCase();
+              }
+              path = pathStr || "/";
+            } else if (config.name === "aiohttp") {
+              const [, methodStr, pathStr] = routeMatch;
+              if (methodStr) method = methodStr.toUpperCase();
+              path = pathStr || "/";
+            } else if (config.name === "sanic") {
+              const [, , methodOrPath, pathStr] = routeMatch;
+              if (config.methodPattern) {
+                const mm = line.match(config.methodPattern);
+                if (mm) method = mm[1].toUpperCase();
+              }
+              if (["get", "post", "put", "delete", "patch"].includes(methodOrPath.toLowerCase())) {
+                method = methodOrPath.toUpperCase();
+                path = pathStr || "/";
+              } else {
+                path = methodOrPath || "/";
+              }
+            } else {
+              if (config.methodPattern) {
+                const methodMatch = line.match(config.methodPattern);
+                if (methodMatch) method = methodMatch[1].toUpperCase();
+              }
+              path = routeMatch[config.pathGroup] || "/";
+            }
 
             if (config.name === "django") {
               path = path.startsWith("/") ? path : `/${path}`;
             }
 
             raw.push({
-              path,
+              path: this.normalizePath(path),
               method: method === "ALL" ? "ANY" : method,
               source: { file: relFile, line: i + 1 },
               tags: [fw],
@@ -133,6 +186,13 @@ export class PythonAnalyzer implements Analyzer {
     if (relFile.includes("api") || relFile.includes("routes")) return "api-service";
     if (relFile.includes("server")) return "server";
     return "web-app";
+  }
+
+  private normalizePath(path: string): string {
+    return path
+      .replace(/:(\w+)/g, "{$1}")
+      .replace(/<(\w+)>/g, "{$1}")
+      .replace(/{(\w+):\w+}/g, "{$1}");
   }
 
   private dedup(endpoints: Endpoint[]): Endpoint[] {

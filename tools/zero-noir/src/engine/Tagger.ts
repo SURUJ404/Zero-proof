@@ -70,6 +70,8 @@ export class Tagger {
     const headers = ep.headers || [];
     if (ep.tags.includes("auth")) return true;
     if (headers.some((h) => AUTH_HEADERS.some((a) => h.toLowerCase().includes(a)))) return true;
+    const path = ep.path.toLowerCase();
+    if (path.includes("/auth") || path.includes("/login") || path.includes("/logout") || path.includes("/oauth") || path.includes("/token") || path.includes("/session")) return true;
     return false;
   }
 

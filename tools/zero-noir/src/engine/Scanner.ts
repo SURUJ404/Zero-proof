@@ -150,8 +150,7 @@ export class Scanner {
 
   private collectFiles(rootDir: string): string[] {
     const patterns = [
-      join(rootDir, "server/src/**/*.rs"),
-      join(rootDir, "services/**/src/**/*.rs"),
+      join(rootDir, "**/*.rs"),
       join(rootDir, "docker-compose.yml"),
       join(rootDir, "docker-compose.yaml"),
       join(rootDir, "Dockerfile"),
@@ -163,6 +162,9 @@ export class Scanner {
       join(rootDir, "**/*.cs"),
       join(rootDir, "**/*.rb"),
       join(rootDir, "**/*.php"),
+      join(rootDir, "**/*.kt"),
+      join(rootDir, "**/*.scala"),
+      join(rootDir, "**/*.swift"),
     ];
 
     let files: string[] = [];
