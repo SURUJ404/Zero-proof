@@ -8,15 +8,24 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Missing 'url' in request body" });
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+
   try {
     const { owner, repo } = parseGitHubUrl(url);
     if (!owner || !repo) {
+      clearTimeout(timeout);
       return res.status(400).json({ error: "Invalid GitHub URL. Use: https://github.com/owner/repo" });
     }
 
-    const scanResult = await scanGitHubRepo(owner, repo);
+    const scanResult = await scanGitHubRepo(owner, repo, controller.signal);
+    clearTimeout(timeout);
     return res.status(200).json(scanResult);
   } catch (e) {
+    clearTimeout(timeout);
+    if (e.name === "AbortError") {
+      return res.status(200).json({ projectName: "ScanDog", projectVersion: "web-scan", scannedAt: new Date().toISOString(), totalEndpoints: 0, services: [], clis: [], tags: {}, technologies: [], warnings: ["Scan timed out — repo may be too large"] });
+    }
     return res.status(500).json({ error: e.message });
   }
 }
@@ -26,17 +35,17 @@ function parseGitHubUrl(url) {
   return m ? { owner: m[1], repo: m[2].replace(/\.git$/, "") } : {};
 }
 
-async function scanGitHubRepo(owner, repo) {
+async function scanGitHubRepo(owner, repo, signal) {
   const headers = { Accept: "application/vnd.github.v3+json", "User-Agent": "scandog-api" };
   if (process.env.GITHUB_TOKEN) headers.Authorization = `token ${process.env.GITHUB_TOKEN}`;
 
   const contentsUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/main?recursive=1`;
-  const treeRes = await fetch(contentsUrl, { headers });
+  const treeRes = await fetch(contentsUrl, { headers, signal });
   let branch = "main";
   let treeData;
   if (treeRes.status === 404) {
     const altUrl = `https://api.github.com/repos/${owner}/${repo}/git/trees/master?recursive=1`;
-    const altRes = await fetch(altUrl, { headers });
+    const altRes = await fetch(altUrl, { headers, signal });
     if (altRes.status !== 200) throw new Error("Repository not found or inaccessible");
     branch = "master";
     treeData = await altRes.json();
@@ -44,7 +53,7 @@ async function scanGitHubRepo(owner, repo) {
     if (!treeRes.ok) throw new Error(`GitHub API error: ${treeRes.status}`);
     treeData = await treeRes.json();
   }
-  return processTree(treeData.tree, owner, repo, branch, headers);
+  return processTree(treeData.tree, owner, repo, branch, headers, signal);
 }
 
 function rawUrl(owner, repo, branch, path) {
@@ -328,141 +337,118 @@ const FILE_ROUTER_PATTERNS = [
 
 // ── Main Processing ─────────────────────────────────────────────────
 
-async function processTree(tree, owner, repo, branch, headers) {
+const SOURCE_EXTS = new Set([".rs", ".js", ".jsx", ".ts", ".tsx", ".py", ".go", ".java", ".kt", ".kts", ".cs", ".rb", ".php", ".swift", ".scala", ".ex", ".exs", ".cr", ".zig", ".mjs", ".cjs", ".mts", ".cts", ".graphql", ".gql", ".graphqls", ".proto"]);
+const CONFIG_FILES = new Set(["Cargo.toml", "package.json", "requirements.txt", "go.mod", "pom.xml", "build.gradle", "build.gradle.kts", "Gemfile", "composer.json", "mix.exs", "pyproject.toml", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]);
+const MAX_FETCH_FILES = 150;
+const BATCH_SIZE = 20;
+
+function isSourceFile(path) {
+  const ext = "." + path.split(".").pop().toLowerCase();
+  return SOURCE_EXTS.has(ext) || CONFIG_FILES.has(path.split("/").pop());
+}
+
+async function processTree(tree, owner, repo, branch, headers, signal) {
   const files = tree.filter((n) => n.type === "blob");
   const techs = new Set();
   const frameworks = new Set();
   const endpoints = [];
-  const configFiles = {};
-  let hasDockerCompose = false;
-  let hasServerlessConfig = false;
 
+  // Phase 1: detect technologies from file tree (no fetches needed)
   for (const file of files) {
     const ext = "." + file.path.split(".").pop();
     const fileName = file.path.split("/").pop();
-
     for (const tp of TECH_PATTERNS) {
       if (tp.ext.some((e) => file.path.endsWith(e) || file.path === e || (e.startsWith("*.") && fileName === e.slice(2)) || file.path.includes(e))) {
         techs.add(tp.tech);
       }
     }
+  }
 
-    if (file.path === "docker-compose.yml" || file.path === "docker-compose.yaml" || file.path === "compose.yml" || file.path === "compose.yaml") {
-      hasDockerCompose = true;
+  // Phase 2: pick files to fetch (prioritize config files, then source files)
+  const configFiles = files.filter((f) => CONFIG_FILES.has(f.path.split("/").pop()));
+  const sourceFiles = files.filter((f) => SOURCE_EXTS.has("." + f.path.split(".").pop().toLowerCase()));
+  const toFetch = [...configFiles];
+  for (const f of sourceFiles) {
+    if (toFetch.length >= MAX_FETCH_FILES) break;
+    if (!toFetch.some((tf) => tf.path === f.path)) toFetch.push(f);
+  }
+
+  // Phase 3: fetch file contents in parallel batches
+  const fileContents = [];
+  for (let i = 0; i < toFetch.length; i += BATCH_SIZE) {
+    if (signal.aborted) break;
+    const batch = toFetch.slice(i, i + BATCH_SIZE);
+    const results = await Promise.allSettled(
+      batch.map(async (file) => {
+        const res = await fetch(rawUrl(owner, repo, branch, file.path), { signal });
+        if (!res.ok) return null;
+        return { path: file.path, content: await res.text() };
+      })
+    );
+    for (const r of results) {
+      if (r.status === "fulfilled" && r.value) fileContents.push(r.value);
     }
+  }
+  if (signal.aborted) throw new DOMException("Aborted", "AbortError");
 
-    if (file.path === "serverless.yml" || file.path === "serverless.yaml" || file.path === ".serverless" || file.path === "wrangler.toml") {
-      hasServerlessConfig = true;
-    }
-
-    let rawText = null;
-
-    if (FRAMEWORK_PATTERNS.some((fp) => file.path.endsWith(fp.file) || file.path.endsWith(fp.file.replace("*", "")))) {
-      try {
-        const rawRes = await fetch(rawUrl(owner, repo, branch, file.path));
-        if (rawRes.ok) {
-          rawText = await rawRes.text();
-          configFiles[fileName] = rawText;
-          for (const fp of FRAMEWORK_PATTERNS) {
-            if (file.path.endsWith(fp.file.replace("*", ""))) {
-              for (const m of fp.matchers) {
-                const re = new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-                if (re.test(rawText)) {
-                  frameworks.add(fp.framework);
-                }
-              }
-            }
+  // Phase 4: framework detection from config files
+  for (const { path, content } of fileContents) {
+    const fileName = path.split("/").pop();
+    for (const fp of FRAMEWORK_PATTERNS) {
+      const target = fp.file.replace("*", "");
+      if (fileName.endsWith(target) || path.endsWith(fp.file)) {
+        for (const m of fp.matchers) {
+          if (content.toLowerCase().includes(m.toLowerCase())) {
+            frameworks.add(fp.framework);
           }
         }
-      } catch {}
+      }
     }
+  }
 
-    // ── Endpoint pattern matching ──────────────────────────────────
+  // Phase 5: endpoint detection from source files
+  for (const { path, content } of fileContents) {
+    // Regex-based endpoint patterns
     for (const ep of ENDPOINT_PATTERNS) {
-      if (file.path.endsWith(ep.ext)) {
-        try {
-          if (rawText === null) {
-            const rawRes = await fetch(rawUrl(owner, repo, branch, file.path));
-            if (!rawRes.ok) continue;
-            rawText = await rawRes.text();
+      if (!path.endsWith(ep.ext)) continue;
+      ep.pattern.lastIndex = 0;
+      let match;
+      while ((match = ep.pattern.exec(content)) !== null) {
+        if (ep.pathGroup === null && ep.methodGroup === null) {
+          if (ep.tech.startsWith("rust/leptos")) {
+            endpoints.push({ path: "/", method: "ANY", source: { file: path, line: getLineNumber(content, match.index) }, tags: ["frontend", "ssr"], service: detectService(path), technology: ep.tech });
           }
-          ep.pattern.lastIndex = 0;
-          let match;
-          while ((match = ep.pattern.exec(rawText)) !== null) {
-            if (ep.pathGroup === null && ep.methodGroup === null) {
-              if (ep.tech.startsWith("rust/leptos")) {
-                endpoints.push({
-                  path: "/",
-                  method: "ANY",
-                  source: { file: file.path, line: getLineNumber(rawText, match.index) },
-                  tags: ["frontend", "ssr"],
-                  service: detectService(file.path),
-                  technology: ep.tech,
-                });
-              }
-              continue;
-            }
-            if (ep.pathGroup === null) {
-              const method = ep.methodGroup ? match[ep.methodGroup].toUpperCase() : "ANY";
-              const extracted = extractFilePathRoute(file.path, method);
-              if (extracted) {
-                endpoints.push({
-                  path: extracted.path,
-                  method: extracted.method,
-                  source: { file: file.path, line: getLineNumber(rawText, match.index) },
-                  tags: inferTags(extracted.path),
-                  service: detectService(file.path),
-                  technology: ep.tech,
-                });
-              }
-              continue;
-            }
-            const path = match[ep.pathGroup] || "/";
-            const method = ep.methodGroup ? match[ep.methodGroup].toUpperCase() : "ANY";
-            const normalized = normalizePath(path);
-            endpoints.push({
-              path: normalized,
-              method: method === "ANY" ? normalizeMethod(method) : method,
-              source: { file: file.path, line: getLineNumber(rawText, match.index) },
-              tags: inferTags(normalized),
-              service: detectService(file.path),
-              technology: ep.tech,
-            });
+          continue;
+        }
+        if (ep.pathGroup === null) {
+          const method = ep.methodGroup ? match[ep.methodGroup].toUpperCase() : "ANY";
+          const extracted = extractFilePathRoute(path, method);
+          if (extracted) {
+            endpoints.push({ path: extracted.path, method: extracted.method, source: { file: path, line: getLineNumber(content, match.index) }, tags: inferTags(extracted.path), service: detectService(path), technology: ep.tech });
           }
-        } catch {}
+          continue;
+        }
+        const routePath = match[ep.pathGroup] || "/";
+        const method = ep.methodGroup ? match[ep.methodGroup].toUpperCase() : "ANY";
+        endpoints.push({ path: normalizePath(routePath), method: method === "ANY" ? normalizeMethod(method) : method, source: { file: path, line: getLineNumber(content, match.index) }, tags: inferTags(routePath), service: detectService(path), technology: ep.tech });
       }
     }
 
-    // ── File-based router detection (Next.js, SvelteKit, Remix, etc.) ──
+    // File-based router patterns (Next.js, SvelteKit, Remix)
     for (const fr of FILE_ROUTER_PATTERNS) {
-      if (fr.pattern.test(file.path)) {
-        try {
-          if (rawText === null) {
-            const rawRes = await fetch(rawUrl(owner, repo, branch, file.path));
-            if (!rawRes.ok) continue;
-            rawText = await rawRes.text();
-          }
-          const apiPath = fr.pathExtractor(file.path);
-          if (!apiPath) continue;
-          const methods = fr.methodExtractor(file.path, rawText);
-          for (const method of methods) {
-            endpoints.push({
-              path: apiPath,
-              method,
-              source: { file: file.path, line: 0 },
-              tags: inferTags(apiPath),
-              service: detectService(file.path),
-              technology: fr.tech,
-            });
-          }
-        } catch {}
+      if (!fr.pattern.test(path)) continue;
+      const apiPath = fr.pathExtractor(path);
+      if (!apiPath) continue;
+      const methods = fr.methodExtractor(path, content);
+      for (const method of methods) {
+        endpoints.push({ path: apiPath, method, source: { file: path, line: 0 }, tags: inferTags(apiPath), service: detectService(path), technology: fr.tech });
       }
     }
   }
 
   const deduped = dedupEndpoints(endpoints);
   const grouped = groupByService(deduped);
-  const services = buildServices(grouped, configFiles);
+  const services = buildServices(grouped, {});
   const tags = aggregateTags(deduped);
   const warnings = buildWarnings(deduped, services);
   const allTechs = [...new Set([...techs, ...frameworks])];
