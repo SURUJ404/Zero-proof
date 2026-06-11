@@ -250,7 +250,7 @@ export default function ScanDog() {
     setUrlScanning(true);
     setUrlError("");
     try {
-      const res = await fetch("/api/scan-url", {
+      const res = await fetch("/api/scandog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: trimmed }),
