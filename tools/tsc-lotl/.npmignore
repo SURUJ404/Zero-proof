@@ -1,0 +1,4 @@
+node_modules/
+test-config.json
+test-config-wrong.json
+*.log

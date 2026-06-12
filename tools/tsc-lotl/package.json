@@ -1,6 +1,6 @@
 {
   "name": "tsc-lotl",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Living-off-the-Land C2 — Google Drive, GitHub Gists, Notion, Slack",
   "main": "src/lotl-c2.js",
   "bin": {
