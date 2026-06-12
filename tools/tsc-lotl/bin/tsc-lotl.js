@@ -10,22 +10,17 @@ const cmd = argv._[0];
 
 function showBanner() {
   console.log('');
-  console.log('  ████████╗███████╗ ██████╗     ██╗      ██████╗ ████████╗██╗');
-  console.log('  ╚══██╔══╝██╔════╝██╔════╝     ██║     ██╔═══██╗╚══██╔══╝██║');
-  console.log('     ██║   █████╗  ██║          ██║     ██║   ██║   ██║   ██║');
-  console.log('     ██║   ██╔══╝  ██║          ██║     ██║   ██║   ██║   ██║');
-  console.log('     ██║   ███████╗╚██████╗     ███████╗╚██████╔╝   ██║   ██║');
-  console.log('     ╚═╝   ╚══════╝ ╚═════╝     ╚══════╝ ╚═════╝    ╚═╝   ╚═╝');
-  console.log('  ┌─────────────────────────────────────────────────────────────────┐');
-  console.log('  │     Living-off-the-Land C2 — GDrive · GitHub · Notion · Slack  │');
-  console.log('  │     tsc-lotl v1.0.1 — github.com/SURUJ404/Zero-proof           │');
-  console.log('  └─────────────────────────────────────────────────────────────────┘');
+  console.log('  ╔═══════════════════════════════════════════════════════════════╗');
+  console.log('  ║                     T S C - L O T L                         ║');
+  console.log('  ║           Living-off-the-Land C2  v1.0.2                    ║');
+  console.log('  ║   GDrive · GitHub · Notion · Slack · Discord                ║');
+  console.log('  ╚═══════════════════════════════════════════════════════════════╝');
   console.log('');
 }
 
 function showHelp() {
   showBanner();
-  console.log(`tsc-lotl — Living-off-the-Land C2 Tool  v1.0.1
+  console.log(`tsc-lotl — Living-off-the-Land C2 Tool  v1.0.2
 
 Usage:
   tsc-lotl server --config <path>          Start C2 server listening on all channels

