@@ -7,9 +7,19 @@ const crypto = require('crypto');
 const minimist = require('minimist');
 const Generator = require('../src/generator');
 
+function showBanner() {
+  console.log('');
+  console.log('  ╔═══════════════════════════════════════════════════════════════╗');
+  console.log('  ║                  T S C - P O L Y G R A P H                 ║');
+  console.log('  ║           Polymorphic Payload Generator  v1.0.1            ║');
+  console.log('  ║   reverse-shell · command-exec · file-exfil · beacon       ║');
+  console.log('  ╚═══════════════════════════════════════════════════════════════╝');
+  console.log('');
+}
+
 function showHelp() {
-  console.log(`
-tsc-polymorph v1.0.0 — Polymorphic Payload Generator
+  showBanner();
+  console.log(`tsc-polymorph v1.0.1 — Polymorphic Payload Generator
 
 USAGE:
   tsc-polymorph generate [options]
@@ -41,6 +51,7 @@ OPTIONS (batch):
 }
 
 function cmdGenerate(args) {
+  showBanner();
   const host = args.host;
   if (!host) {
     console.error('[-] --host is required');
@@ -67,6 +78,7 @@ function cmdGenerate(args) {
 }
 
 function cmdInfo(args) {
+  showBanner();
   const filePath = args._[0];
   if (!filePath) {
     console.error('[-] Usage: tsc-polymorph info <file>');
@@ -124,6 +136,7 @@ function cmdInfo(args) {
 }
 
 function cmdCompare(args) {
+  showBanner();
   const file1 = args._[0];
   const file2 = args._[1];
 
@@ -165,6 +178,7 @@ function cmdCompare(args) {
 }
 
 function cmdBatch(args) {
+  showBanner();
   const host = args.host;
   if (!host) {
     console.error('[-] --host is required for batch mode');
