@@ -7,31 +7,46 @@ description: Cross-platform HTTP/HTTPS traffic interception proxy with AI-powere
 
 Cross-platform HTTP/HTTPS traffic interception and analysis tool — built with Go and React. Proxy, inspect, fuzz, resend, and analyze with AI.
 
+## Prerequisites
+
+- [Go](https://go.dev/dl/) 1.21+
+- [Node.js](https://nodejs.org/) 18+
+- [Wails CLI](https://wails.io/docs/gettingstarted/installation)
+
+```bash
+go install github.com/wailsapp/wails/v2/cmd/wails@latest
+```
+
 ## Installation
 
 ```bash
-npm install -g tsc-wireshift
+# Clone the repo
+cd tools/tsc-wireshift
+
+# Install frontend deps
+cd frontend && npm install && cd ..
+
+# Build the app
+wails build
 ```
 
 ## Quick Start
 
-### Start the proxy
+### Launch the app
 
 ```bash
-tsc-wireshift proxy --port 8080
+./build/bin/tsc-wireshift
 ```
 
-### Intercept traffic
+Or in dev mode with hot reload:
+
+```bash
+wails dev
+```
+
+### Configure proxy
 
 Configure your browser to use `http://localhost:8080` as the HTTP/HTTPS proxy. All traffic flows through tsc-wireshift for inspection.
-
-### Launch the UI
-
-```bash
-tsc-wireshift ui
-```
-
-Opens the desktop UI for interactive traffic analysis.
 
 ## Features
 
