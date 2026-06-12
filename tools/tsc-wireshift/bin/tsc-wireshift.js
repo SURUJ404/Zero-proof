@@ -15,7 +15,7 @@ const argv = minimist(process.argv.slice(2), {
   alias: { h: 'help', v: 'version', p: 'port' },
 });
 
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 const BANNER = `
   ╔═══════════════════════════════════════════════════════════════╗
   ║               T S C - W I R E S H I F T                    ║

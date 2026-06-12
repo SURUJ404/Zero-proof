@@ -1,6 +1,6 @@
 {
   "name": "tsc-wireshift",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "HTTP/HTTPS traffic interception and analysis proxy - desktop app",
   "author": "SURUJ404",
   "license": "GPL-3.0",
