@@ -1,12 +1,17 @@
 {
   "name": "tsc-wireshift",
-  "version": "1.0.1",
-  "description": "HTTP/HTTPS traffic interception and analysis proxy",
+  "version": "1.1.0",
+  "description": "HTTP/HTTPS traffic interception and analysis proxy - desktop app",
   "author": "SURUJ404",
   "license": "GPL-3.0",
   "main": "bin/tsc-wireshift.js",
   "bin": {
     "tsc-wireshift": "bin/tsc-wireshift.js"
+  },
+  "scripts": {
+    "postinstall": "node -e \"var c=require('child_process');try{c.execSync('wails build',{cwd:__dirname,stdio:'inherit'})}catch(e){c.execSync('echo Wails build failed - install Go+Wails+MinGW and run: npm run build',{stdio:'inherit'})}\"",
+    "build": "node -e \"var c=require('child_process');c.execSync('wails build',{cwd:process.cwd(),stdio:'inherit'})\"",
+    "dev": "node -e \"var c=require('child_process');c.execSync('wails dev',{cwd:process.cwd(),stdio:'inherit'})\""
   },
   "dependencies": {
     "minimist": "1.2.8"
