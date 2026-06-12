@@ -15,7 +15,7 @@ const argv = minimist(process.argv.slice(2), {
   alias: { h: 'help', v: 'version', p: 'port' },
 });
 
-const VERSION = '1.1.1';
+const VERSION = '1.2.0';
 const BANNER = `
   ╔═══════════════════════════════════════════════════════════════╗
   ║               T S C - W I R E S H I F T                    ║
@@ -27,8 +27,8 @@ const BANNER = `
 function showHelp() {
   console.log(BANNER);
   console.log(`Usage:
-  tsc-wireshift [ui]        Launch Wireshift desktop app
-  tsc-wireshift proxy       Run Node.js proxy server (fallback)
+  tsc-wireshift [proxy]     Run Node.js proxy server (default)
+  tsc-wireshift ui          Launch Wireshift desktop app
   tsc-wireshift --help
   tsc-wireshift --version
 
@@ -159,7 +159,12 @@ if (argv.version) {
 
 const command = argv._[0];
 
-if (!command || command === 'ui') {
+if (!command) {
+  startProxy(argv.port || 8080, argv.host || '127.0.0.1');
+  return;
+}
+
+if (command === 'ui') {
   launchUI();
   return;
 }
