@@ -149,12 +149,11 @@ async function cmdDashboard() {
   showBanner();
   const port = argv.port || 3456;
   const app = createServer(port);
-  const server = app.listen(port, '127.0.0.1', () => {
+  const server = app.listen(port, '127.0.0.1', async () => {
     const url = `http://127.0.0.1:${port}`;
     console.log(`\n  Dashboard running at: ${url}`);
     console.log('  Press Ctrl+C to stop\n');
-    const open = require('open');
-    open(url).catch(() => {});
+    try { const { default: open } = await import('open'); open(url); } catch (e) { /* browser open not available */ }
   });
   process.on('SIGINT', () => { server.close(); process.exit(0); });
   await new Promise(() => {});
@@ -173,12 +172,11 @@ async function cmdBuild() {
   });
   app.use(express.json());
   app.use(express.static(path.join(__dirname, '..', 'src', 'ide', 'public')));
-  const server = app.listen(port, '127.0.0.1', () => {
+  const server = app.listen(port, '127.0.0.1', async () => {
     const url = `http://127.0.0.1:${port}`;
     console.log(`\n  IDE running at: ${url}`);
     console.log('  Press Ctrl+C to stop\n');
-    const open = require('open');
-    open(url).catch(() => {});
+    try { const { default: open } = await import('open'); open(url); } catch (e) { /* browser open not available */ }
   });
   process.on('SIGINT', () => { server.close(); process.exit(0); });
   await new Promise(() => {});
