@@ -8,9 +8,24 @@ const { C2Agent } = require('../src/c2agent');
 const argv = minimist(process.argv.slice(2));
 const cmd = argv._[0];
 
+function showBanner() {
+  console.log('');
+  console.log('  ████████╗███████╗ ██████╗     ███╗   ███╗███████╗███████╗██╗  ██╗');
+  console.log('  ╚══██╔══╝██╔════╝██╔════╝     ████╗ ████║██╔════╝██╔════╝██║  ██║');
+  console.log('     ██║   █████╗  ██║          ██╔████╔██║█████╗  ███████╗███████║');
+  console.log('     ██║   ██╔══╝  ██║          ██║╚██╔╝██║██╔══╝  ╚════██║██╔══██║');
+  console.log('     ██║   ███████╗╚██████╗     ██║ ╚═╝ ██║███████╗███████║██║  ██║');
+  console.log('     ╚═╝   ╚══════╝ ╚═════╝     ╚═╝     ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝');
+  console.log('  ┌─────────────────────────────────────────────────────────────────┐');
+  console.log('  │        Multi-Protocol C2 Mesh — HTTP · WS · DNS               │');
+  console.log('  │        tsc-mesh v1.0.1 — github.com/SURUJ404/Zero-proof       │');
+  console.log('  └─────────────────────────────────────────────────────────────────┘');
+  console.log('');
+}
+
 function showHelp() {
-  console.log(`
-tsc-mesh - Multi-Protocol C2 Mesh Tool
+  showBanner();
+  console.log(`tsc-mesh - Multi-Protocol C2 Mesh Tool
 
 Usage:
   tsc-mesh server [--port <port>] [--dns-port <port>]
@@ -32,6 +47,7 @@ Usage:
 }
 
 async function cmdServer() {
+  showBanner();
   const port = argv.port || 8443;
   const dnsPort = argv['dns-port'] || 5353;
   const server = new C2Server({ port, dnsPort });
@@ -78,6 +94,7 @@ async function cmdServer() {
 }
 
 async function cmdAgent() {
+  showBanner();
   const serverUrl = argv.server;
   if (!serverUrl) {
     console.error('Error: --server is required');
@@ -114,6 +131,7 @@ async function cmdAgent() {
 }
 
 function cmdSend() {
+  showBanner();
   const serverUrl = argv.server;
   const agentId = argv.agent;
   const command = argv.cmd;
@@ -159,6 +177,7 @@ function cmdSend() {
 }
 
 function cmdStatus() {
+  showBanner();
   const serverUrl = argv.server;
   if (!serverUrl) {
     console.error('Error: --server is required');

