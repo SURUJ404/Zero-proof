@@ -173,7 +173,7 @@ export default async function createConfigAsync() {
                 { label: "tsc-polymorph — Payload Generator", to: "/tsc-polymorph" },
                 { label: "tsc-p2p — P2P Botnet Mesh", to: "/tsc-p2p" },
                 { label: "tsc-ai — Evasion Engine", to: "/tsc-ai" },
-                { label: "wireshift — Traffic Interceptor", to: "/wireshift" },
+                { label: "tsc-wireshift — Traffic Interceptor", to: "/wireshift" },
               ],
             },
             {

@@ -410,7 +410,7 @@ export default function ScanDog() {
             <Link className={styles.routeDocBtn} to="/tsc-ai" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
           </div>
           <div className={styles.routeCmd}>
-            <span className={styles.routeLabel} style={{background:"#7c3aed"}}>wireshift</span>
+            <span className={styles.routeLabel} style={{background:"#7c3aed"}}>tsc-wireshift</span>
             <code>Traffic Interception &amp; Analysis</code>
             <span className={styles.routeDesc}>HTTP/HTTPS proxy, fuzzer, AI analysis, Interactsh OOB, request resender</span>
             <Link className={styles.routeDocBtn} to="/wireshift" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
