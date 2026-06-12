@@ -1,0 +1,41 @@
+name: Update CLI Docs
+
+on:
+  push:
+    branches: [main, feat/tsc-ai, feat/tsc-wireshift]
+    paths:
+      - 'tools/tsc-ai/**'
+      - 'tools/tsc-wireshift/**'
+      - '.github/scripts/update-cli-docs.js'
+      - '.github/workflows/update-cli-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install tools globally
+        run: |
+          npm install -g ./tools/tsc-ai ./tools/tsc-wireshift 2>/dev/null || true
+      - name: Update CLI documentation pages
+        run: node .github/scripts/update-cli-docs.js
+      - name: Commit changes if any
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add website/src/pages/tsc-ai.mdx website/src/pages/wireshift.mdx
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "docs: auto-update CLI documentation from latest help output"
+            git push
+          fi

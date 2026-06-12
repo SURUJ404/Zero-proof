@@ -19,6 +19,9 @@ class Node {
     this.dht = new DHT(this);
     this.gossip = new Gossip(this);
     this.socket = dgram.createSocket('udp4');
+    this.socket.on('error', (err) => {
+      console.error(`[${this.identity}] Socket error: ${err.message}`);
+    });
     this.pendingRequests = new Map();
     this.running = false;
 
@@ -55,7 +58,7 @@ class Node {
     for (const addr of bootstrapNodes) {
       const [host, portStr] = addr.split(':');
       const port = parseInt(portStr, 10);
-      if (isNaN(port)) continue;
+      if (isNaN(port) || port < 1 || port > 65535) continue;
       try {
         const resp = await this._sendRPC(host, port, 'FIND_NODE', {
           targetId: this.nodeId.toString('hex')
@@ -83,9 +86,7 @@ class Node {
         queried.add(addr);
 
         try {
-          const resp = await this._sendRPC(entry.address, entry.port, 'FIND_NODE', {
-            targetId
-          });
+          const resp = await this._sendRPC(entry.address, entry.port, 'FIND_NODE', { targetId }, 5, entry.nodeId);
           if (resp.type === 'FOUND_NODES' && resp.payload.nodes) {
             for (const n of resp.payload.nodes) {
               const nId = Buffer.from(n.nodeId, 'hex');
@@ -117,7 +118,7 @@ class Node {
     return this.gossip.broadcast(key, value, ttl);
   }
 
-  _sendRPC(host, port, type, payload, ttl = 5) {
+  _sendRPC(host, port, type, payload, ttl = 5, nodeId = null) {
     return new Promise((resolve, reject) => {
       const requestId = crypto.randomBytes(4).readUInt32BE(0);
       const msg = {
@@ -130,6 +131,7 @@ class Node {
 
       const timer = setTimeout(() => {
         this.pendingRequests.delete(requestId);
+        if (nodeId) this.routingTable.removeNode(nodeId);
         reject(new Error(`RPC timeout: ${type} to ${host}:${port}`));
       }, 10000);
 
@@ -141,12 +143,14 @@ class Node {
           if (err) {
             clearTimeout(timer);
             this.pendingRequests.delete(requestId);
+            if (nodeId) this.routingTable.removeNode(nodeId);
             reject(err);
           }
         });
       } catch (e) {
         clearTimeout(timer);
         this.pendingRequests.delete(requestId);
+        if (nodeId) this.routingTable.removeNode(nodeId);
         reject(e);
       }
     });
@@ -181,7 +185,7 @@ class Node {
           pending.resolve(msg);
         }
       } else {
-        this._handleRPC(msg, rinfo);
+        this._handleRPC(msg, rinfo).catch(() => {});
       }
     } catch (e) {
     }
@@ -250,7 +254,7 @@ class Node {
           console.log(`[${this.identity}] GOT COMMAND: ${payload.key} = ${payload.value}`);
         }
 
-        this.gossip.propagate(msg, `${rinfo.address}:${rinfo.port}`);
+        this.gossip.propagate(msg, `${rinfo.address}:${rinfo.port}`).catch(() => {});
 
         const resp = Protocol.createResponse(msg, { received: true });
         resp.senderId = this.nodeId.toString('hex');

@@ -37,7 +37,7 @@ class DHT {
           key: keyHex,
           value: value,
           ttl: VALUE_TTL
-        });
+        }, 5, entry.nodeId);
         results.push({ node: `${entry.address}:${entry.port}`, success: true });
       } catch (e) {
         results.push({ node: `${entry.address}:${entry.port}`, success: false, error: e.message });
@@ -65,9 +65,7 @@ class DHT {
         queried.add(addr);
 
         try {
-          const resp = await this.node._sendRPC(entry.address, entry.port, 'FIND_VALUE', {
-            key: keyHex
-          });
+          const resp = await this.node._sendRPC(entry.address, entry.port, 'FIND_VALUE', { key: keyHex }, 5, entry.nodeId);
 
           if (resp.type === 'VALUE' && resp.payload.value !== undefined) {
             return { found: true, value: resp.payload.value, source: addr };
@@ -116,9 +114,7 @@ class DHT {
         const keyBuf = Buffer.from(key, 'hex');
         const closest = this.node.routingTable.getClosest(keyBuf, this.node.k);
         for (const c of closest) {
-          this.node._sendRPC(c.address, c.port, 'STORE', {
-            key, value: entry.value, ttl: VALUE_TTL
-          }).catch(() => {});
+          this.node._sendRPC(c.address, c.port, 'STORE', { key, value: entry.value, ttl: VALUE_TTL }, 5, c.nodeId).catch(() => {});
         }
       }
     }
