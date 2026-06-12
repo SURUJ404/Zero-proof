@@ -1,0 +1,14 @@
+{
+  "name": "tsc-wireshift",
+  "version": "1.0.0",
+  "description": "HTTP/HTTPS traffic interception and analysis proxy",
+  "author": "SURUJ404",
+  "license": "GPL-3.0",
+  "main": "bin/tsc-wireshift.js",
+  "bin": {
+    "tsc-wireshift": "bin/tsc-wireshift.js"
+  },
+  "dependencies": {
+    "minimist": "1.2.8"
+  }
+}
