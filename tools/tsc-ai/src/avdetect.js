@@ -158,8 +158,8 @@ function detectWMI() {
   const products = [];
   try {
     if (process.platform !== 'win32') return products;
-    const output = execSync('wmic /namespace:root\\securitycenter2 path antivirusproduct get displayname', { encoding: 'utf8', timeout: 5000 });
-    const lines = output.trim().split('\n').slice(1);
+    const output = execSync('powershell -Command "Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct | Select-Object -ExpandProperty displayName"', { encoding: 'utf8', timeout: 5000 });
+    const lines = output.trim().split('\n').filter(Boolean);
     for (const line of lines) {
       const name = line.trim();
       if (name) {

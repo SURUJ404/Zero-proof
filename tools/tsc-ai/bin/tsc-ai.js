@@ -8,7 +8,7 @@ const evasion = require('../src/evasion');
 const sandbox = require('../src/sandbox');
 const avdetect = require('../src/avdetect');
 const { BeaconController, runTrainingSimulation } = require('../src/beacon');
-const { createServer } = require('../src/dashboard/server');
+
 
 const argv = minimist(process.argv.slice(2), {
   boolean: ['json', 'train', 'help'],
@@ -22,7 +22,7 @@ function showBanner() {
   console.log('');
   console.log('  ╔═══════════════════════════════════════════════════════════════╗');
   console.log('  ║                T S C - A I   E V A S I O N                 ║');
-  console.log('  ║    AI-Driven Dynamic Targeting & Evasion Engine  v1.1.0    ║');
+  console.log('  ║    AI-Driven Dynamic Targeting & Evasion Engine  v1.3.2    ║');
   console.log('  ║   sandbox detection · AV/EDR fingerprint · Q-learning      ║');
   console.log('  ╚═══════════════════════════════════════════════════════════════╝');
   console.log('');
@@ -37,15 +37,12 @@ function showHelp() {
   tsc-ai beacon [--interval auto]  Start adaptive beacon timer
   tsc-ai learn --train     Run reinforcement learning simulation
   tsc-ai report --json     Full scan + evasion report as JSON
-  tsc-ai dashboard         Open web dashboard in browser
-  tsc-ai build             Start full IDE with code editor, terminal, AI
   tsc-ai --help            Show this help
 
 Options:
   --json, -j      Output as JSON
   --train, -t     Run training simulation
   --interval, -i  Beacon interval (default: auto)
-  --port, -p      Dashboard/IDE port (default: 3456)
   --help, -h      Show help
 `);
 }
@@ -145,43 +142,6 @@ function calculateRecommendedInterval(fp) {
   return 30000;
 }
 
-async function cmdDashboard() {
-  showBanner();
-  const port = argv.port || 3456;
-  const app = createServer(port);
-  const server = app.listen(port, '127.0.0.1', async () => {
-    const url = `http://127.0.0.1:${port}`;
-    console.log(`\n  Dashboard running at: ${url}`);
-    console.log('  Press Ctrl+C to stop\n');
-    try { const { default: open } = await import('open'); open(url); } catch (e) { /* browser open not available */ }
-  });
-  process.on('SIGINT', () => { server.close(); process.exit(0); });
-  await new Promise(() => {});
-}
-
-async function cmdBuild() {
-  showBanner();
-  const port = argv.port || 3457;
-  const express = require('express');
-  const path = require('path');
-  const app = express();
-  app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
-    next();
-  });
-  app.use(express.json());
-  app.use(express.static(path.join(__dirname, '..', 'src', 'ide', 'public')));
-  const server = app.listen(port, '127.0.0.1', async () => {
-    const url = `http://127.0.0.1:${port}`;
-    console.log(`\n  IDE running at: ${url}`);
-    console.log('  Press Ctrl+C to stop\n');
-    try { const { default: open } = await import('open'); open(url); } catch (e) { /* browser open not available */ }
-  });
-  process.on('SIGINT', () => { server.close(); process.exit(0); });
-  await new Promise(() => {});
-}
-
 async function main() {
   if (argv.help || !command) {
     showHelp();
@@ -209,12 +169,6 @@ async function main() {
     case 'report':
       result = await cmdReport();
       break;
-    case 'dashboard':
-      result = await cmdDashboard();
-      return;
-    case 'build':
-      result = await cmdBuild();
-      return;
     default:
       console.error(`Unknown command: ${command}`);
       showHelp();
