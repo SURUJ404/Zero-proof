@@ -13,7 +13,7 @@ const argv = minimist(process.argv.slice(2), {
   alias: { h: 'help', v: 'version', p: 'port' },
 });
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const BANNER = `
   ╔═══════════════════════════════════════════════════════════════╗
   ║               T S C - W I R E S H I F T                    ║
@@ -49,11 +49,21 @@ function log(prefix, msg) {
 function startProxy(port, host) {
   const requests = [];
 
+  const requestCount = { http: 0, https: 0 };
+  let startTime = Date.now();
+
   const server = http.createServer((req, res) => {
+    if (req.headers.host && (req.headers.host === `${host}:${port}` || req.headers.host === `127.0.0.1:${port}` || req.headers.host === `localhost:${port}`)) {
+      const uptime = Math.floor((Date.now() - startTime) / 1000);
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      return res.end(`<!DOCTYPE html><html><head><title>TSC Wireshift Proxy</title><style>body{font-family:system-ui;max-width:600px;margin:50px auto;padding:0 20px;color:#333}h1{color:#1a73e8}.stat{background:#f5f5f5;padding:12px;border-radius:8px;margin:8px 0}</style></head><body><h1>TSC Wireshift</h1><p>HTTP/HTTPS proxy is running.</p><div class="stat"><b>Status:</b> Active</div><div class="stat"><b>Port:</b> ${port}</div><div class="stat"><b>Uptime:</b> ${uptime}s</div><div class="stat"><b>HTTP requests:</b> ${requestCount.http}</div><div class="stat"><b>HTTPS tunnels:</b> ${requestCount.https}</div><p style="margin-top:30px;font-size:14px;color:#666">Configure your browser proxy settings to use this address to intercept traffic.</p></body></html>`);
+    }
+
     const reqId = requests.length + 1;
     const reqUrl = `${req.method} ${req.url}`;
     const entry = { id: reqId, method: req.method, url: req.url, headers: req.headers, timestamp: Date.now() };
     requests.push(entry);
+    requestCount.http++;
 
     log('REQ', `${req.method} ${req.url}`);
 
@@ -85,6 +95,7 @@ function startProxy(port, host) {
 
   server.on('connect', (req, clientSocket, head) => {
     const [targetHost, targetPort] = req.url.split(':');
+    requestCount.https++;
     const reqId = requests.length + 1;
     const entry = { id: reqId, method: 'CONNECT', url: req.url, timestamp: Date.now() };
     requests.push(entry);
