@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const minimist = require('minimist');
 const fingerprint = require('../src/fingerprint');
 const evasion = require('../src/evasion');
@@ -15,15 +17,19 @@ const argv = minimist(process.argv.slice(2), {
 
 const command = argv._[0];
 
-function showHelp() {
-  console.log(`
-╔══════════════════════════════════════════════════════════╗
-║              TSC-AI — Evasion Engine v1.0.0              ║
-║     AI-Driven Dynamic Targeting & Evasion Engine         ║
-║                    Author: SURUJ404                       ║
-╚══════════════════════════════════════════════════════════╝
+function showBanner() {
+  console.log('');
+  console.log('  ╔═══════════════════════════════════════════════════════════════╗');
+  console.log('  ║                T S C - A I   E V A S I O N                 ║');
+  console.log('  ║    AI-Driven Dynamic Targeting & Evasion Engine  v1.0.1    ║');
+  console.log('  ║   sandbox detection · AV/EDR fingerprint · Q-learning      ║');
+  console.log('  ╚═══════════════════════════════════════════════════════════════╝');
+  console.log('');
+}
 
-Usage:
+function showHelp() {
+  showBanner();
+  console.log(`Usage:
   tsc-ai scan              Full environment fingerprint scan
   tsc-ai evade             Scan + recommend best evasion technique
   tsc-ai sandbox-test      Check if current environment is sandbox/VM
@@ -41,22 +47,26 @@ Options:
 }
 
 async function cmdScan() {
+  showBanner();
   const report = fingerprint.run();
   return report;
 }
 
 async function cmdEvade() {
+  showBanner();
   const fp = fingerprint.run();
   const technique = evasion.selectEvasion(fp);
   return { fingerprint: fp, evasion: technique };
 }
 
 async function cmdSandboxTest() {
+  showBanner();
   const result = sandbox.analyze();
   return result;
 }
 
 async function cmdBeacon() {
+  showBanner();
   const controller = new BeaconController();
   const interval = argv.interval || 'auto';
 
@@ -91,6 +101,7 @@ async function cmdBeacon() {
 }
 
 async function cmdLearn() {
+  showBanner();
   console.log('Running reinforcement learning training simulation...\n');
   const result = runTrainingSimulation(50);
   console.log(`Q-Table size: ${result.qTableSize} states`);
@@ -105,6 +116,7 @@ async function cmdLearn() {
 }
 
 async function cmdReport() {
+  showBanner();
   const fp = fingerprint.run();
   const technique = evasion.selectEvasion(fp);
   const report = {
@@ -192,7 +204,7 @@ function printFingerprint(fp) {
   console.log(`Network:   ${fp.network.type}`);
   console.log(`CPU:       ${fp.environment.cpus} cores`);
   console.log(`RAM:       ${fp.environment.totalMemory}`);
-  console.log(`Uptime:    ${Math.round(fp.os.uptime ? fp.os.uptime / 3600 : 0)}h`);
+  console.log(`Uptime:    ${Math.round(fp.environment.uptime ? fp.environment.uptime / 3600 : 0)}h`);
   console.log('');
 
   const sb = fp.sandbox;

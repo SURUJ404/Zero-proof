@@ -15,7 +15,7 @@ const AV_PRODUCTS = {
     services: ['ekrn', 'eamon', 'EhttpSrv'],
   },
   'Norton': {
-    processes: ['ccSvcHst.exe', 'ns.exe', 'ccSvcHst.exe', 'rtvscan.exe'],
+    processes: ['ccSvcHst.exe', 'ns.exe', 'rtvscan.exe'],
     services: ['Norton Internet Security', 'ccSetMgr', 'ccEvtMgr'],
   },
   'McAfee': {
@@ -158,7 +158,7 @@ function detectWMI() {
   const products = [];
   try {
     if (process.platform !== 'win32') return products;
-    const output = execSync('wmic /namespace:\\\\root\\securitycenter2 path antivirusproduct get displayname', { encoding: 'utf8', timeout: 5000 });
+    const output = execSync('wmic /namespace:root\\securitycenter2 path antivirusproduct get displayname', { encoding: 'utf8', timeout: 5000 });
     const lines = output.trim().split('\n').slice(1);
     for (const line of lines) {
       const name = line.trim();

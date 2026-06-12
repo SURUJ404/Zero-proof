@@ -28,7 +28,7 @@ const SUSPICIOUS_USERNAMES = [
 
 const VM_MAC_PREFIXES = [
   '00:05:69', '00:0C:29', '00:1C:42', '00:1C:14',
-  '00:50:56', '00:50:56', '08:00:27', '00:15:5D',
+  '00:50:56', '08:00:27', '00:15:5D',
   '00:03:FF',
 ];
 
@@ -96,11 +96,18 @@ function checkHardware() {
         const s = parseInt(line.trim(), 10);
         if (!isNaN(s)) total += s;
       }
-      result.diskSize = Math.round(total / (1024 * 1024 * 1024 * 1024) * 100) / 100;
+      result.diskSize = Math.round(total / (1024 * 1024 * 1024) * 100) / 100;
     } else if (process.platform === 'linux') {
       try {
         const out = execSync("df -B1 / | awk 'NR==2{print $2}'", { encoding: 'utf8', timeout: 5000 });
-        result.diskSize = Math.round(parseInt(out.trim(), 10) / (1024 * 1024 * 1024 * 1024) * 100) / 100;
+        result.diskSize = Math.round(parseInt(out.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
+      } catch (e) {
+        result.diskSize = 0;
+      }
+    } else if (process.platform === 'darwin') {
+      try {
+        const out = execSync("df -B1 / | awk 'NR==2{print $2}'", { encoding: 'utf8', timeout: 5000 });
+        result.diskSize = Math.round(parseInt(out.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
       } catch (e) {
         result.diskSize = 0;
       }
