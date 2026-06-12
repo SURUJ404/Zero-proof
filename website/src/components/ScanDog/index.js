@@ -398,10 +398,10 @@ export default function ScanDog() {
             <Link className={styles.routeDocBtn} to="/tsc-polymorph" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
           </div>
           <div className={styles.routeCmd}>
-            <span className={styles.routeLabel} style={{background:"#16a34a"}}>tsc-p2p</span>
+            <span className={styles.routeLabel} style={{background:"#16a34a"}}>tsc-p2pnet</span>
             <code>P2P Botnet Mesh</code>
             <span className={styles.routeDesc}>Kademlia DHT + gossip protocol — no central C2 needed</span>
-            <Link className={styles.routeDocBtn} to="/tsc-p2p" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
+            <Link className={styles.routeDocBtn} to="/tsc-p2pnet" style={{marginLeft:"auto",fontSize:"0.7rem",padding:"0.2rem 0.6rem"}}>Open &rarr;</Link>
           </div>
           <div className={styles.routeCmd}>
             <span className={styles.routeLabel} style={{background:"#dc2626"}}>tsc-ai</span>
