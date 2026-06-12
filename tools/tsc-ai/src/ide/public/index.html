@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSC-AI Build IDE</title>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5/css/xterm.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a0f; color: #e4e4e7; height: 100vh; overflow: hidden; }
+.toolbar { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: #12121a; border-bottom: 1px solid #1e1e2e; height: 40px; }
+.toolbar .brand { font-weight: 700; color: #a78bfa; font-size: 13px; margin-right: 16px; }
+.toolbar select, .toolbar button { padding: 3px 10px; border-radius: 5px; border: 1px solid #1e1e2e; background: #181825; color: #e4e4e7; font-size: 12px; cursor: pointer; }
+.toolbar button:hover { border-color: #7c3aed; }
+.toolbar .spacer { flex: 1; }
+.panels { display: flex; height: calc(100vh - 40px); }
+.panel { display: flex; flex-direction: column; }
+.panel-header { padding: 6px 12px; font-size: 11px; font-weight: 600; color: #71717a; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid #1e1e2e; background: #12121a; display: flex; align-items: center; justify-content: space-between; }
+.panel-body { flex: 1; overflow: auto; }
+#explorer { width: 220px; border-right: 1px solid #1e1e2e; min-width: 180px; }
+#editor { flex: 1; min-width: 0; }
+#sidebar { width: 340px; border-left: 1px solid #1e1e2e; display: flex; flex-direction: column; }
+#terminal-panel { height: 200px; border-top: 1px solid #1e1e2e; min-height: 120px; resize: vertical; overflow: hidden; }
+#terminal-panel .panel-body { padding: 4px; background: #000; }
+#terminal { height: 100%; }
+
+.file-item { padding: 4px 12px 4px 16px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; color: #a1a1aa; }
+.file-item:hover { background: #1e1e2e; color: #e4e4e7; }
+.file-item.active { background: #2e2e4e; color: #a78bfa; }
+.file-item .icon { width: 16px; text-align: center; }
+.folder-item { padding: 4px 12px; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 6px; color: #e4e4e7; font-weight: 500; }
+.folder-item:hover { background: #1e1e2e; }
+.folder-children { padding-left: 16px; }
+
+.chat-msgs { flex: 1; overflow-y: auto; padding: 8px; font-size: 12px; }
+.chat-msg { margin-bottom: 8px; padding: 6px 10px; border-radius: 6px; }
+.chat-msg.user { background: #1e1e3e; }
+.chat-msg.assistant { background: #0e1e0e; }
+.chat-msg .role { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 2px; }
+.chat-msg.user .role { color: #a78bfa; }
+.chat-msg.assistant .role { color: #4ade80; }
+.chat-input { display: flex; padding: 6px; gap: 4px; border-top: 1px solid #1e1e2e; }
+.chat-input input { flex: 1; padding: 5px 8px; border-radius: 4px; border: 1px solid #1e1e2e; background: #0a0a0f; color: #e4e4e7; font-size: 12px; outline: none; }
+.chat-input input:focus { border-color: #7c3aed; }
+.chat-input button { padding: 3px 10px; border-radius: 4px; border: 1px solid #7c3aed; background: #7c3aed; color: #fff; font-size: 11px; cursor: pointer; }
+
+.tab-bar { display: flex; background: #0f0f18; border-bottom: 1px solid #1e1e2e; min-height: 30px; }
+.tab-item { padding: 5px 14px; font-size: 12px; border-right: 1px solid #1e1e2e; cursor: pointer; color: #71717a; display: flex; align-items: center; gap: 6px; }
+.tab-item.active { background: #1e1e2e; color: #e4e4e7; }
+.tab-item:hover { color: #e4e4e7; }
+.tab-item .close { opacity: 0; cursor: pointer; }
+.tab-item:hover .close { opacity: 0.6; }
+.tab-item .close:hover { opacity: 1; }
+
+.output-box { padding: 8px; background: #0a0a0f; font-family: 'Courier New', monospace; font-size: 12px; color: #4ade80; white-space: pre-wrap; max-height: 200px; overflow-y: auto; display: none; }
+.loading { display: inline-block; width: 12px; height: 12px; border: 2px solid #1e1e2e; border-top-color: #7c3aed; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.resize-handle { width: 3px; cursor: col-resize; background: #1e1e2e; }
+.resize-handle:hover { background: #7c3aed; }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <span class="brand">⚡ TSC-AI Build</span>
+  <select id="template-select"><option>React</option><option>Next.js</option><option>Express</option><option>Vue</option><option>Hono</option><option>Angular</option></select>
+  <button onclick="loadTemplate()">📦 Load Template</button>
+  <button onclick="runCode()">▶ Run</button>
+  <button onclick="clearOutput()">Clear</button>
+  <span class="spacer"></span>
+  <button onclick="addFile()">+ New File</button>
+  <button onclick="addFolder()">+ New Folder</button>
+</div>
+
+<div class="panels">
+  <div id="explorer" class="panel">
+    <div class="panel-header">📁 Files</div>
+    <div class="panel-body" id="file-tree"></div>
+  </div>
+  <div id="editor" class="panel">
+    <div class="tab-bar" id="tab-bar"></div>
+    <div id="monaco-container" style="flex:1;min-height:0"></div>
+    <div class="output-box" id="output-box"></div>
+  </div>
+  <div id="sidebar" class="panel">
+    <div class="panel-header">🤖 AI Chat</div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="chat-msg assistant"><div class="role">Assistant</div>Ask me about code, refactors, or debugging!</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Ask AI..." onkeydown="if(event.key==='Enter') sendChat()">
+      <button onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</div>
+
+<div id="terminal-panel" class="panel">
+  <div class="panel-header">💻 Terminal</div>
+  <div class="panel-body" id="terminal"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5/lib/xterm.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8/lib/xterm-addon-fit.min.js"></script>
+<script>
+// === State ===
+const API = '';
+let files = {};
+let openFiles = [];
+let activeFile = null;
+let editor = null;
+let term = null;
+let fitAddon = null;
+
+const DEFAULT_FILES = {
+  'src/index.html': '<!DOCTYPE html>\n<html>\n<head><title>App</title></head>\n<body>\n  <div id="root"></div>\n</body>\n</html>',
+  'src/index.js': 'console.log("Hello from TSC-AI Build!");\n',
+  'src/style.css': 'body { font-family: sans-serif; margin: 0; padding: 20px; }\n',
+  'package.json': JSON.stringify({ name: 'tsc-project', version: '1.0.0', scripts: { start: 'node src/index.js' } }, null, 2),
+};
+
+// === Monaco Setup ===
+require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } });
+require(['vs/editor/editor.main'], function() {
+  editor = monaco.editor.create(document.getElementById('monaco-container'), {
+    value: '// Select a file to edit',
+    language: 'javascript',
+    theme: 'vs-dark',
+    fontSize: 13,
+    minimap: { enabled: false },
+    automaticLayout: true,
+    scrollBeyondLastLine: false,
+  });
+  initFiles();
+  renderFileTree();
+  openFile('src/index.js');
+});
+
+// === File System ===
+function initFiles() {
+  files = JSON.parse(JSON.stringify(DEFAULT_FILES));
+}
+
+function renderFileTree() {
+  const tree = document.getElementById('file-tree');
+  tree.innerHTML = '';
+  const treeData = buildTree(files);
+  for (const [name, node] of Object.entries(treeData)) {
+    renderTreeNode(tree, node);
+  }
+}
+
+function buildTree(flat) {
+  const root = {};
+  for (const [path, content] of Object.entries(flat)) {
+    const parts = path.split('/');
+    let current = root;
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const isFile = i === parts.length - 1;
+      if (isFile) {
+        current[part] = { type: 'file', name: part, path, content };
+      } else {
+        if (!current[part]) current[part] = { type: 'folder', name: part, children: {} };
+        current = current[part].children;
+      }
+    }
+  }
+  return root;
+}
+
+function renderTreeNode(parent, node) {
+  if (node.type === 'folder') {
+    const div = document.createElement('div');
+    const header = document.createElement('div');
+    header.className = 'folder-item';
+    header.innerHTML = '<span class="icon">📁</span>' + node.name;
+    let expanded = true;
+    header.onclick = () => { expanded = !expanded; children.style.display = expanded ? 'block' : 'none'; };
+    const children = document.createElement('div');
+    children.className = 'folder-children';
+    for (const [name, child] of Object.entries(node.children)) {
+      renderTreeNode(children, child);
+    }
+    div.appendChild(header);
+    div.appendChild(children);
+    parent.appendChild(div);
+  } else {
+    const div = document.createElement('div');
+    div.className = 'file-item' + (activeFile === node.path ? ' active' : '');
+    const ext = node.name.split('.').pop();
+    const icons = { js: '📄', ts: '📘', jsx: '⚛️', tsx: '⚛️', html: '🌐', css: '🎨', json: '📋', md: '📝' };
+    div.innerHTML = '<span class="icon">' + (icons[ext] || '📄') + '</span>' + node.name;
+    div.onclick = () => openFile(node.path);
+    parent.appendChild(div);
+  }
+}
+
+function openFile(path) {
+  if (!files[path]) return;
+  if (!openFiles.includes(path)) {
+    openFiles.push(path);
+  }
+  activeFile = path;
+  renderTabs();
+  renderFileTree();
+  if (editor) {
+    const content = files[path];
+    editor.setValue(content);
+    const ext = path.split('.').pop();
+    const langMap = { js: 'javascript', ts: 'typescript', jsx: 'javascript', tsx: 'typescript', html: 'html', css: 'css', json: 'json', md: 'markdown', py: 'python', c: 'c', cpp: 'cpp', go: 'go', rs: 'rust' };
+    monaco.editor.setModelLanguage(editor.getModel(), langMap[ext] || 'plaintext');
+  }
+}
+
+function renderTabs() {
+  const bar = document.getElementById('tab-bar');
+  bar.innerHTML = '';
+  for (const path of openFiles) {
+    const tab = document.createElement('div');
+    tab.className = 'tab-item' + (path === activeFile ? ' active' : '');
+    tab.innerHTML = path.split('/').pop() + ' <span class="close" onclick="event.stopPropagation();closeTab(\'' + path + '\')">✕</span>';
+    tab.onclick = () => openFile(path);
+    bar.appendChild(tab);
+  }
+}
+
+function closeTab(path) {
+  openFiles = openFiles.filter(f => f !== path);
+  if (activeFile === path) {
+    activeFile = openFiles.length > 0 ? openFiles[openFiles.length - 1] : null;
+    if (activeFile) openFile(activeFile);
+    else if (editor) editor.setValue('');
+  }
+  renderTabs();
+  renderFileTree();
+}
+
+function saveCurrentFile() {
+  if (activeFile && editor) {
+    files[activeFile] = editor.getValue();
+  }
+}
+
+function addFile() {
+  const name = prompt('File name (e.g. src/app.js):');
+  if (name && !files[name]) {
+    files[name] = '';
+    renderFileTree();
+    openFile(name);
+  }
+}
+
+function addFolder() {
+  const name = prompt('Folder name:');
+  if (name && !files[name + '/.gitkeep']) {
+    files[name + '/.gitkeep'] = '';
+    renderFileTree();
+  }
+}
+
+// === Templates ===
+async function loadTemplate() {
+  saveCurrentFile();
+  const tmpl = document.getElementById('template-select').value.toLowerCase().replace(/\s+/g, '');
+  const templates = {
+    react: {
+      'package.json': JSON.stringify({ name: 'react-app', scripts: { start: 'npx react-scripts start' }, dependencies: { react: '^19', 'react-dom': '^19', 'react-scripts': '5' } }, null, 2),
+      'src/index.js': "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nconst App = () => <h1>Hello React!</h1>;\nReactDOM.createRoot(document.getElementById('root')).render(<App />);",
+      'public/index.html': '<!DOCTYPE html><html><head><title>React App</title></head><body><div id="root"></div></body></html>',
+    },
+    nextjs: {
+      'package.json': JSON.stringify({ name: 'next-app', scripts: { dev: 'next dev', build: 'next build' }, dependencies: { next: '^15', react: '^19', 'react-dom': '^19' } }, null, 2),
+      'app/page.js': "export default function Home() { return <h1>Hello Next.js!</h1> }",
+      'app/layout.js': "export default function RootLayout({ children }) { return <html><body>{children}</body></html> }",
+    },
+    express: {
+      'package.json': JSON.stringify({ name: 'express-app', scripts: { start: 'node index.js' }, dependencies: { express: '^5' } }, null, 2),
+      'index.js': "const express = require('express');\nconst app = express();\napp.get('/', (req, res) => res.send('Hello Express!'));\napp.listen(3000, () => console.log('Server on :3000'));",
+    },
+    vue: {
+      'package.json': JSON.stringify({ name: 'vue-app', scripts: { dev: 'vite' }, dependencies: { vue: '^3', vite: '^6' } }, null, 2),
+      'src/App.vue': "<template><h1>Hello Vue!</h1></template>\n<script>\nexport default { name: 'App' }\n</script>",
+      'index.html': '<!DOCTYPE html><html><head><title>Vue App</title></head><body><div id="app"></div><script type="module" src="/src/main.js"></script></body></html>',
+    },
+  };
+  const tmplFiles = templates[tmpl] || templates.react;
+  if (tmplFiles) {
+    files = JSON.parse(JSON.stringify(tmplFiles));
+    openFiles = [];
+    renderFileTree();
+    const firstFile = Object.keys(files)[0];
+    if (firstFile) openFile(firstFile);
+  }
+}
+
+// === Run Code ===
+async function runCode() {
+  saveCurrentFile();
+  const box = document.getElementById('output-box');
+  box.style.display = 'block';
+  box.innerHTML = '<span class="loading"></span> Running...';
+  try {
+    const pkg = files['package.json'];
+    const mainFile = pkg ? JSON.parse(pkg).main || Object.keys(files).find(f => f.endsWith('.js') && !f.includes('node_modules')) : Object.keys(files).find(f => f.endsWith('.js'));
+    const r = await fetch(API + '/api/terminal/exec', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ command: 'node -e ' + JSON.stringify(files[mainFile] || files[Object.keys(files).find(f => f.endsWith('.js'))]) })
+    });
+    const data = await r.json();
+    box.innerHTML = '<span style="color:#71717a">$ node ' + (mainFile || 'script') + '</span>\n' + escapeHtml(data.output);
+  } catch(e) {
+    box.innerHTML = 'Error: ' + e.message;
+  }
+}
+
+function clearOutput() {
+  document.getElementById('output-box').style.display = 'none';
+  document.getElementById('output-box').innerHTML = '';
+}
+
+// === Terminal ===
+function initTerminal() {
+  const termEl = document.getElementById('terminal');
+  term = new Terminal({ theme: { background: '#0a0a0f', foreground: '#4ade80', cursor: '#4ade80' }, fontSize: 13, cursorBlink: true });
+  fitAddon = new FitAddon.FitAddon();
+  term.loadAddon(fitAddon);
+  term.open(termEl);
+  fitAddon.fit();
+  let cmdBuffer = '';
+  term.write('$ ');
+  term.onData(data => {
+    if (data === '\r') {
+      term.write('\r\n');
+      if (cmdBuffer.trim()) {
+        fetch(API + '/api/terminal/exec', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ command: cmdBuffer })
+        }).then(r => r.json()).then(res => {
+          term.writeln(res.output || ' ');
+          term.write('$ ');
+        });
+      } else {
+        term.write('$ ');
+      }
+      cmdBuffer = '';
+    } else if (data === '\x7f') {
+      if (cmdBuffer.length > 0) { cmdBuffer = cmdBuffer.slice(0, -1); term.write('\b \b'); }
+    } else {
+      cmdBuffer += data;
+      term.write(data);
+    }
+  });
+}
+
+// === AI Chat ===
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const box = document.getElementById('chat-msgs');
+  box.innerHTML += '<div class="chat-msg user"><div class="role">You</div>' + escapeHtml(msg) + '</div>';
+  box.scrollTop = box.scrollHeight;
+  box.innerHTML += '<div class="chat-msg assistant"><div class="role">Assistant</div><span class="loading"></span></div>';
+  try {
+    const r = await fetch(API + '/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg + '\n\nContext - current file: ' + (activeFile || 'none') + '\n```\n' + (editor ? editor.getValue() : '') + '\n```' })
+    });
+    const data = await r.json();
+    const lastMsg = box.querySelector('.chat-msg:last-child');
+    if (lastMsg) lastMsg.innerHTML = '<div class="role">Assistant</div>' + escapeHtml(data.response);
+  } catch(e) {
+    const lastMsg = box.querySelector('.chat-msg:last-child');
+    if (lastMsg) lastMsg.innerHTML = '<div class="role">Assistant</div>Error: ' + e.message;
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// === Init ===
+window.addEventListener('resize', () => { if (fitAddon) fitAddon.fit(); });
+initTerminal();
+</script>
+</body>
+</html>

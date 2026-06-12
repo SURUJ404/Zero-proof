@@ -1,6 +1,6 @@
 {
   "name": "tsc-ai",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "AI evasion engine — environment fingerprinting, sandbox detection, evasion recommendation",
   "author": "SURUJ404",
   "license": "GPL-3.0",
@@ -9,6 +9,8 @@
     "tsc-ai": "bin/tsc-ai.js"
   },
   "dependencies": {
-    "minimist": "1.2.8"
+    "express": "^5.2.1",
+    "minimist": "1.2.8",
+    "open": "^11.0.0"
   }
 }

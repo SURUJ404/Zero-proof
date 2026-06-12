@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSC-AI Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a0f; color: #e4e4e7; min-height: 100vh; }
+
+.sidebar { width: 220px; background: #12121a; border-right: 1px solid #1e1e2e; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 10; }
+.sidebar-brand { padding: 20px; border-bottom: 1px solid #1e1e2e; }
+.sidebar-brand h1 { font-size: 16px; font-weight: 700; color: #a78bfa; }
+.sidebar-brand span { font-size: 11px; color: #71717a; }
+.sidebar-nav { padding: 12px; flex: 1; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; color: #a1a1aa; transition: all .15s; border: none; background: none; width: 100%; text-align: left; }
+.nav-item:hover { background: #1e1e2e; color: #e4e4e7; }
+.nav-item.active { background: #2e2e4e; color: #a78bfa; }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+.main { margin-left: 220px; padding: 24px; }
+.page { display: none; }
+.page.active { display: block; }
+.page-header { margin-bottom: 24px; }
+.page-header h2 { font-size: 22px; font-weight: 700; }
+.page-header p { color: #71717a; font-size: 13px; margin-top: 4px; }
+
+.card { background: #12121a; border: 1px solid #1e1e2e; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 14px; font-weight: 600; color: #a1a1aa; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .5px; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; transition: all .15s; }
+.btn-primary { background: #7c3aed; color: #fff; }
+.btn-primary:hover { background: #6d28d9; }
+.btn-success { background: #16a34a; color: #fff; }
+.btn-success:hover { background: #15803d; }
+.btn-warning { background: #d97706; color: #fff; }
+.btn-warning:hover { background: #b45309; }
+.btn-outline { background: transparent; border: 1px solid #1e1e2e; color: #a1a1aa; }
+.btn-outline:hover { border-color: #7c3aed; color: #e4e4e7; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+.toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+
+.badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+.badge-green { background: #052e16; color: #4ade80; }
+.badge-yellow { background: #3b2200; color: #fbbf24; }
+.badge-red { background: #3b0a0a; color: #f87171; }
+.badge-purple { background: #1e0a3b; color: #c084fc; }
+.badge-blue { background: #0a1e3b; color: #60a5fa; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+.stat-card { background: #12121a; border: 1px solid #1e1e2e; border-radius: 12px; padding: 16px; }
+.stat-value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+.stat-label { font-size: 12px; color: #71717a; text-transform: uppercase; letter-spacing: .5px; }
+
+.result-box { background: #0a0a0f; border: 1px solid #1e1e2e; border-radius: 8px; padding: 16px; font-family: 'Courier New', monospace; font-size: 12px; white-space: pre-wrap; max-height: 400px; overflow-y: auto; line-height: 1.6; margin-top: 12px; }
+.result-box .key { color: #a78bfa; }
+.result-box .string { color: #4ade80; }
+.result-box .number { color: #fbbf24; }
+.result-box .boolean { color: #60a5fa; }
+
+.chart-container { height: 250px; position: relative; }
+
+.chat-messages { height: 400px; overflow-y: auto; border: 1px solid #1e1e2e; border-radius: 8px; padding: 16px; background: #0a0a0f; margin-bottom: 12px; }
+.chat-msg { margin-bottom: 12px; }
+.chat-msg .role { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+.chat-msg.user .role { color: #a78bfa; }
+.chat-msg.assistant .role { color: #4ade80; }
+.chat-msg .content { font-size: 13px; line-height: 1.5; color: #d4d4d8; white-space: pre-wrap; }
+.chat-input { display: flex; gap: 8px; }
+.chat-input input { flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid #1e1e2e; background: #0a0a0f; color: #e4e4e7; font-size: 13px; outline: none; }
+.chat-input input:focus { border-color: #7c3aed; }
+
+.term-box { background: #000; border: 1px solid #1e1e2e; border-radius: 8px; padding: 12px; min-height: 300px; }
+.term-output { font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; color: #4ade80; white-space: pre-wrap; max-height: 400px; overflow-y: auto; padding: 8px; }
+.term-input-row { display: flex; gap: 0; border-top: 1px solid #1e1e2e; margin-top: 8px; padding-top: 8px; }
+.term-input-row span { color: #4ade80; font-family: 'Courier New', monospace; font-size: 13px; padding: 8px 0 8px 8px; }
+.term-input-row input { flex: 1; background: transparent; border: none; color: #4ade80; font-family: 'Courier New', monospace; font-size: 13px; padding: 8px; outline: none; }
+
+.loading { display: inline-block; width: 16px; height: 16px; border: 2px solid #1e1e2e; border-top-color: #7c3aed; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.sandbox-gauge { width: 160px; height: 160px; margin: 0 auto; position: relative; }
+.sandbox-gauge canvas { width: 100% !important; height: 100% !important; }
+.sandbox-gauge-label { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 28px; font-weight: 700; }
+.sandbox-gauge-text { text-align: center; font-size: 14px; margin-top: 8px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <h1>⚡ TSC-AI</h1>
+    <span>Evasion Engine Dashboard</span>
+  </div>
+  <nav class="sidebar-nav" id="nav">
+    <button class="nav-item active" data-page="dashboard"> <span class="nav-icon">📊</span> Dashboard </button>
+    <button class="nav-item" data-page="scan"> <span class="nav-icon">🔍</span> Fingerprint </button>
+    <button class="nav-item" data-page="sandbox"> <span class="nav-icon">🛡️</span> Sandbox Check </button>
+    <button class="nav-item" data-page="av"> <span class="nav-icon">🦠</span> AV/EDR Detect </button>
+    <button class="nav-item" data-page="evasion"> <span class="nav-icon">🎯</span> Evasion </button>
+    <button class="nav-item" data-page="beacon"> <span class="nav-icon">📡</span> Beacon Sim </button>
+    <button class="nav-item" data-page="chat"> <span class="nav-icon">🤖</span> AI Chat </button>
+    <button class="nav-item" data-page="terminal"> <span class="nav-icon">💻</span> Terminal </button>
+  </nav>
+</div>
+
+<div class="main" id="main">
+
+<!-- Dashboard -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header"><h2>Dashboard</h2><p>Summary of your environment and security posture</p></div>
+  <div class="grid-4" id="dash-stats"></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Environment</div><div id="dash-env" class="result-box">Run a scan to populate</div></div>
+    <div class="card"><div class="card-title">Security Products</div><div id="dash-sec" class="result-box">Run a scan to populate</div></div>
+  </div>
+  <div class="toolbar"><button class="btn btn-primary" onclick="runFullScan()">🔄 Run Full Scan</button></div>
+</div>
+
+<!-- Scan -->
+<div class="page" id="page-scan">
+  <div class="page-header"><h2>🔍 Fingerprint Scan</h2><p>Full environment fingerprint including OS, network, and hardware</p></div>
+  <div class="toolbar"><button class="btn btn-primary" onclick="runScan()">🔄 Run Scan</button></div>
+  <div class="card"><div id="scan-result" class="result-box">Click "Run Scan" to start</div></div>
+</div>
+
+<!-- Sandbox -->
+<div class="page" id="page-sandbox">
+  <div class="page-header"><h2>🛡️ Sandbox Detection</h2><p>Check if current environment is a sandbox, VM, or analysis environment</p></div>
+  <div class="toolbar"><button class="btn btn-primary" onclick="runSandbox()">🔄 Run Check</button></div>
+  <div class="grid-2">
+    <div class="card" id="sandbox-gauge-card">
+      <div class="card-title">Sandbox Score</div>
+      <div class="sandbox-gauge"><canvas id="sandboxChart"></canvas><div class="sandbox-gauge-label" id="sandboxScore">0</div></div>
+      <div class="sandbox-gauge-text" id="sandboxVerdict">—</div>
+    </div>
+    <div class="card"><div class="card-title">Details</div><div id="sandbox-result" class="result-box">Click "Run Check" to start</div></div>
+  </div>
+</div>
+
+<!-- AV -->
+<div class="page" id="page-av">
+  <div class="page-header"><h2>🦠 AV/EDR Detection</h2><p>Detect antivirus and endpoint detection products on this system</p></div>
+  <div class="toolbar"><button class="btn btn-primary" onclick="runAV()">🔄 Run Detection</button></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Antivirus</div><div id="av-result" class="result-box">Click "Run Detection" to start</div></div>
+    <div class="card"><div class="card-title">EDR</div><div id="edr-result" class="result-box">Click "Run Detection" to start</div></div>
+  </div>
+</div>
+
+<!-- Evasion -->
+<div class="page" id="page-evasion">
+  <div class="page-header"><h2>🎯 Evasion Recommendation</h2><p>AI-driven technique selection based on your environment</p></div>
+  <div class="toolbar"><button class="btn btn-primary" onclick="runEvasion()">🔄 Analyze & Recommend</button></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Recommended Technique</div><div id="evasion-result" class="result-box">Click "Analyze & Recommend" to start</div></div>
+    <div class="card"><div class="card-title">Reasoning</div><div id="evasion-reasoning" class="result-box">—</div></div>
+  </div>
+</div>
+
+<!-- Beacon -->
+<div class="page" id="page-beacon">
+  <div class="page-header"><h2>📡 Beacon Simulator</h2><p>Q-learning adaptive beacon simulation with real-time charts</p></div>
+  <div class="toolbar">
+    <button class="btn btn-success" onclick="startBeacon()">▶ Start</button>
+    <button class="btn btn-warning" onclick="stepBeacon()">⏭ Step</button>
+    <button class="btn btn-outline" onclick="autoBeacon()">▶ Auto (10 steps)</button>
+    <button class="btn btn-outline" onclick="resetBeacon()">⟳ Reset</button>
+  </div>
+  <div class="grid-3">
+    <div class="stat-card"><div class="stat-label">Beacons</div><div class="stat-value" id="beacon-total">0</div></div>
+    <div class="stat-card"><div class="stat-label">Success Rate</div><div class="stat-value" id="beacon-rate">0%</div></div>
+    <div class="stat-card"><div class="stat-label">Interval</div><div class="stat-value" id="beacon-interval">30s</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-title">Success Rate Over Time</div><div class="chart-container"><canvas id="beaconChart"></canvas></div></div>
+    <div class="card"><div class="card-title">Log</div><div id="beacon-log" class="result-box" style="max-height:250px">No data yet</div></div>
+  </div>
+</div>
+
+<!-- Chat -->
+<div class="page" id="page-chat">
+  <div class="page-header"><h2>🤖 AI Chat</h2><p>Chat with local Ollama (codellama) — get code help, refactors, explanations</p></div>
+  <div class="card">
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg assistant"><div class="role">Assistant</div><div class="content">Hello! I'm connected to your local Ollama instance. Send a message to start chatting about code, evasion techniques, or anything else.</div></div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Ask about code, evasion, or anything..." onkeydown="if(event.key==='Enter') sendChat()">
+      <button class="btn btn-primary" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Terminal -->
+<div class="page" id="page-terminal">
+  <div class="page-header"><h2>💻 Terminal</h2><p>Execute shell commands directly from the dashboard</p></div>
+  <div class="card">
+    <div class="term-box">
+      <div class="term-output" id="term-output"><span style="color:#71717a">TSC-AI Terminal — type a command and press Enter</span></div>
+      <div class="term-input-row"><span>$</span><input type="text" id="term-input" placeholder="command..." onkeydown="if(event.key==='Enter') execCommand()" autofocus></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const API = '';
+let beaconData = { timestamps: [], rates: [], intervals: [] };
+let beaconChart = null;
+
+document.querySelectorAll('.nav-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+  });
+});
+
+function fmt(obj) {
+  return JSON.stringify(obj, null, 2)
+    .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
+    .replace(/"([^"]+)"/g, '<span class="string">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g, ': <span class="number">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="boolean">$1</span>');
+}
+
+async function apiGet(path) {
+  const r = await fetch(API + path);
+  return r.json();
+}
+
+async function apiPost(path, body) {
+  const r = await fetch(API + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  return r.json();
+}
+
+// === Full Scan ===
+async function runFullScan() {
+  const data = await apiGet('/api/scan');
+  document.getElementById('dash-env').innerHTML = fmt(data);
+  const dashStats = document.getElementById('dash-stats');
+  dashStats.innerHTML = `
+    <div class="stat-card"><div class="stat-label">Platform</div><div class="stat-value" style="font-size:18px">${data.os.platform}</div></div>
+    <div class="stat-card"><div class="stat-label">Arch</div><div class="stat-value" style="font-size:18px">${data.architecture}</div></div>
+    <div class="stat-card"><div class="stat-label">CPU Cores</div><div class="stat-value">${data.environment.cpus}</div></div>
+    <div class="stat-card"><div class="stat-label">RAM</div><div class="stat-value" style="font-size:18px">${data.environment.totalMemory}</div></div>
+  `;
+  const avData = await apiGet('/api/av');
+  document.getElementById('dash-sec').innerHTML = fmt(avData);
+}
+
+async function runScan() {
+  const el = document.getElementById('scan-result');
+  el.innerHTML = '<span class="loading"></span> Scanning...';
+  const data = await apiGet('/api/scan');
+  el.innerHTML = fmt(data);
+}
+
+// === Sandbox ===
+async function runSandbox() {
+  const el = document.getElementById('sandbox-result');
+  el.innerHTML = '<span class="loading"></span> Checking...';
+  const data = await apiGet('/api/sandbox');
+  el.innerHTML = fmt(data);
+  document.getElementById('sandboxScore').textContent = data.score;
+  const verdict = document.getElementById('sandboxVerdict');
+  verdict.textContent = data.verdict.toUpperCase();
+  verdict.style.color = data.score >= 60 ? '#f87171' : data.score >= 30 ? '#fbbf24' : '#4ade80';
+  const ctx = document.getElementById('sandboxChart').getContext('2d');
+  new Chart(ctx, { type: 'doughnut', data: {
+    labels: ['Score', 'Remaining'],
+    datasets: [{ data: [data.score, 100 - data.score], backgroundColor: ['#7c3aed', '#1e1e2e'], borderWidth: 0 }]
+  }, options: { cutout: '75%', responsive: true, plugins: { legend: { display: false } } } });
+}
+
+// === AV ===
+async function runAV() {
+  const data = await apiGet('/api/av');
+  document.getElementById('av-result').innerHTML = data.av.length > 0 ? fmt(data.av) : '<span style="color:#71717a">No AV detected</span>';
+  document.getElementById('edr-result').innerHTML = data.edr.length > 0 ? fmt(data.edr) : '<span style="color:#71717a">No EDR detected</span>';
+}
+
+// === Evasion ===
+async function runEvasion() {
+  const el = document.getElementById('evasion-result');
+  el.innerHTML = '<span class="loading"></span> Analyzing...';
+  const data = await apiGet('/api/evade');
+  el.innerHTML = fmt(data.evasion);
+  document.getElementById('evasion-reasoning').innerHTML = data.evasion.reasoning.map(r => '• ' + r).join('\n');
+}
+
+// === Beacon ===
+async function startBeacon() {
+  await apiGet('/api/beacon/start');
+  beaconData = { timestamps: [], rates: [], intervals: [] };
+  document.getElementById('beacon-log').innerHTML = 'Beacon reset.';
+  updateBeaconStats();
+}
+
+async function stepBeacon() {
+  const result = await apiPost('/api/beacon/step', {});
+  const s = result.step;
+  beaconData.timestamps.push(beaconData.timestamps.length + 1);
+  beaconData.rates.push(result.stats.successRate);
+  beaconData.intervals.push(s.actualInterval);
+  const log = document.getElementById('beacon-log');
+  const status = result.success ? '✓' : '✗';
+  log.innerHTML += `\n[#${beaconData.timestamps.length}] ${status} interval=${Math.round(s.actualInterval/1000)}s jitter=${Math.round(s.jitter*100)}% rate=${result.stats.successRate}%`;
+  log.scrollTop = log.scrollHeight;
+  updateBeaconStats();
+  updateBeaconChart();
+}
+
+async function autoBeacon() {
+  for (let i = 0; i < 10; i++) {
+    await stepBeacon();
+    await new Promise(r => setTimeout(r, 200));
+  }
+}
+
+async function resetBeacon() {
+  await startBeacon();
+  if (beaconChart) beaconChart.destroy();
+  document.getElementById('beacon-log').innerHTML = 'No data yet';
+}
+
+function updateBeaconStats() {
+  const s = beaconData.rates;
+  document.getElementById('beacon-total').textContent = s.length;
+  document.getElementById('beacon-rate').textContent = s.length > 0 ? Math.round(s[s.length-1]) + '%' : '0%';
+  document.getElementById('beacon-interval').textContent = beaconData.intervals.length > 0 ? Math.round(beaconData.intervals[beaconData.intervals.length-1] / 1000) + 's' : '30s';
+}
+
+function updateBeaconChart() {
+  const ctx = document.getElementById('beaconChart').getContext('2d');
+  if (beaconChart) beaconChart.destroy();
+  beaconChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: beaconData.timestamps,
+      datasets: [
+        { label: 'Success Rate (%)', data: beaconData.rates, borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', fill: true, tension: 0.3 },
+        { label: 'Interval (s)', data: beaconData.intervals.map(v => v/1000), borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', fill: true, tension: 0.3, yAxisID: 'y1' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { y: { beginAtZero: true, max: 100, grid: { color: '#1e1e2e' } }, y1: { position: 'right', grid: { display: false } } },
+      plugins: { legend: { labels: { color: '#a1a1aa', boxWidth: 12, padding: 12 } } }
+    }
+  });
+}
+
+// === Chat ===
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const box = document.getElementById('chat-messages');
+  box.innerHTML += `<div class="chat-msg user"><div class="role">You</div><div class="content">${escapeHtml(msg)}</div></div>`;
+  box.scrollTop = box.scrollHeight;
+  box.innerHTML += `<div class="chat-msg assistant"><div class="role">Assistant</div><div class="content"><span class="loading"></span> Thinking...</div></div>`;
+  try {
+    const data = await apiPost('/api/chat', { message: msg });
+    box.querySelector('.chat-msg:last-child .content').innerHTML = escapeHtml(data.response);
+  } catch(e) {
+    box.querySelector('.chat-msg:last-child .content').innerHTML = 'Error contacting Ollama.';
+  }
+  box.scrollTop = box.scrollHeight;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// === Terminal ===
+async function execCommand() {
+  const input = document.getElementById('term-input');
+  const cmd = input.value.trim();
+  if (!cmd) return;
+  const output = document.getElementById('term-output');
+  output.innerHTML += `\n<span style="color:#a78bfa">$ ${escapeHtml(cmd)}</span>\n`;
+  input.value = '';
+  const data = await apiPost('/api/terminal/exec', { command: cmd });
+  output.innerHTML += escapeHtml(data.output) + '\n';
+  output.scrollTop = output.scrollHeight;
+}
+
+// Init
+runFullScan();
+</script>
+</body>
+</html>
