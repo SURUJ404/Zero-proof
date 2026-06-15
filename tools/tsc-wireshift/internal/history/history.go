@@ -182,11 +182,15 @@ func (c *Client) GetAllRequests(page, limit int, sortKey, sortDirection, searchQ
 
 	log.Printf("Total matches: %d", total)
 
-	// Add sorting
+	// Add sorting (sortKey is validated against allowed columns)
+	allowedSortKeys := map[string]bool{"id": true, "timestamp": true, "method": true, "url": true, "status": true, "length": true}
+	if !allowedSortKeys[sortKey] {
+		sortKey = "id"
+	}
 	if sortDirection == "ascending" {
-		baseQuery += fmt.Sprintf(" ORDER BY %s ASC", sortKey)
+		baseQuery += " ORDER BY " + sortKey + " ASC"
 	} else {
-		baseQuery += fmt.Sprintf(" ORDER BY %s DESC", sortKey)
+		baseQuery += " ORDER BY " + sortKey + " DESC"
 	}
 
 	// Add pagination

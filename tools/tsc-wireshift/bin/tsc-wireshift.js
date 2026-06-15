@@ -130,7 +130,8 @@ function startProxy(port, host) {
 }
 
 function launchUI() {
-  const binaryPath = path.join(__dirname, '..', 'build', 'bin', 'TSC-Wireshift.exe');
+  const binName = process.platform === 'win32' ? 'TSC-Wireshift.exe' : 'TSC-Wireshift';
+  const binaryPath = path.join(__dirname, '..', 'build', 'bin', binName);
   console.log(BANNER);
   console.log('Launching TSC-Wireshift desktop app...');
 

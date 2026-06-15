@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"math/big"
 	"net/http"
@@ -116,7 +116,7 @@ func (c *Client) RegisterClient() (bool, error) {
 	defer resp.Body.Close()
 
 	// Read the response body for debugging
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return false, err
 	}
@@ -159,7 +159,7 @@ func (c *Client) Poll() (bool, error) {
 		return false, fmt.Errorf("polling failed: %s", resp.Status)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return false, err
 	}

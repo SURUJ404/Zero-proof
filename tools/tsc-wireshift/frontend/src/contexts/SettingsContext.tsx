@@ -6,6 +6,7 @@ interface Settings {
   project_name: string;
   openai_api_url: string;
   openai_api_key: string;
+  llm_model: string;
   proxy_port: string;
   interactsh_host: string;
   interactsh_port: number | string;
@@ -34,6 +35,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     project_name: "",
     openai_api_url: "",
     openai_api_key: "",
+    llm_model: "gpt-4o-mini",
     proxy_port: "",
     interactsh_host: "",
     interactsh_port: "",

@@ -152,8 +152,12 @@ func (l *Logger) GetRecentLogs(params map[string]interface{}) PaginatedLogs {
 		return PaginatedLogs{}
 	}
 
-	// Add sorting with correct SQL syntax
-	baseQuery += fmt.Sprintf(" ORDER BY %s %s", sortKey, sqlDirection)
+	// Add sorting with correct SQL syntax (sortKey validated against allowed columns)
+	allowedSortKeys := map[string]bool{"id": true, "timestamp": true, "level": true, "message": true, "source": true}
+	if !allowedSortKeys[sortKey] {
+		sortKey = "id"
+	}
+	baseQuery += " ORDER BY " + sortKey + " " + sqlDirection
 
 	// Add pagination
 	baseQuery += " LIMIT ? OFFSET ?"

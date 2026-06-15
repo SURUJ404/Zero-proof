@@ -7,6 +7,20 @@ import { EventsEmit, EventsOn, EventsOff, BrowserOpenURL } from "../../wailsjs/r
 import { useTheme } from '../contexts/ThemeContext'
 import { useSettings } from '../contexts/SettingsContext'
 
+const PROVIDERS: Record<string, { url: string; model: string }> = {
+  openai: { url: "https://api.openai.com/v1/chat/completions", model: "gpt-4o-mini" },
+  groq: { url: "https://api.groq.com/openai/v1/chat/completions", model: "llama-3.3-70b-versatile" },
+  deepseek: { url: "https://api.deepseek.com/v1/chat/completions", model: "deepseek-chat" },
+  custom: { url: "", model: "" },
+}
+
+const detectProvider = (url: string): string => {
+  if (url.includes("api.openai.com")) return "openai"
+  if (url.includes("api.groq.com")) return "groq"
+  if (url.includes("api.deepseek.com")) return "deepseek"
+  return "custom"
+}
+
 const SettingsPage: React.FC = () => {
   const { theme, toggleTheme } = useTheme()
   const { settings, updateSettings } = useSettings();
@@ -14,6 +28,13 @@ const SettingsPage: React.FC = () => {
   const [errors, setErrors] = useState<any>({})
   const [currentVersion, setCurrentVersion] = useState("")
   const [latestVersion, setLatestVersion] = useState("")
+  const [selectedProvider, setSelectedProvider] = useState<string>("openai")
+
+  useEffect(() => {
+    if (settings.openai_api_url) {
+      setSelectedProvider(detectProvider(settings.openai_api_url))
+    }
+  }, [settings.openai_api_url])
 
   useEffect(() => {
     const handleFetchSettings = (data: any) => {
@@ -59,11 +80,23 @@ const SettingsPage: React.FC = () => {
     return () => document.removeEventListener('keydown', handleCopyPaste, true);
   }, []);
 
+  const handleProviderChange = (provider: string) => {
+    setSelectedProvider(provider)
+    const p = PROVIDERS[provider]
+    if (p && provider !== "custom") {
+      updateSettings({
+        ...settings,
+        openai_api_url: p.url,
+        llm_model: p.model,
+      })
+    }
+  }
+
   const handleSave = () => {
     const newErrors: any = {}
     if (!settings.project_name) newErrors.project_name = "Project Name is required"
-    if (!settings.openai_api_url) newErrors.openai_api_url = "OpenAI API URL is required"
-    if (!settings.openai_api_key) newErrors.openai_api_key = "OpenAI API Key is required"
+    if (!settings.openai_api_url) newErrors.openai_api_url = "LLM API URL is required"
+    if (!settings.openai_api_key) newErrors.openai_api_key = "LLM API Key is required"
     if (!settings.proxy_port) newErrors.proxy_port = "Proxy Port is required"
     if (!settings.interactsh_host) newErrors.interactsh_host = "Interactsh Host is required"
     if (!settings.interactsh_port) newErrors.interactsh_port = "Interactsh Port is required"
@@ -80,12 +113,16 @@ const SettingsPage: React.FC = () => {
     updateSettings(settings)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    updateSettings({
+    const newSettings = {
       ...settings,
       [name]: name === 'interactsh_port' ? parseInt(value) || value : value,
-    })
+    }
+    updateSettings(newSettings)
+    if (name === "openai_api_url") {
+      setSelectedProvider(detectProvider(value))
+    }
   }
 
   const renderSection = (section: string) => {
@@ -150,12 +187,12 @@ const SettingsPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* OpenAI Settings Group */}
+              {/* LLM Configuration Group */}
               <div className="bg-white dark:bg-dark-secondary p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h3 className="text-lg font-semibold dark:text-white">OpenAI Configuration</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Settings for OpenAI integration</p>
+                    <h3 className="text-lg font-semibold dark:text-white">LLM Configuration</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Settings for AI-powered analysis</p>
                   </div>
                   <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                     <svg className="w-4 h-4 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="currentColor">
@@ -165,6 +202,21 @@ const SettingsPage: React.FC = () => {
                 </div>
                 
                 <div className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Provider</label>
+                    <select
+                      value={selectedProvider}
+                      onChange={(e) => handleProviderChange(e.target.value)}
+                      className="w-full px-3 py-1.5 bg-gray-50 dark:bg-dark-accent text-gray-900 dark:text-white rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="openai">OpenAI</option>
+                      <option value="groq">Groq</option>
+                      <option value="deepseek">DeepSeek</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Select a provider to auto-fill URL and model</p>
+                  </div>
+
                   <div className="space-y-1">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="openai_api_url">
                       API URL
@@ -178,10 +230,10 @@ const SettingsPage: React.FC = () => {
                       autoComplete="off"
                       spellCheck="false"
                       className="w-full px-3 py-1.5 bg-gray-50 dark:bg-dark-accent text-gray-900 dark:text-white rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="https://api.openai.com/v1"
+                      placeholder="https://api.openai.com/v1/chat/completions"
                     />
                     {errors.openai_api_url && <p className="mt-1 text-xs text-red-500">{errors.openai_api_url}</p>}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">The base URL for OpenAI API requests</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Full endpoint URL for the API</p>
                   </div>
                   
                   <div className="space-y-1">
@@ -200,7 +252,25 @@ const SettingsPage: React.FC = () => {
                       placeholder="sk-..."
                     />
                     {errors.openai_api_key && <p className="mt-1 text-xs text-red-500">{errors.openai_api_key}</p>}
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Your OpenAI API key for authentication</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Your API key for authentication</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="llm_model">
+                      Model
+                    </label>
+                    <input
+                      type="text"
+                      id="llm_model"
+                      name="llm_model"
+                      value={settings.llm_model}
+                      onChange={handleChange}
+                      autoComplete="off"
+                      spellCheck="false"
+                      className="w-full px-3 py-1.5 bg-gray-50 dark:bg-dark-accent text-gray-900 dark:text-white rounded-md border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="gpt-4o-mini"
+                    />
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Model name (e.g. gpt-4o-mini, llama3-70b-8192, deepseek-chat)</p>
                   </div>
                 </div>
               </div>

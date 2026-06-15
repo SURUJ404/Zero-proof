@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -142,10 +142,14 @@ func (c *Client) SendMessage(messageData map[string]interface{}, settings map[st
 		})
 		return fmt.Errorf("invalid OpenAI API key")
 	}
+	llmModel, _ := settings["LLMModel"].(string)
+	if llmModel == "" {
+		llmModel = "gpt-4o-mini"
+	}
 
 	// Prepare the ChatGPT request with all messages
 	chatGPTRequest := ChatGPTRequest{
-		Model:    "gpt-4o-mini",
+		Model:    llmModel,
 		Messages: allMessages,
 	}
 
@@ -170,8 +174,13 @@ func (c *Client) SendMessage(messageData map[string]interface{}, settings map[st
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+openaiAPIKey)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36")
 
-	client := &http.Client{}
+	client := &http.Client{
+		Transport: &http.Transport{
+			Proxy: nil,
+		},
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		runtime.EventsEmit(c.ctx, "backend:error", map[string]interface{}{
@@ -183,7 +192,7 @@ func (c *Client) SendMessage(messageData map[string]interface{}, settings map[st
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		errorMsg := fmt.Sprintf("ChatGPT API returned non-200 status code: %d, body: %s", resp.StatusCode, string(body))
 		runtime.EventsEmit(c.ctx, "backend:error", map[string]interface{}{
 			"chatContextId": chatContextId,
@@ -253,22 +262,7 @@ func (c *Client) CreateChatContext(requestString string) (int64, error) {
 		"name": newChatName,
 	})
 
-	// If request string is provided, format and send it
-	if requestString != "" {
-		message := fmt.Sprintf("Analyze the following HTTP:\n\n%s", requestString)
-		err = c.SendMessage(map[string]interface{}{
-			"chatContextId": float64(id),
-			"messages": []interface{}{
-				map[string]interface{}{
-					"role":    "user",
-					"content": message,
-				},
-			},
-		}, nil) // Settings will need to be passed from the caller
-		if err != nil {
-			log.Printf("Failed to send initial message: %v", err)
-		}
-	}
+	// Send is handled by the caller (App.sendMessage) which has access to settings
 
 	return id, nil
 }

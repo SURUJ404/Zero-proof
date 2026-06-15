@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -267,11 +267,11 @@ func (f *Fuzzer) handleFuzzerResponse(tabId, index int, allPayloadValues [][]str
 			return
 		}
 		defer reader.Close()
-		responseBody, err = ioutil.ReadAll(reader)
+		responseBody, err = io.ReadAll(reader)
 	} else {
-		responseBody, err = ioutil.ReadAll(resp.Body)
+		responseBody, err = io.ReadAll(resp.Body)
 	}
-	resp.Body = ioutil.NopCloser(bytes.NewBuffer(responseBody))
+	resp.Body = io.NopCloser(bytes.NewBuffer(responseBody))
 	if err != nil {
 		log.Printf("Error reading response body: %v", err)
 		f.sendFuzzerResult(tabId, index, allPayloadValues, resp, err)
@@ -306,8 +306,8 @@ func (f *Fuzzer) sendFuzzerResult(tabId, index int, allPayloadValues [][]string,
 		result["contentType"] = ""
 		result["rawStatusLine"] = ""
 	} else {
-		responseBody, _ := ioutil.ReadAll(resp.Body)
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer(responseBody))
+		responseBody, _ := io.ReadAll(resp.Body)
+		resp.Body = io.NopCloser(bytes.NewBuffer(responseBody))
 
 		result["responseHeaders"] = resp.Header
 		result["responseBody"] = string(responseBody)

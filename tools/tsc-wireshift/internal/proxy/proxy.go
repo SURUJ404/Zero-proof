@@ -6,7 +6,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -353,14 +352,14 @@ func (p *Proxy) HandleRequest(ctx context.Context, scopeClient ScopeClient, matc
 		var err error
 
 		// Read the entire body
-		bodyContent, err = ioutil.ReadAll(req.Body)
+		bodyContent, err = 	io.ReadAll(req.Body)
 		if err != nil {
 			log.Printf("Error reading request body: %v", err)
 			return req, p.CreateErrorResponse(req, http.StatusInternalServerError, "Error reading request body")
 		}
 
 		// Restore the body for further processing
-		req.Body = ioutil.NopCloser(bytes.NewBuffer(bodyContent))
+		req.Body = 	io.NopCloser(bytes.NewBuffer(bodyContent))
 
 		userData.BodyBytes = bodyContent
 
@@ -452,7 +451,7 @@ func (p *Proxy) HandleRequest(ctx context.Context, scopeClient ScopeClient, matc
 		} else {
 			// Update the body with the new content for non-multipart requests
 			bodyBytes := []byte(approvalResponse.Body)
-			req.Body = ioutil.NopCloser(bytes.NewReader(bodyBytes))
+			req.Body = 	io.NopCloser(bytes.NewReader(bodyBytes))
 			req.ContentLength = int64(len(bodyBytes))
 			req.Header.Set("Content-Length", strconv.FormatInt(req.ContentLength, 10))
 		}
@@ -547,7 +546,7 @@ func handleMultipartForm(req *http.Request) error {
 	writer.Close()
 
 	// Update the request body and headers
-	req.Body = ioutil.NopCloser(body)
+	req.Body = 	io.NopCloser(body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	req.ContentLength = int64(body.Len())
 	req.Header.Set("Content-Length", strconv.FormatInt(req.ContentLength, 10))

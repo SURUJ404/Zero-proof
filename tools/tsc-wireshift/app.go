@@ -345,6 +345,7 @@ func (a *App) registerEventHandlers() {
 
 		// Chat handlers
 		"frontend:createChatContext":   a.createChatContext,
+		"frontend:sendMessage":        a.sendMessage,
 		"frontend:getChatContexts":     a.getChatContexts,
 		"frontend:getChatMessages":     a.getChatMessages,
 		"frontend:deleteChatContext":   a.deleteChatContext,
@@ -873,7 +874,7 @@ func (a *App) getRequestByID(data ...interface{}) {
 		return
 	}
 
-	id := data[0].(string)
+	id, _ := data[0].(string)
 	details, err := a.historyClient.GetRequestByID(id)
 	if err != nil {
 		wailsRuntime.EventsEmit(a.ctx, "backend:requestDetails", map[string]interface{}{
@@ -915,13 +916,20 @@ func (a *App) addRule(data ...interface{}) {
 		return
 	}
 
+	ruleName, _ := ruleData["RuleName"].(string)
+	operator, _ := ruleData["Operator"].(string)
+	matchType, _ := ruleData["MatchType"].(string)
+	relationship, _ := ruleData["Relationship"].(string)
+	pattern, _ := ruleData["Pattern"].(string)
+	enabled, _ := ruleData["Enabled"].(bool)
+
 	rule := rules.Rule{
-		RuleName:     ruleData["RuleName"].(string),
-		Operator:     ruleData["Operator"].(string),
-		MatchType:    ruleData["MatchType"].(string),
-		Relationship: ruleData["Relationship"].(string),
-		Pattern:      ruleData["Pattern"].(string),
-		Enabled:      ruleData["Enabled"].(bool),
+		RuleName:     ruleName,
+		Operator:     operator,
+		MatchType:    matchType,
+		Relationship: relationship,
+		Pattern:      pattern,
+		Enabled:      enabled,
 	}
 
 	err := a.rulesClient.AddRule(rule)
@@ -945,9 +953,9 @@ func (a *App) deleteRule(data ...interface{}) {
 		})
 		return
 	}
-	ruleID := int(data[0].(float64))
+	ruleID, _ := data[0].(float64)
 
-	err := a.rulesClient.DeleteRule(ruleID)
+	err := a.rulesClient.DeleteRule(int(ruleID))
 	if err != nil {
 		wailsRuntime.EventsEmit(a.ctx, "backend:ruleDeleted", map[string]interface{}{
 			"error": err.Error(),
@@ -982,8 +990,8 @@ func (a *App) deleteMatchReplaceRule(data ...interface{}) {
 		})
 		return
 	}
-	ruleID := int(data[0].(float64))
-	err := a.matchReplaceClient.DeleteRule(ruleID)
+	ruleID, _ := data[0].(float64)
+	err := a.matchReplaceClient.DeleteRule(int(ruleID))
 	if err != nil {
 		wailsRuntime.EventsEmit(a.ctx, "backend:matchReplaceRuleDeleted", map[string]interface{}{
 			"error": err.Error(),
@@ -1011,14 +1019,22 @@ func (a *App) updateMatchReplaceRule(data ...interface{}) {
 		return
 	}
 
+	ruleID, _ := ruleData["id"].(float64)
+	ruleName, _ := ruleData["rule_name"].(string)
+	matchType, _ := ruleData["match_type"].(string)
+	matchContent, _ := ruleData["match_content"].(string)
+	replaceContent, _ := ruleData["replace_content"].(string)
+	target, _ := ruleData["target"].(string)
+	enabled, _ := ruleData["enabled"].(bool)
+
 	rule := matchreplace.Rule{
-		ID:             int(ruleData["id"].(float64)),
-		RuleName:       ruleData["rule_name"].(string),
-		MatchType:      ruleData["match_type"].(string),
-		MatchContent:   ruleData["match_content"].(string),
-		ReplaceContent: ruleData["replace_content"].(string),
-		Target:         ruleData["target"].(string),
-		Enabled:        ruleData["enabled"].(bool),
+		ID:             int(ruleID),
+		RuleName:       ruleName,
+		MatchType:      matchType,
+		MatchContent:   matchContent,
+		ReplaceContent: replaceContent,
+		Target:         target,
+		Enabled:        enabled,
 	}
 
 	err := a.matchReplaceClient.UpdateRule(rule)
@@ -1196,7 +1212,7 @@ func (a *App) getSiteMap(data ...interface{}) {
 		return
 	}
 
-	domain := data[0].(string)
+	domain, _ := data[0].(string)
 	root, err := a.sitemapClient.GetSiteMap(domain)
 	if err != nil {
 		wailsRuntime.EventsEmit(a.ctx, "backend:Sitemap", map[string]interface{}{
@@ -1219,8 +1235,8 @@ func (a *App) getRequestsByEndpoint(data ...interface{}) {
 		return
 	}
 
-	domain := data[0].(string)
-	path := data[1].(string)
+	domain, _ := data[0].(string)
+	path, _ := data[1].(string)
 
 	requests, err := a.sitemapClient.GetRequestsByEndpoint(domain, path)
 	if err != nil {
@@ -1261,6 +1277,7 @@ func (a *App) createChatContext(data ...interface{}) {
 		settingsMap := map[string]interface{}{
 			"OpenAIAPIURL": settings.OpenAIAPIURL,
 			"OpenAIAPIKey": settings.OpenAIAPIKey,
+			"LLMModel":     settings.LLMModel,
 		}
 
 		message := fmt.Sprintf("Analyze the following HTTP:\n\n%s", requestString)
@@ -1276,6 +1293,35 @@ func (a *App) createChatContext(data ...interface{}) {
 		if err != nil {
 			log.Printf("Failed to send initial message: %v", err)
 		}
+	}
+}
+
+func (a *App) sendMessage(data ...interface{}) {
+	if len(data) < 1 {
+		log.Println("Missing message data")
+		return
+	}
+	messageData, ok := data[0].(map[string]interface{})
+	if !ok {
+		log.Println("Invalid message data format")
+		return
+	}
+
+	settings, err := a.loadSettingsFromDB()
+	if err != nil {
+		log.Printf("Failed to load settings: %v", err)
+		return
+	}
+
+	settingsMap := map[string]interface{}{
+		"OpenAIAPIURL": settings.OpenAIAPIURL,
+		"OpenAIAPIKey": settings.OpenAIAPIKey,
+		"LLMModel":     settings.LLMModel,
+	}
+
+	err = a.llmClient.SendMessage(messageData, settingsMap)
+	if err != nil {
+		log.Printf("Failed to send message: %v", err)
 	}
 }
 
@@ -1491,15 +1537,26 @@ func (a *App) UpdateSettings(data ...interface{}) {
 		return
 	}
 
+	idVal, _ := settingsData["id"].(float64)
+	projectName, _ := settingsData["project_name"].(string)
+	apiURL, _ := settingsData["openai_api_url"].(string)
+	apiKey, _ := settingsData["openai_api_key"].(string)
+	llmModel, _ := settingsData["llm_model"].(string)
+	proxyPort, _ := settingsData["proxy_port"].(string)
+	interactshHost, _ := settingsData["interactsh_host"].(string)
+	interactshPort, _ := settingsData["interactsh_port"].(float64)
+	createdAt, _ := settingsData["created_at"].(string)
+
 	settings := &settings.Settings{
-		ID:             int(settingsData["id"].(float64)),
-		ProjectName:    settingsData["project_name"].(string),
-		OpenAIAPIURL:   settingsData["openai_api_url"].(string),
-		OpenAIAPIKey:   settingsData["openai_api_key"].(string),
-		ProxyPort:      settingsData["proxy_port"].(string),
-		InteractshHost: settingsData["interactsh_host"].(string),
-		InteractshPort: int(settingsData["interactsh_port"].(float64)),
-		CreatedAt:      settingsData["created_at"].(string),
+		ID:             int(idVal),
+		ProjectName:    projectName,
+		OpenAIAPIURL:   apiURL,
+		OpenAIAPIKey:   apiKey,
+		LLMModel:       llmModel,
+		ProxyPort:      proxyPort,
+		InteractshHost: interactshHost,
+		InteractshPort: int(interactshPort),
+		CreatedAt:      createdAt,
 	}
 
 	if err := a.settingsClient.UpdateSettings(settings); err != nil {
@@ -1784,7 +1841,7 @@ func (a *App) getRequestsByDomain(data ...interface{}) {
 		return
 	}
 
-	domain := data[0].(string)
+	domain, _ := data[0].(string)
 
 	requests, err := a.sitemapClient.GetRequestsByDomain(domain)
 	if err != nil {
