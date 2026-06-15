@@ -8,6 +8,7 @@ class Discord {
     this.channelId = config.channelId;
     this.commandPrefix = '!c2';
     this.apiBase = 'discord.com';
+    this._lastPollId = '0';
   }
 
   _request(opts, body) {
@@ -70,7 +71,7 @@ class Discord {
 
     const messages = await this._request({
       hostname: this.apiBase,
-      path: `/api/channels/${this.channelId}/messages?limit=50`,
+      path: `/api/channels/${this.channelId}/messages?limit=50&after=${this._lastPollId}`,
       method: 'GET',
       headers: {
         'Authorization': `Bot ${this.botToken}`
@@ -96,6 +97,11 @@ class Discord {
         });
       }
     }
+
+    if (messages.length > 0) {
+      this._lastPollId = messages[0].id;
+    }
+
     return commands;
   }
 

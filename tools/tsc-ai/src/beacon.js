@@ -40,9 +40,13 @@ class BeaconController {
 
   getState() {
     const envType = process.platform;
-    const networkType = 'NAT';
+    const networkType = this.networkType || 'NAT';
     const hours = this.hoursOfOperation;
     return hashState(envType, networkType, hours);
+  }
+
+  updateNetworkType(type) {
+    this.networkType = type;
   }
 
   getQ(state) {

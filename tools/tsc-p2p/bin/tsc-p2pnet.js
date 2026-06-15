@@ -8,33 +8,42 @@ const crypto = require('crypto');
 
 const command = argv._[0] || 'help';
 
-function help() {
-  console.log(`
-tsc-p2p v1.0.0 - Decentralized P2P Botnet Mesh
-SURUJ404 | License GPL-3.0
+function showBanner() {
+  console.log('');
+  console.log('  ╔═══════════════════════════════════════════════════════════════╗');
+  console.log('  ║                   T S C - P 2 P N E T                     ║');
+  console.log('  ║          Decentralized P2P Botnet Network   v1.0.1         ║');
+  console.log('  ║   Kademlia DHT · gossip protocol · command & control       ║');
+  console.log('  ╚═══════════════════════════════════════════════════════════════╝');
+  console.log('');
+}
 
+function help() {
+  showBanner();
+  console.log(`
 USAGE:
-  tsc-p2p node --port <port> --id <identity> --bootstrap <host:port>
+  tsc-p2pnet node --port <port> --id <identity> --bootstrap <host:port>
     Start a P2P node
 
-  tsc-p2p send --key <key> --value <value> --bootstrap <host:port>
+  tsc-p2pnet send --key <key> --value <value> --bootstrap <host:port>
     Gossip a command to the network
 
-  tsc-p2p status --bootstrap <host:port>
+  tsc-p2pnet status --bootstrap <host:port>
     Query network status
 
-  tsc-p2p store --key <key> --value <value> --bootstrap <host:port>
+  tsc-p2pnet store --key <key> --value <value> --bootstrap <host:port>
     Store a value in the DHT
 
-  tsc-p2p lookup --key <key> --bootstrap <host:port>
+  tsc-p2pnet lookup --key <key> --bootstrap <host:port>
     Look up a value in the DHT
 
-  tsc-p2p help
+  tsc-p2pnet help
     Show this help
 `);
 }
 
 async function cmdNode() {
+  showBanner();
   const port = parseInt(argv.port, 10) || 0;
   const identity = argv.id || `node-${crypto.randomBytes(4).toString('hex')}`;
   const bootstrap = argv.bootstrap ? argv.bootstrap.split(',').map(s => s.trim()) : [];
@@ -68,6 +77,7 @@ async function cmdNode() {
 }
 
 async function cmdSend() {
+  showBanner();
   const key = argv.key;
   const value = argv.value;
   const bootstrap = parseBootstrap(argv.bootstrap);
@@ -94,6 +104,7 @@ async function cmdSend() {
 }
 
 async function cmdStatus() {
+  showBanner();
   const bootstrap = parseBootstrap(argv.bootstrap);
 
   const node = new Node({ identity: `client-${crypto.randomBytes(4).toString('hex')}` });
@@ -121,6 +132,7 @@ async function cmdStatus() {
 }
 
 async function cmdStore() {
+  showBanner();
   const key = argv.key;
   const value = argv.value;
   const bootstrap = parseBootstrap(argv.bootstrap);
@@ -152,6 +164,7 @@ async function cmdStore() {
 }
 
 async function cmdLookup() {
+  showBanner();
   const key = argv.key;
   const bootstrap = parseBootstrap(argv.bootstrap);
 

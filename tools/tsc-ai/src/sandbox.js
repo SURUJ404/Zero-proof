@@ -28,7 +28,7 @@ const SUSPICIOUS_USERNAMES = [
 
 const VM_MAC_PREFIXES = [
   '00:05:69', '00:0C:29', '00:1C:42', '00:1C:14',
-  '00:50:56', '00:50:56', '08:00:27', '00:15:5D',
+  '00:50:56', '08:00:27', '00:15:5D',
   '00:03:FF',
 ];
 
@@ -58,7 +58,7 @@ function checkDrivers() {
   const detected = [];
   try {
     if (process.platform === 'win32') {
-      const output = execSync('wmic sysdriver list brief', { encoding: 'utf8', timeout: 5000 });
+      const output = execSync('powershell -Command "Get-CimInstance -ClassName Win32_SystemDriver | Select-Object Name, State, Started | Format-Table -AutoSize"', { encoding: 'utf8', timeout: 5000 });
       const lower = output.toLowerCase();
       for (const drv of VM_DRIVERS_WINDOWS) {
         if (lower.includes(drv.toLowerCase())) {
@@ -89,20 +89,39 @@ function checkHardware() {
     result.freemem = Math.round(os.freemem() / (1024 * 1024 * 1024) * 100) / 100;
 
     if (process.platform === 'win32') {
-      const output = execSync('wmic diskdrive get size', { encoding: 'utf8', timeout: 5000 });
-      const lines = output.trim().split('\n').slice(1);
+      const diskOut = execSync('powershell -Command "Get-CimInstance -ClassName Win32_DiskDrive | Select-Object -ExpandProperty Size"', { encoding: 'utf8', timeout: 5000 });
+      const diskLines = diskOut.trim().split('\n').filter(Boolean);
       let total = 0;
-      for (const line of lines) {
+      for (const line of diskLines) {
         const s = parseInt(line.trim(), 10);
         if (!isNaN(s)) total += s;
       }
-      result.diskSize = Math.round(total / (1024 * 1024 * 1024 * 1024) * 100) / 100;
+      result.diskSize = Math.round(total / (1024 * 1024 * 1024) * 100) / 100;
+      try {
+        const freeOut = execSync('powershell -Command "Get-CimInstance -ClassName Win32_LogicalDisk -Filter \\"DriveType=3\\" | Measure-Object -Property FreeSpace -Sum | Select-Object -ExpandProperty Sum"', { encoding: 'utf8', timeout: 5000 });
+        result.diskFree = Math.round(parseInt(freeOut.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
+      } catch (e) {
+        result.diskFree = 0;
+      }
     } else if (process.platform === 'linux') {
       try {
         const out = execSync("df -B1 / | awk 'NR==2{print $2}'", { encoding: 'utf8', timeout: 5000 });
-        result.diskSize = Math.round(parseInt(out.trim(), 10) / (1024 * 1024 * 1024 * 1024) * 100) / 100;
+        result.diskSize = Math.round(parseInt(out.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
+        const freeOut = execSync("df -B1 / | awk 'NR==2{print $4}'", { encoding: 'utf8', timeout: 5000 });
+        result.diskFree = Math.round(parseInt(freeOut.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
       } catch (e) {
         result.diskSize = 0;
+        result.diskFree = 0;
+      }
+    } else if (process.platform === 'darwin') {
+      try {
+        const out = execSync("df -B1 / | awk 'NR==2{print $2}'", { encoding: 'utf8', timeout: 5000 });
+        result.diskSize = Math.round(parseInt(out.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
+        const freeOut = execSync("df -B1 / | awk 'NR==2{print $4}'", { encoding: 'utf8', timeout: 5000 });
+        result.diskFree = Math.round(parseInt(freeOut.trim(), 10) / (1024 * 1024 * 1024) * 100) / 100;
+      } catch (e) {
+        result.diskSize = 0;
+        result.diskFree = 0;
       }
     } else {
       result.diskSize = 0;
@@ -173,9 +192,13 @@ function checkDebugger() {
         // skip
       }
       try {
-        const out = execSync('wmic process where "Name=\'tsc-ai.exe\'" get ProcessId /format:csv', { encoding: 'utf8', timeout: 5000 });
-        const lower = out.toLowerCase();
-        if (lower.includes('ntglobalflag')) {
+        const fs = require('fs');
+        const path = require('path');
+        const tmp = path.join(require('os').tmpdir(), 'ntg.cs');
+        fs.writeFileSync(tmp, 'using System;using System.Runtime.InteropServices;public class NtG{[DllImport("ntdll.dll")]static extern int NtQueryInformationProcess(IntPtr h,int c,out int i,int s,out int l);public static bool HasFlag(){int i=0;int u=0;return NtQueryInformationProcess(System.Diagnostics.Process.GetCurrentProcess().Handle,0,out i,4,out u)==0&&(i&0x70)!=0;}}');
+        const out = execSync('powershell -Command "Add-Type -TypeDefinition (Get-Content \'' + tmp.replace(/'/g, "''") + '\' -Raw);[NtG]::HasFlag()"', { encoding: 'utf8', timeout: 5000 });
+        if (out.trim() === 'True') {
+          result.debuggerDetected = true;
           result.methods.push('NtGlobalFlag');
         }
       } catch (e) {

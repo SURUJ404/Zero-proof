@@ -127,19 +127,38 @@ class Obfuscator {
     const dispatchVar = this.randomVarName();
     const caseVal = Math.floor(Math.random() * 5000 + 100);
 
-    let fakeStates = [];
-    const numFake = Math.floor(Math.random() * 4 + 2);
+    const numFake = Math.floor(Math.random() * 3 + 2);
+    const fakeStates = [];
     for (let i = 0; i < numFake; i++) {
       fakeStates.push(Math.floor(Math.random() * 9000 + 1000));
     }
 
-    let wrapper = `(function(){var ${stateVar}=${caseVal};var ${dispatchVar}=[${stateVar}];while(${dispatchVar}.length>0){switch(${dispatchVar}.shift()){`;
-    for (const fs of fakeStates) {
-      wrapper += `case ${fs}:${this.deadCode()}break;`;
-    }
-    wrapper += `case ${caseVal}:${code}break;`;
-    wrapper += `default:break;}}})();`;
+    const allStates = [caseVal, ...fakeStates];
+    const shuffled = allStates.sort(() => Math.random() - 0.5);
+    const realIdx = shuffled.indexOf(caseVal);
 
+    let wrapper = `(function(){var ${stateVar}=${shuffled[0]};var ${dispatchVar}=[${stateVar}];while(${dispatchVar}.length>0){switch(${dispatchVar}.shift()){`;
+
+    for (let i = 0; i < shuffled.length; i++) {
+      const s = shuffled[i];
+      if (s === caseVal) {
+        wrapper += `case ${s}:${code}`;
+        if (i < shuffled.length - 1) {
+          wrapper += `${dispatchVar}.push(${shuffled[i + 1]});`;
+        }
+        wrapper += `break;`;
+      } else {
+        wrapper += `case ${s}:${this.deadCode()}`;
+        if (i < shuffled.length - 1) {
+          wrapper += `${dispatchVar}.push(${shuffled[i + 1]});`;
+        } else {
+          wrapper += `${dispatchVar}.push(${caseVal});`;
+        }
+        wrapper += `break;`;
+      }
+    }
+
+    wrapper += `default:break;}}})();`;
     return wrapper;
   }
 }

@@ -123,6 +123,42 @@ class GitHub {
     return { id: result.id, url: result.html_url };
   }
 
+  async pollResults(agentId) {
+    try {
+      const gists = await this._request('GET', `/gists?per_page=100`);
+      const prefix = `${this.gistPrefix}result_${agentId}`;
+
+      const matching = gists.filter(g =>
+        g.files &&
+        Object.keys(g.files).some(f => f.startsWith(prefix))
+      );
+
+      const results = [];
+      for (const gist of matching) {
+        try {
+          const gistDetail = await this._request('GET', `/gists/${gist.id}`);
+          const fileKey = Object.keys(gistDetail.files).find(f => f.startsWith(prefix));
+          if (!fileKey) continue;
+
+          const raw = gistDetail.files[fileKey].content;
+          const parsed = JSON.parse(raw);
+          results.push({
+            id: gist.id,
+            agentId: parsed.agentId,
+            result: parsed.result,
+            timestamp: parsed.timestamp
+          });
+          await this._request('DELETE', `/gists/${gist.id}`);
+        } catch (e) {
+          // skip
+        }
+      }
+      return results;
+    } catch (e) {
+      return [];
+    }
+  }
+
   async test() {
     try {
       const user = await this._request('GET', '/user');

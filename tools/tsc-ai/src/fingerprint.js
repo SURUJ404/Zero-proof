@@ -75,8 +75,8 @@ function detectPrivileges() {
     result.user = os.userInfo().username;
     if (process.platform === 'win32') {
       try {
-        execSync('net session 2>nul', { timeout: 3000 });
-        result.isAdmin = true;
+        const out = execSync('whoami /groups /NH 2>nul', { encoding: 'utf8', timeout: 3000 });
+        result.isAdmin = out.toLowerCase().includes('s-1-16-12288');
       } catch (e) {
         result.isAdmin = false;
       }

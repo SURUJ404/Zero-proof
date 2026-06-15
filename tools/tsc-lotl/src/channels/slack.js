@@ -6,6 +6,7 @@ class Slack {
     this.token = config.token;
     this.channelId = config.channelId;
     this.commandPrefix = '!c2';
+    this._lastPollTs = '0';
   }
 
   _parseWebhookUrl(url) {
@@ -85,7 +86,7 @@ class Slack {
 
     const result = await this._request({
       hostname: 'slack.com',
-      path: `/api/conversations.history?channel=${this.channelId}&limit=50`,
+      path: `/api/conversations.history?channel=${this.channelId}&limit=50&oldest=${this._lastPollTs}`,
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${this.token}`
@@ -111,6 +112,12 @@ class Slack {
         });
       }
     }
+
+    if (result.messages.length > 0) {
+      const latest = parseFloat(result.messages[0].ts);
+      this._lastPollTs = (latest + 0.0001).toString();
+    }
+
     return commands;
   }
 

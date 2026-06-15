@@ -6,6 +6,7 @@ class PayloadTemplate {
     const template = config.template || 'auto';
     const command = config.command || 'whoami';
     const filePath = config.file || '/etc/passwd';
+    const protocol = config.protocol || 'tcp';
 
     if (template === 'command-exec') {
       return this.commandExec(host, port, command);
@@ -13,7 +14,7 @@ class PayloadTemplate {
     if (template === 'file-exfil') {
       return this.fileExfil(host, port, filePath);
     }
-    if (template === 'beacon' || config.protocol === 'https') {
+    if (template === 'beacon' || (template === 'auto' && protocol === 'https')) {
       return this.beacon(host, port, beacon);
     }
 
