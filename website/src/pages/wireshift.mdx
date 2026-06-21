@@ -13,7 +13,23 @@ Cross-platform HTTP/HTTPS traffic interception and analysis tool — built with 
 npm install -g tsc-wireshift
 ```
 
+The desktop binary is bundled in the npm package — no Go, Wails, or build tools required.
+
 ## Quick Start
+
+### Launch the desktop UI
+
+```bash
+tsc-wireshift
+```
+
+Or equivalently:
+```bash
+tsc-wireshift ui
+tsc-wireshift launch ui
+```
+
+Opens the desktop UI for interactive traffic analysis.
 
 ### Start the proxy
 
@@ -24,14 +40,6 @@ tsc-wireshift proxy --port 8080
 ### Intercept traffic
 
 Configure your browser to use `http://localhost:8080` as the HTTP/HTTPS proxy. All traffic flows through tsc-wireshift for inspection.
-
-### Launch the UI
-
-```bash
-tsc-wireshift ui
-```
-
-Opens the desktop UI for interactive traffic analysis.
 
 ## Features
 
@@ -103,6 +111,12 @@ tsc-wireshift history --search "/api/admin" --export ./report.json
 
 | Command | Description |
 |---------|-------------|
+| `tsc-wireshift` | Launch the desktop UI (default) |
+| `tsc-wireshift ui` | Launch the desktop UI |
+| `tsc-wireshift launch ui` | Launch the desktop UI |
+| `tsc-wireshift proxy` | Start the Node.js proxy server |
+| `tsc-wireshift --version` | Show version |
+| `tsc-wireshift --help` | Show help |
 
 
 ## Tech Stack
@@ -112,3 +126,4 @@ tsc-wireshift history --search "/api/admin" --export ./report.json
 - **Wails** — Cross-platform desktop framework
 - **Interactsh** — OOB vulnerability detection
 - **OpenAI API** — AI-powered analysis
+- **npm** — Distribution via `tsc-wireshift` package (binary bundled)
