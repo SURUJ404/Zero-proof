@@ -23,4 +23,3 @@ node_modules
 risc0/fuzz/artifacts/
 risc0/fuzz/corpus/
 risc0/fuzz/coverage/
-zarathustra/zarathustra
