@@ -1,0 +1,24 @@
+[Unit]
+Description=Zarathustra Web IDE
+After=network.target
+
+[Service]
+Type=simple
+User=zarathustra
+Group=zarathustra
+WorkingDirectory=/opt/zarathustra/web
+ExecStart=/usr/bin/node /opt/zarathustra/web/server.js
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=NODE_ENV=production
+Environment=PORT=4000
+Environment=HOST=0.0.0.0
+Environment=ZARATHUSTRA_BIN=/opt/zarathustra
+Environment=ZARATHUSTRA_STDLIB=/opt/zarathustra/stdlib
+Environment=WORK_DIR=/opt/zarathustra/web/work
+Environment=LOG_LEVEL=info
+
+[Install]
+WantedBy=multi-user.target

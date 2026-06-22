@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarathustra Playground</title>
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; overflow: hidden; background: #1e1e1e; color: #ccc; }
+.app { display: flex; flex-direction: column; height: 100vh; }
+.toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: #252526; border-bottom: 1px solid #333; }
+.toolbar h1 { font-size: 14px; font-weight: 600; margin-right: 16px; color: #e0e0e0; }
+.toolbar h1 span { color: #d4a84b; }
+.btn { padding: 6px 14px; border: none; border-radius: 4px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.btn-primary { background: #0e639c; color: #fff; }
+.btn-primary:hover { background: #1177bb; }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-success { background: #1b6d3e; color: #fff; }
+.btn-success:hover { background: #228b4f; }
+.btn-warning { background: #8a6d3b; color: #fff; }
+.btn-warning:hover { background: #a07d45; }
+.btn-danger { background: #6b3030; color: #fff; }
+.btn-danger:hover { background: #853a3a; }
+.btn-outline { background: transparent; color: #ccc; border: 1px solid #555; }
+.btn-outline:hover { background: #333; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #333; margin-left: auto; }
+.badge-ok { background: #1b6d3e; }
+.badge-error { background: #6b3030; }
+.main { display: flex; flex: 1; overflow: hidden; }
+.editor-pane { flex: 1; display: flex; flex-direction: column; border-right: 1px solid #333; }
+.editor-header { padding: 6px 12px; background: #2d2d2d; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #333; }
+#editor { flex: 1; }
+.output-pane { width: 420px; min-width: 300px; display: flex; flex-direction: column; background: #1e1e1e; }
+.output-tabs { display: flex; background: #2d2d2d; border-bottom: 1px solid #333; }
+.output-tab { padding: 6px 14px; font-size: 11px; cursor: pointer; border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 0.5px; }
+.output-tab.active { border-bottom-color: #0e639c; color: #fff; }
+.output-tab:hover { background: #333; }
+.output-content { flex: 1; overflow: auto; padding: 12px; font-family: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+.steps { padding: 8px 12px; border-top: 1px solid #333; background: #252526; }
+.step-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.step-row .btn { flex: 1; min-width: 80px; font-size: 11px; }
+.abi-input { width: 100%; padding: 8px; background: #1e1e1e; border: 1px solid #333; color: #ccc; border-radius: 4px; font-family: monospace; font-size: 12px; margin-top: 6px; resize: vertical; min-height: 40px; }
+.abi-input:focus { outline: none; border-color: #0e639c; }
+.loading { display: inline-block; width: 12px; height: 12px; border: 2px solid #555; border-top-color: #0e639c; border-radius: 50%; animation: spin 0.6s linear infinite; margin-right: 6px; vertical-align: middle; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <h1>⚡ <span>Zarathustra</span> Playground</h1>
+    <button class="btn btn-primary" onclick="compile()">▶ Compile</button>
+    <button class="btn btn-success" onclick="computeWitness()" disabled id="btnWitness">🔢 Witness</button>
+    <button class="btn btn-warning" onclick="setup()" disabled id="btnSetup">🔑 Setup</button>
+    <button class="btn btn-danger" onclick="prove()" disabled id="btnProve">📜 Prove</button>
+    <button class="btn btn-outline" onclick="verify()" disabled id="btnVerify">✅ Verify</button>
+    <button class="btn btn-outline" onclick="exportVerifier()" disabled id="btnExport">📄 Solidity</button>
+    <button class="btn btn-outline" onclick="reset()">↺ Reset</button>
+    <a href="demo.html" class="btn btn-outline" style="text-decoration:none;margin-left:auto;">ℹ About</a>
+    <span class="badge" id="statusBadge">Ready</span>
+  </div>
+
+  <div class="main">
+    <div class="editor-pane">
+      <div class="editor-header">program.zarathustra</div>
+      <div id="editor"></div>
+    </div>
+
+    <div class="output-pane">
+      <div class="output-tabs">
+        <div class="output-tab active" onclick="switchTab('console')">Console</div>
+        <div class="output-tab" onclick="switchTab('r1cs')">R1CS</div>
+        <div class="output-tab" onclick="switchTab('proof')">Proof</div>
+        <div class="output-tab" onclick="switchTab('solidity')">Solidity</div>
+      </div>
+      <div class="output-content" id="outputConsole">// Ready. Write code and click Compile.</div>
+      <div class="output-content hidden" id="outputR1CS"></div>
+      <div class="output-content hidden" id="outputProof"></div>
+      <div class="output-content hidden" id="outputSolidity"></div>
+
+      <div class="steps">
+        <div class="step-row">
+          <select id="curveSelect" style="background:#1e1e1e;color:#ccc;border:1px solid #555;border-radius:4px;padding:4px 8px;font-size:11px;">
+            <option value="bn128">BN128 (Ethereum)</option>
+            <option value="bls12_381">BLS12-381</option>
+            <option value="bls12_377">BLS12-377</option>
+            <option value="pallas">Pallas (Nova)</option>
+          </select>
+          <textarea id="abiArgs" class="abi-input" rows="2" placeholder='ABI args: ["42"] or leave empty'>["42"]</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let API_BASE = window.location.origin;
+// Override API base via query param: ?api=http://my-server:4000
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('api')) API_BASE = urlParams.get('api');
+// Or via global var set before this script
+if (window.ZARATHUSTRA_API) API_BASE = window.ZARATHUSTRA_API;
+
+let editor;
+let state = { compiled: false, witnessed: false, setupDone: false };
+
+require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+require(['vs/editor/editor.main'], function () {
+    editor = monaco.editor.create(document.getElementById('editor'), {
+        value: DEFAULT_CODE,
+        language: 'plaintext',
+        theme: 'vs-dark',
+        fontSize: 14,
+        fontFamily: "'Cascadia Code', 'Fira Code', monospace",
+        minimap: { enabled: false },
+        automaticLayout: true,
+        padding: { top: 12 },
+        scrollBeyondLastLine: false,
+    });
+});
+
+const DEFAULT_CODE = `// Zarathustra - Zero Knowledge DSL
+// Prove knowledge of x such that x^2 == 42
+
+def main(private field x) -> bool {
+    assert(x * x == 42);
+    return true;
+}
+`;
+
+function setStatus(msg, ok) {
+    const badge = document.getElementById('statusBadge');
+    badge.textContent = msg;
+    badge.className = 'badge' + (ok === true ? ' badge-ok' : ok === false ? ' badge-error' : '');
+}
+
+function setButtons(step) {
+    document.getElementById('btnWitness').disabled = !step.compiled;
+    document.getElementById('btnSetup').disabled = !step.compiled;
+    document.getElementById('btnProve').disabled = !(step.witnessed && step.setupDone);
+    document.getElementById('btnVerify').disabled = !step.proved;
+    document.getElementById('btnExport').disabled = !step.setupDone;
+}
+
+function output(tab, content) {
+    document.getElementById(`output${tab.charAt(0).toUpperCase() + tab.slice(1)}`).textContent = content;
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.output-content').forEach(t => t.classList.add('hidden'));
+    event.target.classList.add('active');
+    document.getElementById(`output${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.remove('hidden');
+}
+
+async function compile() {
+    const code = editor.getValue();
+    const curve = document.getElementById('curveSelect').value;
+    setStatus('Compiling...');
+    document.getElementById('outputConsole').textContent = 'Compiling...\n';
+
+    try {
+        const res = await fetch(API_BASE + '/api/compile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code, curve }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+            state.compiled = true;
+            state.witnessed = false;
+            state.setupDone = false;
+            state.proved = false;
+            document.getElementById('outputConsole').textContent =
+                `✓ Compilation successful\n  Constraints: ${data.output.constraints}\n  Curve: ${curve}`;
+            if (data.output.abi) {
+                document.getElementById('outputConsole').textContent +=
+                    `\n  ABI: ${JSON.stringify(data.output.abi, null, 2)}`;
+            }
+        } else {
+            state.compiled = false;
+            document.getElementById('outputConsole').textContent =
+                `✗ Compilation failed\n${data.stderr || data.stdout}`;
+        }
+    } catch (err) {
+        document.getElementById('outputConsole').textContent = `✗ Error: ${err.message}`;
+    }
+    setButtons(state);
+    setStatus(state.compiled ? 'Compiled' : 'Error', state.compiled);
+}
+
+async function computeWitness() {
+    const abiArgs = document.getElementById('abiArgs').value;
+    setStatus('Computing witness...');
+
+    try {
+        const res = await fetch(API_BASE + '/api/compute-witness', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ args: abiArgs ? JSON.parse(abiArgs) : null }),
+        });
+        const data = await res.json();
+
+        if (data.ok) {
+            state.witnessed = true;
+            document.getElementById('outputConsole').textContent = '✓ Witness computed successfully';
+        } else {
+            state.witnessed = false;
+            document.getElementById('outputConsole').textContent =
+                `✗ Witness failed\n${data.stderr || data.stdout}`;
+        }
+    } catch (err) {
+        document.getElementById('outputConsole').textContent = `✗ Error: ${err.message}`;
+    }
+    setButtons(state);
+    setStatus(state.witnessed ? 'Witness OK' : 'Error', state.witnessed);
+}
+
+async function setup() {
+    setStatus('Generating keys...');
+    try {
+        const res = await fetch(API_BASE + '/api/setup', { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+            state.setupDone = true;
+            document.getElementById('outputConsole').textContent =
+                '✓ Setup complete\n  Proving key + Verification key generated';
+        } else {
+            state.setupDone = false;
+            document.getElementById('outputConsole').textContent =
+                `✗ Setup failed\n${data.stderr || data.stdout}`;
+        }
+    } catch (err) {
+        document.getElementById('outputConsole').textContent = `✗ Error: ${err.message}`;
+    }
+    setButtons(state);
+    setStatus(state.setupDone ? 'Keys ready' : 'Error', state.setupDone);
+}
+
+async function prove() {
+    setStatus('Generating proof...');
+    try {
+        const res = await fetch(API_BASE + '/api/prove', { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+            state.proved = true;
+            document.getElementById('outputConsole').textContent = '✓ Proof generated successfully';
+            if (data.proof) {
+                document.getElementById('outputProof').textContent =
+                    JSON.stringify(data.proof, null, 2);
+            }
+        } else {
+            state.proved = false;
+            document.getElementById('outputConsole').textContent =
+                `✗ Proof failed\n${data.stderr || data.stdout}`;
+        }
+    } catch (err) {
+        document.getElementById('outputConsole').textContent = `✗ Error: ${err.message}`;
+    }
+    setButtons(state);
+    setStatus(state.proved ? 'Proof ready' : 'Error', state.proved);
+}
+
+async function verify() {
+    setStatus('Verifying...');
+    try {
+        const res = await fetch(API_BASE + '/api/verify', { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+            document.getElementById('outputConsole').textContent = '✓ ✓ ✓ PROOF VERIFIED ✓ ✓ ✓\nThe proof is valid!';
+        } else {
+            document.getElementById('outputConsole').textContent =
+                `✗ Verification failed\n${data.stderr || data.stdout}`;
+        }
+    } catch (err) {
+        document.getElementById('outputConsole').textContent = `✗ Error: ${err.message}`;
+    }
+    setStatus('Verified');
+}
+
+async function exportVerifier() {
+    setStatus('Exporting...');
+    try {
+        const res = await fetch(API_BASE + '/api/export-verifier', { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) {
+            document.getElementById('outputSolidity').textContent = data.stdout;
+            switchTab('solidity');
+            setStatus('Solidity exported');
+        } else {
+            document.getElementById('outputConsole').textContent =
+                `✗ Export failed\n${data.stderr || data.stdout}`;
+        }
+    } catch (err) {
+        document.getElementById('outputConsole').textContent = `✗ Error: ${err.message}`;
+    }
+}
+
+async function reset() {
+    state = { compiled: false, witnessed: false, setupDone: false, proved: false };
+    setButtons(state);
+    setStatus('Reset');
+    document.getElementById('outputConsole').textContent = '// Reset. Ready.';
+    document.getElementById('outputR1CS').textContent = '';
+    document.getElementById('outputProof').textContent = '';
+    document.getElementById('outputSolidity').textContent = '';
+    try { await fetch(API_BASE + '/api/reset', { method: 'POST' }); } catch {}
+}
+</script>
+</body>
+</html>

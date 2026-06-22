@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarathustra — Zero-Knowledge Proofs, Simplified</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a2e;
+    --accent: #d4a84b;
+    --accent2: #f0c860;
+    --accent-dim: #8a7a3b;
+    --text: #e8e8ed;
+    --text2: #8888a0;
+    --border: #2a2a3e;
+    --success: #4ade80;
+    --error: #f87171;
+    --gradient: linear-gradient(135deg, #d4a84b, #f0c860, #d4a84b);
+}
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ---- NAV ---- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 40px;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+}
+.logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+.logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a { color: var(--text2); text-decoration: none; font-size: 14px; font-weight: 500; transition: 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.btn-nav { background: var(--gradient); color: #0a0a0f !important; padding: 8px 20px; border-radius: 8px; font-weight: 700 !important; }
+
+/* ---- HERO ---- */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    background:
+        radial-gradient(ellipse 600px 400px at 50% -20%, rgba(212,168,75,0.08), transparent),
+        radial-gradient(ellipse 400px 400px at 20% 80%, rgba(212,168,75,0.04), transparent),
+        var(--bg);
+}
+.hero-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    background: rgba(212,168,75,0.1);
+    border: 1px solid rgba(212,168,75,0.2);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+.hero h1 {
+    font-size: clamp(48px, 8vw, 88px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, #fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.hero p {
+    font-size: 18px;
+    color: var(--text2);
+    max-width: 600px;
+    margin-bottom: 40px;
+    line-height: 1.7;
+}
+.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+}
+.btn-primary { background: var(--gradient); color: #0a0a0f; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(212,168,75,0.3); }
+.btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+.btn-secondary:hover { border-color: var(--text2); background: var(--bg2); }
+
+/* ---- SECTIONS ---- */
+section { padding: 100px 24px; }
+.section-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 60px;
+}
+.section-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+.section-header h2 span { color: var(--accent); }
+.section-header p { color: var(--text2); font-size: 16px; }
+
+/* ---- CONTRAST TABLE ---- */
+.contrast-section { background: var(--bg2); }
+.contrast-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+.contrast-header {
+    padding: 20px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+.contrast-header.traditional { background: rgba(248,113,113,0.1); color: var(--error); }
+.contrast-header.zarathustra { background: rgba(212,168,75,0.1); color: var(--accent); }
+.contrast-header.why { background: rgba(74,222,128,0.1); color: var(--success); }
+
+.contrast-cell {
+    padding: 20px;
+    font-size: 14px;
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.contrast-cell .icon { font-size: 18px; flex-shrink: 0; }
+.contrast-cell.red { color: var(--error); }
+.contrast-cell.gold { color: var(--accent); }
+.contrast-cell.green { color: var(--success); }
+
+/* ---- FLOW DIAGRAM ---- */
+.flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    max-width: 900px;
+    margin: 40px auto;
+}
+.flow-step {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    min-width: 120px;
+    transition: 0.2s;
+}
+.flow-step:hover { border-color: var(--accent-dim); }
+.flow-step .num {
+    display: inline-flex;
+    width: 28px; height: 28px;
+    align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: var(--gradient);
+    color: #0a0a0f;
+    font-weight: 800;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.flow-step .label { font-size: 13px; font-weight: 600; }
+.flow-step .desc { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.flow-arrow { color: var(--accent-dim); font-size: 24px; font-weight: 300; }
+
+/* ---- CODE DEMO ---- */
+.demo-section {
+    background:
+        radial-gradient(ellipse 500px 300px at 30% 50%, rgba(212,168,75,0.03), transparent),
+        var(--bg);
+}
+.code-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.code-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+}
+.code-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text2);
+}
+.code-card .card-header .lang { color: var(--accent); }
+.code-card pre {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    color: #e0e0e0;
+}
+.code-card pre .kw { color: #c792ea; }
+.code-card pre .fn { color: #82aaff; }
+.code-card pre .ty { color: #ffcb6b; }
+.code-card pre .cm { color: #546e7a; font-style: italic; }
+.code-card pre .str { color: #c3e88d; }
+.code-card pre .num { color: #f78c6c; }
+
+.output-card .card-header { color: var(--success); }
+.output-card pre { color: var(--text2); }
+.output-card pre .ok { color: var(--success); }
+
+/* ---- CLI DEMO ---- */
+.cli-demo {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #0d0d14;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.cli-demo .cli-header {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+}
+.cli-demo .dot { width: 10px; height: 10px; border-radius: 50%; }
+.cli-demo .dot.r { background: #ff5f57; }
+.cli-demo .dot.y { background: #ffbd2e; }
+.cli-demo .dot.g { background: #28c840; }
+.cli-demo .cli-title { font-size: 11px; color: var(--text2); margin-left: 8px; }
+.cli-demo pre {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+}
+.cli-demo pre .prompt { color: var(--accent); }
+.cli-demo pre .output { color: var(--text2); }
+.cli-demo pre .ok { color: var(--success); }
+
+/* ---- FEATURES ---- */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.feature-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: 0.2s;
+}
+.feature-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); }
+.feature-card .icon { font-size: 32px; margin-bottom: 12px; }
+.feature-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.feature-card p { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+/* ---- FOOTER ---- */
+footer {
+    text-align: center;
+    padding: 40px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 13px;
+}
+footer a { color: var(--accent); text-decoration: none; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+    nav { padding: 12px 20px; }
+    .nav-links a:not(.btn-nav) { display: none; }
+    .contrast-grid { grid-template-columns: 1fr; }
+    .code-grid { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">⚡ <span>Zarathustra</span></div>
+    <div class="nav-links">
+        <a href="#contrast">Why</a>
+        <a href="#demo">Demo</a>
+        <a href="#features">Features</a>
+        <a href="index.html" class="btn-nav">Playground →</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-badge">⚡ Zero-Knowledge Proof Compiler</div>
+    <h1>Write Code.<br>Prove Anything.</h1>
+    <p>A high-level DSL that compiles to zkSNARKs — write Python-like code, generate zero-knowledge proofs, and verify them on-chain in minutes.</p>
+    <div class="hero-btns">
+        <a href="index.html" class="btn-primary">▶ Try the Playground</a>
+        <a href="#demo" class="btn-secondary">See How It Works ↓</a>
+    </div>
+</section>
+
+<section class="contrast-section" id="contrast">
+    <div class="section-header">
+        <h2>Traditional zkSNARKs <span>vs</span> Zarathustra</h2>
+        <p>Building zero-knowledge proofs the old way vs a developer-friendly approach.</p>
+    </div>
+    <div class="contrast-grid">
+        <div class="contrast-header traditional">❌ Traditional Approach</div>
+        <div class="contrast-header zarathustra">✅ Zarathustra</div>
+        <div class="contrast-header why">💡 Why It Matters</div>
+
+        <div class="contrast-cell red"><span class="icon">⚠️</span> Write R1CS constraints manually</div>
+        <div class="contrast-cell gold"><span class="icon">⚡</span> Python-like high-level DSL</div>
+        <div class="contrast-cell green"><span class="icon">🚀</span> 10x faster development cycle</div>
+
+        <div class="contrast-cell red"><span class="icon">⚠️</span> Expert-level cryptography knowledge required</div>
+        <div class="contrast-cell gold"><span class="icon">⚡</span> No crypto PhD needed — just write logic</div>
+        <div class="contrast-cell green"><span class="icon">🚀</span> Accessible to any developer</div>
+
+        <div class="contrast-cell red"><span class="icon">⚠️</span> Wire up provers and verifiers from scratch</div>
+        <div class="contrast-cell gold"><span class="icon">⚡</span> One command: compile → setup → prove → verify</div>
+        <div class="contrast-cell green"><span class="icon">🚀</span> Full toolchain, zero boilerplate</div>
+
+        <div class="contrast-cell red"><span class="icon">⚠️</span> Write custom Solidity for on-chain verification</div>
+        <div class="contrast-cell gold"><span class="icon">⚡</span> `export-verifier` — one command to Solidity</div>
+        <div class="contrast-cell green"><span class="icon">🚀</span> Deploy to Ethereum in minutes</div>
+
+        <div class="contrast-cell red"><span class="icon">⚠️</span> Limited curve support, manual backend selection</div>
+        <div class="contrast-cell gold"><span class="icon">⚡</span> 7 curves, 4 proving schemes, 3 backends</div>
+        <div class="contrast-cell green"><span class="icon">🚀</span> BN128, BLS, Pallas — pick what fits</div>
+
+        <div class="contrast-cell red"><span class="icon">⚠️</span> No standard library — build every gadget</div>
+        <div class="contrast-cell gold"><span class="icon">⚡</span> Built-in SHA256, Poseidon, ECC, EdDSA</div>
+        <div class="contrast-cell green"><span class="icon">🚀</span> Ship faster with pre-built crypto</div>
+    </div>
+</section>
+
+<section class="demo-section" id="demo">
+    <div class="section-header">
+        <h2>See It <span>In Action</span></h2>
+        <p>Prove you know a number without revealing it. Here's the full pipeline.</p>
+    </div>
+
+    <div class="code-grid">
+        <div class="code-card">
+            <div class="card-header"><span>📄 program.zarathustra</span><span class="lang">zarathustra</span></div>
+            <pre>
+<span class="cm">// Prove knowledge of x without revealing it</span>
+<span class="kw">def</span> <span class="fn">main</span>(<span class="kw">private</span> <span class="ty">field</span> x, <span class="ty">field</span> y) {
+    <span class="kw">assert</span>(x * x == y);
+    <span class="kw">return</span> <span class="num">true</span>;
+}</pre>
+        </div>
+        <div class="code-card output-card">
+            <div class="card-header"><span>🔍 Compilation Result</span><span class="lang">2 constraints</span></div>
+            <pre>
+<span class="ok">✓ Compilation successful</span>
+  Constraints:   <span class="num">2</span>
+  Curve:         bn128
+  Backend:       Groth16
+
+<span class="ok">✓ Proof generated</span>
+  Proving key:   proving.key
+  Proof:         proof.json
+
+<span class="ok">✓ Verified on-chain</span>
+  Gas used:      ~250,000
+  Status:        <span class="ok">VALID</span></pre>
+        </div>
+    </div>
+
+    <div class="cli-demo">
+        <div class="cli-header">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="cli-title">terminal — full pipeline</span>
+        </div>
+        <pre>
+<span class="prompt">$</span> zarathustra compile -i program.zok --curve bn128
+<span class="output">Compiled code written to 'out'
+Number of constraints: 2</span>
+
+<span class="prompt">$</span> zarathustra setup -i out
+<span class="output">Setup complete</span>
+
+<span class="prompt">$</span> zarathustra compute-witness -i out --abi --stdin &lt;&lt;&lt; '["3", "9"]'
+<span class="output">Witness computed</span>
+
+<span class="prompt">$</span> zarathustra generate-proof -i out -w witness -p proving.key
+<span class="output"><span class="ok">✓ Proof generated</span></span>
+
+<span class="prompt">$</span> zarathustra verify -v verification.key -j proof.json
+<span class="output"><span class="ok">✓ PROOF VERIFIED</span></span>
+
+<span class="prompt">$</span> zarathustra export-verifier -i verification.key
+<span class="output">verifier.sol — ready to deploy</span></pre>
+    </div>
+
+    <div class="section-header" style="margin-top: 60px;">
+        <h2>How It <span>Works</span></h2>
+        <p>The compiler pipeline — from source code to verified proof.</p>
+    </div>
+    <div class="flow">
+        <div class="flow-step"><div class="num">1</div><div class="label">Write Code</div><div class="desc">Python-like DSL</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">2</div><div class="label">Compile</div><div class="desc">R1CS constraints</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">3</div><div class="label">Setup</div><div class="desc">Generate keys</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">4</div><div class="label">Witness</div><div class="desc">Compute values</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">5</div><div class="label">Prove</div><div class="desc">Generate proof</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><div class="num">6</div><div class="label">Verify</div><div class="desc">Check on-chain</div></div>
+    </div>
+</section>
+
+<section id="features">
+    <div class="section-header">
+        <h2>Everything You <span>Need</span></h2>
+        <p>A complete zero-knowledge proving toolkit.</p>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="icon">📝</div>
+            <h3>High-Level DSL</h3>
+            <p>Python-like syntax with types, generics, structs, arrays, and imports. No low-level constraint wrangling.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">🔐</div>
+            <h3>4 Proving Schemes</h3>
+            <p>Groth16, GM17, Marlin (universal), and Nova (IVC). Pick the right scheme for your use case.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">⛓️</div>
+            <h3>Solidity Export</h3>
+            <p>One command to generate a verifier contract. Deploy to Ethereum for ~250k gas per verification.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">📚</div>
+            <h3>Standard Library</h3>
+            <p>Built-in SHA256, Poseidon, Keccak, MiMC7, Blake2, ECC (BabyJubJub), EdDSA, and SNARK verifiers.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">🔄</div>
+            <h3>7 Curves Supported</h3>
+            <p>BN128, BLS12-381, BLS12-377, BW6-761, Pallas, Vesta — covering Ethereum, Filecoin, and Mina ecosystems.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon">🌐</div>
+            <h3>Web IDE + CLI</h3>
+            <p>Browser-based Monaco editor playground or terminal CLI. Same engine, any interface.</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p>⚡ <strong>Zarathustra</strong> — Zero-Knowledge Proof Compiler</p>
+    <p style="margin-top: 8px;">
+        <a href="index.html">Playground</a> · 
+        <a href="https://github.com/SURUJ404/Zero-proof">GitHub</a> · 
+        <a href="https://zokrates.github.io">Documentation</a>
+    </p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,28 @@
+module.exports = {
+    apps: [{
+        name: 'zarathustra',
+        script: 'server.js',
+        cwd: __dirname,
+        instances: 1,
+        exec_mode: 'fork',
+        env: {
+            NODE_ENV: 'production',
+            PORT: 4000,
+            HOST: '0.0.0.0',
+            ZARATHUSTRA_BIN: require('path').resolve(__dirname, '..', 'zarathustra'),
+            ZARATHUSTRA_STDLIB: require('path').resolve(__dirname, '..', 'stdlib'),
+            WORK_DIR: require('path').resolve(__dirname, 'work'),
+            LOG_LEVEL: 'info',
+        },
+        max_memory_restart: '512M',
+        log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
+        error_file: './logs/error.log',
+        out_file: './logs/output.log',
+        merge_logs: true,
+        restart_delay: 5000,
+        max_restarts: 10,
+        kill_timeout: 10000,
+        listen_timeout: 5000,
+        health_check_url: 'http://localhost:4000/api/health',
+    }],
+};

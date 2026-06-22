@@ -17,6 +17,7 @@ enum Command {
     Verify(commands::verify::VerifyArgs),
     Server(commands::server::ServerArgs),
     Config(commands::config::ConfigArgs),
+    Zarathustra(commands::zarathustra::ZarathustraArgs),
 }
 
 #[tokio::main]
@@ -31,5 +32,6 @@ async fn main() -> anyhow::Result<()> {
         Command::Verify(args) => commands::verify::run(args).await,
         Command::Server(args) => commands::server::run(args).await,
         Command::Config(args) => commands::config::run(args).await,
+        Command::Zarathustra(args) => commands::zarathustra::run(args).await,
     }
 }
