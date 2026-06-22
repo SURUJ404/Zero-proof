@@ -27,8 +27,15 @@ jobs:
       - name: Deploy to Vercel
         id: vercel
         run: |
-          npx --yes vercel@latest deploy website --prod \
+          mkdir -p website/.vercel
+          printf '{"orgId":"%s","projectId":"%s"}\n' \
+            "${{ secrets.VERCELID }}" \
+            "${{ secrets.PROJECTID }}" \
+            > website/.vercel/project.json
+          cd website
+          npx --yes vercel@latest deploy --prod \
             --token=${{ secrets.ZEROTOKEN }} \
             --scope=${{ secrets.VERCELID }} \
-            --yes > vercel-url.txt
+            --yes > ../vercel-url.txt
+          cd ..
           echo "url=$(cat vercel-url.txt)" >> $GITHUB_OUTPUT
